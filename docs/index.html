@@ -69,6 +69,10 @@
                     <span class="ml-1 text-sm font-bold text-yellow-400">Hypothetical</span>
                 </div>
 
+                <button onclick="app.fetchLiveData()"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-bold transition text-sm flex items-center gap-2 mr-2">
+                    <span id="refresh-icon">↻</span> Refresh
+                </button>
                 <button onclick="app.resetAll()"
                     class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-bold transition text-sm">Reset</button>
             </div>
@@ -100,6 +104,7 @@
                             <th class="px-6 py-3">Rank</th>
                             <th class="px-6 py-3">Team</th>
                             <th class="px-6 py-3">Name</th>
+                            <th class="px-6 py-3 text-center">OPR</th>
                             <th class="px-6 py-3 text-center">Total RP</th>
                             <th class="px-6 py-3 text-center">Avg Score</th>
                             <th class="px-6 py-3 text-center">Matches</th>
@@ -371,7 +376,8 @@
                     qual_pts: 0,
                     alliance_pts: 0,
                     award_pts: 0,
-                    playoff_pts: 0
+                    playoff_pts: 0,
+                    opr: 0
                 };
             });
 
@@ -381,7 +387,11 @@
                 allMatches.push(...AppState.hypotheticalMatches);
             }
 
-            // 2. Distribute matches to teams
+            // 2. Calculate OPR
+            const allTeamNums = TEAMS.map(t => t.number);
+            const oprs = solveOPR(allMatches, allTeamNums);
+
+            // 3. Distribute matches to teams
             allMatches.forEach(m => {
                 const teamsInMatch = [...m.red, ...m.blue];
                 teamsInMatch.forEach(tNum => {
@@ -402,8 +412,11 @@
                 });
             });
 
-            // 3. Calculate Stats per Team
+            // 4. Calculate Stats per Team
             Object.values(AppState.teamsData).forEach(team => {
+                // Assign OPR
+                team.opr = oprs[team.number] || 0;
+
                 // League Meets (Top 10)
                 const leagueMatches = team.matches.filter(m => m.match_type === 'MEET' && !m.is_surrogate)
                     .sort((a, b) => (b.rp - a.rp) || (b.score - a.score));
@@ -512,15 +525,27 @@
                     }
                 });
 
-                // Fetch Live
+                // Initial Fetch
+                await app.fetchLiveData();
+            },
+
+            async fetchLiveData() {
+                const btnIcon = document.getElementById('refresh-icon');
+                if (btnIcon) btnIcon.classList.add('animate-spin', 'inline-block');
                 document.getElementById('data-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-yellow-500 animate-pulse"></span><span>Fetching...</span>';
-                const allPromises = MEETS.map(m => fetchMeetData(m.code, m.prefix));
-                const results = await Promise.all(allPromises);
 
-                AppState.matches = results.flat();
-                document.getElementById('data-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-green-500"></span><span>Live Data Ready</span>';
-
-                app.renderStandings();
+                try {
+                    const allPromises = MEETS.map(m => fetchMeetData(m.code, m.prefix));
+                    const results = await Promise.all(allPromises);
+                    AppState.matches = results.flat();
+                    document.getElementById('data-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-green-500"></span><span>Live Data Ready</span>';
+                    app.renderStandings();
+                } catch (e) {
+                    console.error(e);
+                    document.getElementById('data-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500"></span><span>Fetch Error</span>';
+                } finally {
+                    if (btnIcon) btnIcon.classList.remove('animate-spin', 'inline-block');
+                }
             },
 
             saveState() {
@@ -591,13 +616,14 @@
                         <td class="px-6 py-4 font-bold">${t.league_rank}</td>
                         <td class="px-6 py-4 font-mono text-first font-bold">${t.number}</td>
                         <td class="px-6 py-4 text-gray-300">${t.name}</td>
+                        <td class="px-6 py-4 text-center text-yellow-500 font-bold">${t.opr.toFixed(1)}</td>
                         <td class="px-6 py-4 text-center font-bold text-lg">${t.total_rp}</td>
                         <td class="px-6 py-4 text-center text-gray-400">${t.avg_score.toFixed(1)}</td>
                         <td class="px-6 py-4 text-center text-gray-500">${t.matches_played}</td>
                         <td class="px-6 py-4 text-center text-xs text-gray-500">▼</td>
                     </tr>
                     <tr id="${detailId}" class="hidden bg-gray-900/50">
-                        <td colspan="7" class="p-4"><div class="bg-gray-800 rounded p-4">
+                        <td colspan="8" class="p-4"><div class="bg-gray-800 rounded p-4">
                             <table class="w-full text-sm"><tbody>${breakdownRows}</tbody></table>
                         </div></td>
                     </tr>
@@ -631,12 +657,12 @@
                 row.className = 'bg-gray-700';
                 row.innerHTML = `
                 <td class="px-3 py-2">Q-${num}</td>
-                <td class="px-3 py-2"><input type="text" class="w-full bg-gray-600 rounded px-2 py-1 text-sm" placeholder="Team"></td>
-                <td class="px-3 py-2"><input type="text" class="w-full bg-gray-600 rounded px-2 py-1 text-sm" placeholder="Team"></td>
+                <td class="px-3 py-2"><input type="text" list="team-numbers" class="w-full bg-gray-600 rounded px-2 py-1 text-sm" placeholder="R1"></td>
+                <td class="px-3 py-2"><input type="text" list="team-numbers" class="w-full bg-gray-600 rounded px-2 py-1 text-sm" placeholder="R2"></td>
                 <td class="px-3 py-2"><input type="number" class="w-full bg-gray-600 rounded px-2 py-1 text-sm text-center" placeholder="Score"></td>
                 <td class="px-3 py-2"><input type="number" class="w-full bg-gray-600 rounded px-2 py-1 text-sm text-center" placeholder="RP"></td>
-                <td class="px-3 py-2"><input type="text" class="w-full bg-gray-600 rounded px-2 py-1 text-sm" placeholder="Team"></td>
-                <td class="px-3 py-2"><input type="text" class="w-full bg-gray-600 rounded px-2 py-1 text-sm" placeholder="Team"></td>
+                <td class="px-3 py-2"><input type="text" list="team-numbers" class="w-full bg-gray-600 rounded px-2 py-1 text-sm" placeholder="B1"></td>
+                <td class="px-3 py-2"><input type="text" list="team-numbers" class="w-full bg-gray-600 rounded px-2 py-1 text-sm" placeholder="B2"></td>
                 <td class="px-3 py-2"><input type="number" class="w-full bg-gray-600 rounded px-2 py-1 text-sm text-center" placeholder="Score"></td>
                 <td class="px-3 py-2"><input type="number" class="w-full bg-gray-600 rounded px-2 py-1 text-sm text-center" placeholder="RP"></td>
                 <td class="px-3 py-2"><button onclick="app.saveTournamentMatch(${num})" class="bg-green-600 text-white px-2 py-1 rounded text-xs">Save</button></td>
@@ -659,6 +685,7 @@
                 AppState.hypotheticalMatches.push(match);
                 app.saveState();
                 app.updateRowUI(row, i, num, true);
+                app.renderStandings(); // Re-render to update OPR
             },
 
             updateRowUI(row, inputs, num, saved) {
@@ -673,6 +700,8 @@
                 const sel = document.getElementById('adv_type');
                 const label = sel.options[sel.selectedIndex].text;
                 const val = sel.value;
+                // Allow adding 0 value awards if needed, checking explicitly for null/undefined if that was the intent,
+                // but here just checking team existence
                 if (!t) return;
 
                 AppState.awards.push({ team: t, award: label, award_val: val });
@@ -727,6 +756,90 @@
                 location.reload();
             }
         };
+
+        /**
+         * OPR Math Helper (Gaussian Elimination)
+         * Solves Ax = b
+         */
+        function solveLinearSystem(A, b) {
+            const n = A.length;
+            // Augment A with b
+            const M = A.map((row, i) => [...row, b[i]]);
+
+            for (let i = 0; i < n; i++) {
+                // Find pivot
+                let maxRow = i;
+                for (let k = i + 1; k < n; k++) {
+                    if (Math.abs(M[k][i]) > Math.abs(M[maxRow][i])) maxRow = k;
+                }
+
+                // Swap
+                [M[i], M[maxRow]] = [M[maxRow], M[i]];
+
+                // Make 1
+                const pivot = M[i][i];
+                if (Math.abs(pivot) < 1e-10) continue; // Singular or close to it
+
+                for (let j = i; j <= n; j++) M[i][j] /= pivot;
+
+                // Eliminate
+                for (let k = 0; k < n; k++) {
+                    if (k !== i) {
+                        const factor = M[k][i];
+                        for (let j = i; j <= n; j++) M[k][j] -= factor * M[i][j];
+                    }
+                }
+            }
+
+            return M.map(row => row[n]);
+        }
+
+        function solveOPR(matches, teamNumbers) {
+            const uniqueTeams = Array.from(new Set(teamNumbers));
+            const numTeams = uniqueTeams.length;
+            const teamToIndex = new Map(uniqueTeams.map((team, i) => [team, i]));
+
+            // Initialize A matrix and b vector
+            const A = Array(numTeams).fill(0).map(() => Array(numTeams).fill(0));
+            const b = Array(numTeams).fill(0);
+
+            matches.forEach(match => {
+                const redTeams = match.red.filter(t => t && teamToIndex.has(t));
+                const blueTeams = match.blue.filter(t => t && teamToIndex.has(t));
+
+                const redScore = match.red_score;
+                const blueScore = match.blue_score;
+
+                // Red Alliance
+                for (const team1 of redTeams) {
+                    const idx1 = teamToIndex.get(team1);
+                    b[idx1] += redScore;
+                    for (const team2 of redTeams) {
+                        const idx2 = teamToIndex.get(team2);
+                        A[idx1][idx2] += 1;
+                    }
+                }
+
+                // Blue Alliance
+                for (const team1 of blueTeams) {
+                    const idx1 = teamToIndex.get(team1);
+                    b[idx1] += blueScore;
+                    for (const team2 of blueTeams) {
+                        const idx2 = teamToIndex.get(team2);
+                        A[idx1][idx2] += 1;
+                    }
+                }
+            });
+
+            const solution = solveLinearSystem(A, b);
+
+            const oprResults = {};
+            uniqueTeams.forEach((team, i) => {
+                oprResults[team] = solution[i] || 0; // Default to 0 if no solution (e.g., singular matrix)
+            });
+
+            return oprResults;
+        }
 
         // BOOT
         document.addEventListener('DOMContentLoaded', app.init);
