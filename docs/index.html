@@ -81,14 +81,49 @@
                     <input type="file" class="hidden" onchange="app.importData(this)">
                 </label>
 
+                <button onclick="document.getElementById('cloud-modal').classList.remove('hidden')"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded font-bold transition text-sm flex items-center gap-2 mr-2">
+                    <span>☁</span> Cloud Sync
+                </button>
+
                 <button onclick="app.fetchLiveData()"
                     class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-bold transition text-sm flex items-center gap-2 mr-2">
                     <span id="refresh-icon">↻</span> Refresh
                 </button>
                 <button onclick="app.resetAll()"
-                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-bold transition text-sm">Reset</button>
+                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-bold transition text-sm">Clear
+                    All</button>
             </div>
         </header>
+
+        <!-- Cloud Modal -->
+        <div id="cloud-modal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+            <div class="bg-gray-800 p-6 rounded-lg shadow-xl w-full max-w-md border border-gray-700">
+                <h2 class="text-xl font-bold mb-4 flex items-center gap-2"><span class="text-indigo-400">☁</span> Cloud
+                    Sync</h2>
+
+                <div class="mb-4">
+                    <label class="block text-xs uppercase text-gray-400 mb-1">GitHub Personal Token (One-time)</label>
+                    <input type="password" id="gh-token" placeholder="ghp_..."
+                        class="w-full bg-gray-700 rounded px-3 py-2 text-white border border-gray-600 focus:border-indigo-500 outline-none">
+                    <p class="text-xs text-gray-500 mt-1">Required only for Saving. Saved securely in your browser.</p>
+                </div>
+
+                <div class="flex gap-2 mb-4">
+                    <button onclick="app.saveToCloud()"
+                        class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded font-bold"
+                        id="btn-save-cloud">⬆ Save to Cloud</button>
+                    <button onclick="app.loadFromCloud()"
+                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-bold"
+                        id="btn-load-cloud">⬇ Load from Cloud</button>
+                </div>
+
+                <div id="cloud-status" class="text-center text-sm mb-4 h-6 text-gray-300"></div>
+
+                <button onclick="document.getElementById('cloud-modal').classList.add('hidden')"
+                    class="w-full bg-gray-700 hover:bg-gray-600 text-gray-300 py-2 rounded">Close</button>
+            </div>
+        </div>
 
         <!-- Tabs -->
         <div class="flex flex-wrap space-x-1 mb-6 border-b border-gray-700 overflow-x-auto">
@@ -261,6 +296,12 @@
          */
 
         // Config
+        const CONFIG = {
+            owner: 'DrealVeerNanda',
+            repo: 'advancement-app',
+            path: 'docs/data/shared_state.json'
+        };
+
         const MEETS = [
             { code: "USCANOEBM1", prefix: "M1" },
             { code: "USCANOEBM2", prefix: "M2" },
@@ -518,6 +559,10 @@
          */
         const app = {
             async init() {
+                // Load Token
+                const token = localStorage.getItem('gh_token');
+                if (token) document.getElementById('gh-token').value = token;
+
                 // Load from LocalStorage
                 const stored = localStorage.getItem('eb_advancement_state');
                 if (stored) {
@@ -808,9 +853,9 @@
                 reader.onload = (e) => {
                     try {
                         const s = JSON.parse(e.target.result);
-                        if (s.hypotheticalMatches && s.awards) {
-                            AppState.hypotheticalMatches = s.hypotheticalMatches;
-                            AppState.awards = s.awards;
+                        if (s.hypotheticalMatches || s.awards) { // Relaxed check
+                            AppState.hypotheticalMatches = s.hypotheticalMatches || [];
+                            AppState.awards = s.awards || [];
                             AppState.isHypothetical = s.isHypothetical || false;
                             app.saveState();
                             alert("Data loaded successfully!");
@@ -823,6 +868,92 @@
                     }
                 };
                 reader.readAsText(file);
+            },
+
+            async saveToCloud() {
+                const token = document.getElementById('gh-token').value.trim();
+                if (!token) return app.setCloudStatus('Error: Token required to save.', 'text-red-500');
+                localStorage.setItem('gh_token', token);
+
+                app.setCloudStatus('Saving...', 'text-yellow-400');
+
+                try {
+                    // 1. Get SHA
+                    const getUrl = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}`;
+                    const getRes = await fetch(getUrl, { headers: { 'Authorization': `token ${token}` } });
+                    const getJson = await getRes.json();
+
+                    if (!getRes.ok && getRes.status !== 404) throw new Error('Failed to check file');
+
+                    const sha = getJson.sha;
+
+                    // 2. Upload
+                    const content = JSON.stringify({
+                        hypotheticalMatches: AppState.hypotheticalMatches,
+                        awards: AppState.awards,
+                        timestamp: new Date().toISOString()
+                    }, null, 2);
+
+                    const putRes = await fetch(getUrl, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: 'Update shared state via App',
+                            content: btoa(content),
+                            sha: sha
+                        })
+                    });
+
+                    if (!putRes.ok) throw new Error('Save failed');
+                    app.setCloudStatus('Saved to GitHub successfully! ✓', 'text-green-500');
+                } catch (e) {
+                    console.error(e);
+                    app.setCloudStatus('Error: ' + e.message, 'text-red-500');
+                }
+            },
+
+            async loadFromCloud() {
+                app.setCloudStatus('Loading...', 'text-yellow-400');
+                try {
+                    // Try public fetch first (fast)
+                    let res = await fetch(`https://${CONFIG.owner}.github.io/${CONFIG.repo}/data/shared_state.json?t=${Date.now()}`);
+
+                    // If 404 or fail, try API (allows private repos or instant fresh data)
+                    if (!res.ok) {
+                        const token = document.getElementById('gh-token').value.trim(); // Optional for read usually, but good fallback
+                        const headers = token ? { 'Authorization': `token ${token}` } : {};
+                        const apiUrl = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}`;
+                        const apiRes = await fetch(apiUrl, { headers });
+                        const apiJson = await apiRes.json();
+                        if (apiJson.content) {
+                            const decoded = atob(apiJson.content);
+                            res = { ok: true, json: async () => JSON.parse(decoded) };
+                        }
+                    }
+
+                    if (!res.ok) throw new Error('File not found or empty');
+
+                    const s = await res.json();
+                    AppState.hypotheticalMatches = s.hypotheticalMatches || [];
+                    AppState.awards = s.awards || [];
+
+                    app.saveState();
+                    app.setCloudStatus('Loaded! Refreshing...', 'text-green-500');
+                    setTimeout(() => location.reload(), 1000);
+
+                } catch (e) {
+                    console.error(e);
+                    app.setCloudStatus('Load Error: ' + e.message, 'text-red-500');
+                }
+            },
+
+            setCloudStatus(msg, color) {
+                const el = document.getElementById('cloud-status');
+                el.textContent = msg;
+                el.className = `text-center text-sm mb-4 h-6 ${color}`;
             }
         };
 
