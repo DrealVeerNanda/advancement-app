@@ -106,6 +106,9 @@
                     <button onclick="app.loadFromCloud()"
                         class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-bold"
                         id="btn-load-cloud">⬇ Load from Cloud</button>
+                    <button onclick="app.clearCloudData()"
+                        class="px-3 bg-red-600 hover:bg-red-700 text-white py-2 rounded font-bold"
+                        title="Wipe Cloud Data">🗑</button>
                 </div>
 
                 <div id="cloud-status" class="text-center text-sm mb-4 h-6 text-gray-300"></div>
@@ -863,41 +866,125 @@
                 } catch (e) {
                     console.error(e);
                     app.setCloudStatus('Error: ' + e.message, 'text-red-500');
+                    app.setCloudStatus('Load Error: ' + e.message, 'text-red-500');
                 }
             },
 
             async loadFromCloud() {
                 app.setCloudStatus('Loading...', 'text-yellow-400');
                 try {
-                    // Try public fetch first (fast)
-                    let res = await fetch(`https://${CONFIG.owner}.github.io/${CONFIG.repo}/data/shared_state.json?t=${Date.now()}`);
+                    let data = null;
+                    const token = document.getElementById('gh-token').value.trim();
 
-                    // If 404 or fail, try API (allows private repos or instant fresh data)
-                    if (!res.ok) {
-                        const token = document.getElementById('gh-token').value.trim(); // Optional for read usually, but good fallback
-                        const headers = token ? { 'Authorization': `token ${token}` } : {};
-                        const apiUrl = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}`;
-                        const apiRes = await fetch(apiUrl, { headers });
-                        const apiJson = await apiRes.json();
-                        if (apiJson.content) {
-                            const decoded = atob(apiJson.content);
-                            res = { ok: true, json: async () => JSON.parse(decoded) };
+                    // 1. Prefer API if Token exists (Instant, no cache)
+                    if (token) {
+                        try {
+                            const apiUrl = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}`;
+                            const apiRes = await fetch(apiUrl, { headers: { 'Authorization': `token ${token}` } });
+                            if (apiRes.ok) {
+                                const json = await apiRes.json();
+                                if (json.content) {
+                                    const decoded = atob(json.content);
+                                    data = JSON.parse(decoded);
+                                }
+                            }
+                        } catch (ignore) { console.warn("API load failed, falling back"); }
+                    }
+
+                    // 2. Fallback to Public URL
+                    if (!data) {
+                        const webPath = CONFIG.path.replace(/^docs\//, '');
+                        const webUrl = `https://${CONFIG.owner}.github.io/${CONFIG.repo}/${webPath}?t=${Date.now()}`;
+
+                        const res = await fetch(webUrl);
+                        if (res.ok) {
+                            data = await res.json();
                         }
                     }
 
-                    if (!res.ok) throw new Error('File not found or empty');
+                    if (!data) throw new Error('No data found (check Token or wait for GitHub Pages build)');
 
-                    const s = await res.json();
-                    AppState.hypotheticalMatches = s.hypotheticalMatches || [];
-                    AppState.awards = s.awards || [];
+                    // 3. Update State
+                    AppState.hypotheticalMatches = data.hypotheticalMatches || [];
+                    AppState.awards = data.awards || [];
+                    AppState.isHypothetical = data.isHypothetical || false;
 
                     app.saveState();
-                    app.setCloudStatus('Loaded! Refreshing...', 'text-green-500');
-                    setTimeout(() => location.reload(), 1000);
+
+                    // 4. Update UI without Reload (Instant)
+                    document.getElementById('mode-toggle').checked = AppState.isHypothetical;
+                    // Reset UI classes manually to avoid loop issues
+                    if (AppState.isHypothetical) document.body.classList.add('hypothetical-mode-active');
+                    else document.body.classList.remove('hypothetical-mode-active');
+
+                    // Restore match inputs (clear first then fill)
+                    document.querySelectorAll('[id^="tmatch-"] input').forEach(i => i.value = '');
+                    document.querySelectorAll('[id^="tmatch-"]').forEach(r => {
+                        r.classList.remove('bg-yellow-900/40');
+                        r.classList.add('bg-gray-700');
+                    });
+
+                    AppState.hypotheticalMatches.forEach(m => {
+                        const num = m.match_id.split('-')[1];
+                        const row = document.getElementById(`tmatch-${num}`);
+                        if (row) {
+                            const inputs = row.querySelectorAll('input');
+                            inputs[0].value = m.r1; inputs[1].value = m.r2;
+                            inputs[2].value = m.red_score; inputs[3].value = m.red_rp;
+                            inputs[4].value = m.b1; inputs[5].value = m.b2;
+                            inputs[6].value = m.blue_score; inputs[7].value = m.blue_rp;
+                            app.updateRowUI(row, inputs, num, true);
+                        }
+                    });
+
+                    app.updateAwardsList();
+                    app.renderStandings();
+                    app.renderAdvancement();
+
+                    app.setCloudStatus('Loaded successfully!', 'text-green-500');
 
                 } catch (e) {
                     console.error(e);
                     app.setCloudStatus('Load Error: ' + e.message, 'text-red-500');
+                }
+            },
+
+            async clearCloudData() {
+                if (!confirm("DANGER: This will WIPE the cloud file for everyone. Continue?")) return;
+
+                const token = document.getElementById('gh-token').value.trim();
+                if (!token) return app.setCloudStatus('Error: Token required.', 'text-red-500');
+                localStorage.setItem('gh_token', token);
+
+                app.setCloudStatus('Clearing...', 'text-red-400');
+
+                try {
+                    const getUrl = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}`;
+                    const getRes = await fetch(getUrl, { headers: { 'Authorization': `token ${token}` } });
+
+                    if (!getRes.ok && getRes.status !== 404) throw new Error('Check failed');
+
+                    let sha = null;
+                    if (getRes.ok) {
+                        const json = await getRes.json();
+                        sha = json.sha;
+                    }
+
+                    const content = JSON.stringify({}, null, 2);
+                    const body = { message: 'Clear shared state', content: btoa(content) };
+                    if (sha) body.sha = sha;
+
+                    const putRes = await fetch(getUrl, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body)
+                    });
+
+                    if (!putRes.ok) throw new Error('Clear failed');
+                    app.setCloudStatus('Cloud Cleared! ✓', 'text-green-500');
+                    setTimeout(() => app.loadFromCloud(), 1000); // Reload empty state
+                } catch (e) {
+                    app.setCloudStatus('Error: ' + e.message, 'text-red-500');
                 }
             },
 
