@@ -1,0 +1,1428 @@
+{
+  "team_performances": {
+    "32098": [
+      {
+        "match_id": "M2-Q18",
+        "rp": 5,
+        "score": 83,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q12",
+        "rp": 4,
+        "score": 142,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q7",
+        "rp": 4,
+        "score": 52,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q1",
+        "rp": 4,
+        "score": 48,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q1",
+        "rp": 3,
+        "score": 87,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q2",
+        "rp": 1,
+        "score": 66,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q9",
+        "rp": 1,
+        "score": 65,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q13",
+        "rp": 1,
+        "score": 49,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q14",
+        "rp": 1,
+        "score": 47,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q18",
+        "rp": 1,
+        "score": 45,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q9",
+        "rp": 1,
+        "score": 23,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q11",
+        "rp": 1,
+        "score": 19,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q7",
+        "rp": 0,
+        "score": 27,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q15",
+        "rp": 0,
+        "score": 15,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q7",
+        "rp": 0,
+        "score": 11,
+        "surrogate": false
+      }
+    ],
+    "5214": [
+      {
+        "match_id": "M2-Q9",
+        "rp": 4,
+        "score": 116,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q5",
+        "rp": 4,
+        "score": 108,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q14",
+        "rp": 4,
+        "score": 108,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q3",
+        "rp": 4,
+        "score": 81,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q6",
+        "rp": 4,
+        "score": 65,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q1",
+        "rp": 4,
+        "score": 48,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q18",
+        "rp": 3,
+        "score": 51,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q18",
+        "rp": 3,
+        "score": 48,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q2",
+        "rp": 1,
+        "score": 66,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q6",
+        "rp": 0,
+        "score": 80,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q14",
+        "rp": 0,
+        "score": 46,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q13",
+        "rp": 0,
+        "score": 36,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q8",
+        "rp": 0,
+        "score": 36,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q17",
+        "rp": 0,
+        "score": 30,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q10",
+        "rp": 0,
+        "score": 8,
+        "surrogate": false
+      }
+    ],
+    "30474": [
+      {
+        "match_id": "M3-Q15",
+        "rp": 4,
+        "score": 231,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q4",
+        "rp": 4,
+        "score": 123,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q7",
+        "rp": 4,
+        "score": 52,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q8",
+        "rp": 3,
+        "score": 53,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q11",
+        "rp": 1,
+        "score": 59,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q6",
+        "rp": 1,
+        "score": 54,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q13",
+        "rp": 1,
+        "score": 46,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q3",
+        "rp": 0,
+        "score": 69,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q18",
+        "rp": 0,
+        "score": 54,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q15",
+        "rp": 0,
+        "score": 44,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q17",
+        "rp": 0,
+        "score": 29,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q1",
+        "rp": 0,
+        "score": 21,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q11",
+        "rp": 0,
+        "score": 21,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q12",
+        "rp": 0,
+        "score": 13,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q4",
+        "rp": 0,
+        "score": 3,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q8",
+        "rp": 0,
+        "score": 0,
+        "surrogate": true
+      }
+    ],
+    "11920": [
+      {
+        "match_id": "M3-Q10",
+        "rp": 4,
+        "score": 239,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q2",
+        "rp": 4,
+        "score": 161,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q14",
+        "rp": 4,
+        "score": 101,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q17",
+        "rp": 3,
+        "score": 45,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q3",
+        "rp": 3,
+        "score": 37,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q17",
+        "rp": 2,
+        "score": 70,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q13",
+        "rp": 1,
+        "score": 46,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q11",
+        "rp": 1,
+        "score": 19,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q5",
+        "rp": 0,
+        "score": 46,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q7",
+        "rp": 0,
+        "score": 46,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q6",
+        "rp": 0,
+        "score": 36,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q17",
+        "rp": 0,
+        "score": 30,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q9",
+        "rp": 0,
+        "score": 28,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q1",
+        "rp": 0,
+        "score": 21,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q8",
+        "rp": 0,
+        "score": 14,
+        "surrogate": false
+      }
+    ],
+    "30473": [
+      {
+        "match_id": "M1-Q2",
+        "rp": 5,
+        "score": 71,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q17",
+        "rp": 4,
+        "score": 99,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q11",
+        "rp": 4,
+        "score": 65,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q10",
+        "rp": 3,
+        "score": 66,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q6",
+        "rp": 3,
+        "score": 46,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q15",
+        "rp": 3,
+        "score": 46,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q12",
+        "rp": 3,
+        "score": 25,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q4",
+        "rp": 0,
+        "score": 59,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q14",
+        "rp": 0,
+        "score": 47,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q1",
+        "rp": 0,
+        "score": 41,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q13",
+        "rp": 0,
+        "score": 36,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q3",
+        "rp": 0,
+        "score": 33,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q7",
+        "rp": 0,
+        "score": 27,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q16",
+        "rp": 0,
+        "score": 25,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q18",
+        "rp": 0,
+        "score": 11,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q8",
+        "rp": 0,
+        "score": 0,
+        "surrogate": true
+      }
+    ],
+    "14259": [
+      {
+        "match_id": "M1-Q2",
+        "rp": 5,
+        "score": 71,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q4",
+        "rp": 4,
+        "score": 162,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q2",
+        "rp": 4,
+        "score": 161,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q12",
+        "rp": 4,
+        "score": 142,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q12",
+        "rp": 4,
+        "score": 126,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q9",
+        "rp": 4,
+        "score": 116,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q9",
+        "rp": 4,
+        "score": 114,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q16",
+        "rp": 4,
+        "score": 113,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q5",
+        "rp": 4,
+        "score": 108,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q5",
+        "rp": 4,
+        "score": 108,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q1",
+        "rp": 4,
+        "score": 101,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q16",
+        "rp": 4,
+        "score": 99,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q17",
+        "rp": 4,
+        "score": 99,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q8",
+        "rp": 3,
+        "score": 115,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q13",
+        "rp": 3,
+        "score": 94,
+        "surrogate": false
+      }
+    ],
+    "25810": [
+      {
+        "match_id": "M3-Q6",
+        "rp": 6,
+        "score": 205,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q17",
+        "rp": 5,
+        "score": 121,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q10",
+        "rp": 4,
+        "score": 239,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q14",
+        "rp": 4,
+        "score": 101,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q16",
+        "rp": 4,
+        "score": 99,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q4",
+        "rp": 4,
+        "score": 66,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q6",
+        "rp": 4,
+        "score": 65,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q14",
+        "rp": 4,
+        "score": 62,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q1",
+        "rp": 3,
+        "score": 87,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q15",
+        "rp": 2,
+        "score": 113,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q12",
+        "rp": 2,
+        "score": 90,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q10",
+        "rp": 1,
+        "score": 61,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q11",
+        "rp": 1,
+        "score": 19,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q1",
+        "rp": 0,
+        "score": 52,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q2",
+        "rp": 0,
+        "score": 30,
+        "surrogate": false
+      }
+    ],
+    "26891": [
+      {
+        "match_id": "M2-Q1",
+        "rp": 4,
+        "score": 101,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q13",
+        "rp": 4,
+        "score": 73,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q10",
+        "rp": 4,
+        "score": 59,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q11",
+        "rp": 4,
+        "score": 59,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q18",
+        "rp": 3,
+        "score": 48,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q17",
+        "rp": 3,
+        "score": 45,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q7",
+        "rp": 3,
+        "score": 23,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q15",
+        "rp": 2,
+        "score": 113,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q11",
+        "rp": 1,
+        "score": 59,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q5",
+        "rp": 1,
+        "score": 48,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q2",
+        "rp": 1,
+        "score": 30,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q18",
+        "rp": 0,
+        "score": 54,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q14",
+        "rp": 0,
+        "score": 46,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q5",
+        "rp": 0,
+        "score": 46,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q2",
+        "rp": 0,
+        "score": 30,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q8",
+        "rp": 0,
+        "score": 0,
+        "surrogate": true
+      }
+    ],
+    "25627": [
+      {
+        "match_id": "M3-Q6",
+        "rp": 6,
+        "score": 205,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q17",
+        "rp": 5,
+        "score": 121,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q7",
+        "rp": 5,
+        "score": 120,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q15",
+        "rp": 4,
+        "score": 231,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q4",
+        "rp": 4,
+        "score": 162,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q9",
+        "rp": 4,
+        "score": 101,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q13",
+        "rp": 4,
+        "score": 86,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q14",
+        "rp": 4,
+        "score": 62,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q10",
+        "rp": 3,
+        "score": 66,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q18",
+        "rp": 3,
+        "score": 51,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q3",
+        "rp": 3,
+        "score": 46,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q6",
+        "rp": 3,
+        "score": 46,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q4",
+        "rp": 2,
+        "score": 88,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q12",
+        "rp": 1,
+        "score": 68,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q16",
+        "rp": 1,
+        "score": 45,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q8",
+        "rp": 0,
+        "score": 0,
+        "surrogate": true
+      }
+    ],
+    "23304": [
+      {
+        "match_id": "M2-Q18",
+        "rp": 5,
+        "score": 83,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q12",
+        "rp": 4,
+        "score": 126,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q9",
+        "rp": 4,
+        "score": 101,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q11",
+        "rp": 4,
+        "score": 65,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q13",
+        "rp": 3,
+        "score": 94,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q16",
+        "rp": 3,
+        "score": 51,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q3",
+        "rp": 3,
+        "score": 46,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q3",
+        "rp": 3,
+        "score": 37,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q6",
+        "rp": 1,
+        "score": 54,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q2",
+        "rp": 1,
+        "score": 30,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q6",
+        "rp": 0,
+        "score": 80,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q5",
+        "rp": 0,
+        "score": 39,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q17",
+        "rp": 0,
+        "score": 29,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q16",
+        "rp": 0,
+        "score": 25,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q8",
+        "rp": 0,
+        "score": 23,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q8",
+        "rp": 0,
+        "score": 0,
+        "surrogate": true
+      }
+    ],
+    "30450": [
+      {
+        "match_id": "M2-Q15",
+        "rp": 5,
+        "score": 122,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q5",
+        "rp": 5,
+        "score": 98,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q2",
+        "rp": 4,
+        "score": 138,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q9",
+        "rp": 4,
+        "score": 114,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q5",
+        "rp": 4,
+        "score": 108,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q12",
+        "rp": 3,
+        "score": 25,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q12",
+        "rp": 2,
+        "score": 90,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q10",
+        "rp": 1,
+        "score": 110,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q12",
+        "rp": 1,
+        "score": 68,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q10",
+        "rp": 1,
+        "score": 61,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q3",
+        "rp": 0,
+        "score": 69,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q16",
+        "rp": 0,
+        "score": 49,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q5",
+        "rp": 0,
+        "score": 39,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q3",
+        "rp": 0,
+        "score": 30,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q15",
+        "rp": 0,
+        "score": 15,
+        "surrogate": false
+      }
+    ],
+    "23212": [
+      {
+        "match_id": "M2-Q2",
+        "rp": 4,
+        "score": 138,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q16",
+        "rp": 4,
+        "score": 113,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q13",
+        "rp": 4,
+        "score": 86,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q7",
+        "rp": 3,
+        "score": 23,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q4",
+        "rp": 2,
+        "score": 88,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q5",
+        "rp": 1,
+        "score": 48,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q14",
+        "rp": 1,
+        "score": 47,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q16",
+        "rp": 1,
+        "score": 45,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q18",
+        "rp": 1,
+        "score": 45,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q16",
+        "rp": 0,
+        "score": 49,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q1",
+        "rp": 0,
+        "score": 41,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q3",
+        "rp": 0,
+        "score": 30,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q11",
+        "rp": 0,
+        "score": 21,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q12",
+        "rp": 0,
+        "score": 13,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q10",
+        "rp": 0,
+        "score": 8,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q8",
+        "rp": 0,
+        "score": 0,
+        "surrogate": true
+      }
+    ],
+    "23279": [
+      {
+        "match_id": "M2-Q15",
+        "rp": 5,
+        "score": 122,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q4",
+        "rp": 4,
+        "score": 123,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q14",
+        "rp": 4,
+        "score": 108,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q13",
+        "rp": 4,
+        "score": 73,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q4",
+        "rp": 4,
+        "score": 66,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q10",
+        "rp": 4,
+        "score": 59,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q8",
+        "rp": 3,
+        "score": 59,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q16",
+        "rp": 3,
+        "score": 51,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q15",
+        "rp": 3,
+        "score": 46,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q10",
+        "rp": 1,
+        "score": 110,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q13",
+        "rp": 1,
+        "score": 49,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q4",
+        "rp": 0,
+        "score": 59,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q1",
+        "rp": 0,
+        "score": 52,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q7",
+        "rp": 0,
+        "score": 46,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q6",
+        "rp": 0,
+        "score": 36,
+        "surrogate": false
+      }
+    ],
+    "14770": [
+      {
+        "match_id": "M2-Q7",
+        "rp": 5,
+        "score": 120,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q5",
+        "rp": 5,
+        "score": 98,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q3",
+        "rp": 4,
+        "score": 81,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q11",
+        "rp": 4,
+        "score": 59,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q17",
+        "rp": 2,
+        "score": 70,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q9",
+        "rp": 1,
+        "score": 65,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q9",
+        "rp": 1,
+        "score": 23,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q11",
+        "rp": 1,
+        "score": 19,
+        "surrogate": false
+      },
+      {
+        "match_id": "M3-Q14",
+        "rp": 0,
+        "score": 47,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q15",
+        "rp": 0,
+        "score": 44,
+        "surrogate": false
+      },
+      {
+        "match_id": "M2-Q3",
+        "rp": 0,
+        "score": 33,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q9",
+        "rp": 0,
+        "score": 28,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q7",
+        "rp": 0,
+        "score": 11,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q18",
+        "rp": 0,
+        "score": 11,
+        "surrogate": false
+      },
+      {
+        "match_id": "M1-Q4",
+        "rp": 0,
+        "score": 3,
+        "surrogate": false
+      }
+    ]
+  },
+  "team_rankings": [
+    {
+      "team": "25627",
+      "total_rp": 42,
+      "avg_score": 93.625,
+      "matches": 16,
+      "record": "12-0-2"
+    },
+    {
+      "team": "14259",
+      "total_rp": 41,
+      "avg_score": 115.26666666666667,
+      "matches": 15,
+      "record": "15-0-0"
+    },
+    {
+      "team": "25810",
+      "total_rp": 40,
+      "avg_score": 94.0,
+      "matches": 15,
+      "record": "9-2-2"
+    },
+    {
+      "team": "23279",
+      "total_rp": 35,
+      "avg_score": 70.6,
+      "matches": 15,
+      "record": "9-4-2"
+    },
+    {
+      "team": "5214",
+      "total_rp": 31,
+      "avg_score": 61.8,
+      "matches": 15,
+      "record": "8-6-1"
+    },
+    {
+      "team": "23304",
+      "total_rp": 31,
+      "avg_score": 55.1875,
+      "matches": 16,
+      "record": "8-5-2"
+    },
+    {
+      "team": "30450",
+      "total_rp": 30,
+      "avg_score": 75.73333333333333,
+      "matches": 15,
+      "record": "6-5-3"
+    },
+    {
+      "team": "26891",
+      "total_rp": 29,
+      "avg_score": 52.125,
+      "matches": 16,
+      "record": "7-4-3"
+    },
+    {
+      "team": "32098",
+      "total_rp": 25,
+      "avg_score": 51.93333333333333,
+      "matches": 15,
+      "record": "5-3-7"
+    },
+    {
+      "team": "30473",
+      "total_rp": 25,
+      "avg_score": 43.5625,
+      "matches": 16,
+      "record": "7-8-0"
+    },
+    {
+      "team": "14770",
+      "total_rp": 23,
+      "avg_score": 47.46666666666667,
+      "matches": 15,
+      "record": "4-7-3"
+    },
+    {
+      "team": "11920",
+      "total_rp": 22,
+      "avg_score": 62.6,
+      "matches": 15,
+      "record": "5-7-2"
+    },
+    {
+      "team": "23212",
+      "total_rp": 21,
+      "avg_score": 49.6875,
+      "matches": 16,
+      "record": "4-6-4"
+    },
+    {
+      "team": "30474",
+      "total_rp": 18,
+      "avg_score": 54.5,
+      "matches": 16,
+      "record": "4-8-3"
+    }
+  ]
+}

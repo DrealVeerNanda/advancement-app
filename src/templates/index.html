@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>East Bay League Advancement</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        first: '#0066B3',
+                        firstRed: '#ED1C24',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .details-row {
+            transition: all 0.2s ease-in-out;
+        }
+
+        /* Toggle Switch */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #68D391;
+        }
+
+        .toggle-checkbox:checked+.toggle-label {
+            background-color: #68D391;
+        }
+
+        .hypothetical-mode-active {
+            border: 2px solid #F6E05E;
+            background: rgba(246, 224, 94, 0.05);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-900 text-gray-100 font-sans min-h-screen">
+
+    <div class="container mx-auto p-4 max-w-7xl">
+        <header class="mb-8 border-b border-gray-700 pb-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-first mb-2">East Bay League Tournament</h1>
+                <p class="text-gray-400">Hypothetical Scenario Planner | 2025-2026 DECODE Season</p>
+            </div>
+
+            <div class="flex items-center space-x-6">
+                <!-- Data Source Indicator -->
+                <div id="data-indicator" class="flex items-center space-x-2 text-sm text-green-400">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    <span>Live Data Connected</span>
+                </div>
+
+                <!-- Mode Toggle -->
+                <div class="flex items-center">
+                    <span class="mr-3 text-sm font-bold text-gray-300">Live</span>
+                    <div
+                        class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+                        <input type="checkbox" name="toggle" id="mode-toggle"
+                            class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer duration-200 ease-in-out left-0"
+                            onchange="toggleMode()" />
+                        <label for="mode-toggle"
+                            class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-600 cursor-pointer"></label>
+                    </div>
+                    <span class="ml-1 text-sm font-bold text-yellow-400">Hypothetical</span>
+                </div>
+
+                <button onclick="resetAll()"
+                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-bold transition text-sm">
+                    Reset
+                </button>
+            </div>
+        </header>
+
+        <!-- Tabs -->
+        <div class="flex flex-wrap space-x-1 mb-6 border-b border-gray-700 overflow-x-auto">
+            <button onclick="switchTab('standings')" id="tab-standings"
+                class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700 active-tab">League
+                Standings</button>
+            <button onclick="switchTab('meet1')" id="tab-meet1"
+                class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Meet 1</button>
+            <button onclick="switchTab('meet2')" id="tab-meet2"
+                class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Meet 2</button>
+            <button onclick="switchTab('meet3')" id="tab-meet3"
+                class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Meet 3</button>
+            <button onclick="switchTab('tournament')" id="tab-tournament"
+                class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Tournament (Hypothetical)</button>
+            <button onclick="switchTab('advancement')" id="tab-advancement"
+                class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Advancement</button>
+        </div>
+
+        <!-- STANDINGS -->
+        <div id="content-standings" class="tab-content block">
+            <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-gray-700 text-gray-300 uppercase text-sm">
+                        <tr>
+                            <th class="px-6 py-3">Rank</th>
+                            <th class="px-6 py-3">Team</th>
+                            <th class="px-6 py-3">Name</th>
+                            <th class="px-6 py-3 text-center">Total RP (Top 10)</th>
+                            <th class="px-6 py-3 text-center">Avg Score</th>
+                            <th class="px-6 py-3 text-center">Matches</th>
+                            <th class="px-6 py-3"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="standings-body" class="divide-y divide-gray-700">
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-sm text-gray-400 mt-2">* Click on a row to see the exact 10 matches counted.</p>
+        </div>
+
+        <!-- MEETS (Generic View) -->
+        <div id="content-meet" class="tab-content hidden">
+            <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+                <h2 id="meet-title" class="text-xl font-bold p-4 bg-gray-750 border-b border-gray-700">Match Results
+                </h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-gray-700 text-gray-300">
+                            <tr>
+                                <th class="px-4 py-2">Match</th>
+                                <th class="px-4 py-2 text-right text-red-400">Red Alliance</th>
+                                <th class="px-4 py-2 text-center text-red-500 font-bold">Score</th>
+                                <th class="px-4 py-2 text-center text-blue-500 font-bold">Score</th>
+                                <th class="px-4 py-2 text-left text-blue-400">Blue Alliance</th>
+                                <th class="px-4 py-2 text-center">Red RP</th>
+                                <th class="px-4 py-2 text-center">Blue RP</th>
+                            </tr>
+                        </thead>
+                        <tbody id="meet-body" class="divide-y divide-gray-700"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOURNAMENT INPUT -->
+        <div id="content-tournament" class="tab-content hidden">
+            <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-bold mb-4 text-first">Tournament Match Scoring</h2>
+                <p class="text-gray-400 text-sm mb-4">Enter scores for all qualification matches. The system will
+                    auto-calculate RPs based on win/loss and bonus points.</p>
+
+                <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-700 text-gray-300 sticky top-0">
+                            <tr>
+                                <th class="px-3 py-2">Match</th>
+                                <th class="px-3 py-2 text-red-400">Red 1</th>
+                                <th class="px-3 py-2 text-red-400">Red 2</th>
+                                <th class="px-3 py-2 text-center text-red-500">Score</th>
+                                <th class="px-3 py-2 text-center text-red-500">RP</th>
+                                <th class="px-3 py-2 text-blue-400">Blue 1</th>
+                                <th class="px-3 py-2 text-blue-400">Blue 2</th>
+                                <th class="px-3 py-2 text-center text-blue-500">Score</th>
+                                <th class="px-3 py-2 text-center text-blue-500">RP</th>
+                                <th class="px-3 py-2"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tournament-table-body" class="divide-y divide-gray-700">
+                        </tbody>
+                    </table>
+                </div>
+
+                <button onclick="addTournamentMatchRow()"
+                    class="mt-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+                    + Add Match
+                </button>
+            </div>
+        </div>
+
+        <!-- ADVANCEMENT -->
+        <div id="content-advancement" class="tab-content hidden">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Inputs -->
+                <div class="md:col-span-1 space-y-4">
+                    <div class="bg-gray-800 p-4 rounded-lg">
+                        <h3 class="font-bold mb-3">Add Awards/Results</h3>
+                        <div class="space-y-3">
+                            <input type="text" id="adv_team" placeholder="Team Number" list="team-numbers"
+                                class="w-full bg-gray-700 border-gray-600 rounded px-3 py-2">
+                            <select id="adv_type" class="w-full bg-gray-700 border-gray-600 rounded px-3 py-2">
+                                <option>Inspire 1 (60)</option>
+                                <option>Inspire 2 (50)</option>
+                                <option>Inspire 3 (40)</option>
+                                <option>Think/Connect 1 (45)</option>
+                                <option>Winning Alliance (40)</option>
+                                <option>Finalist Alliance (20)</option>
+                                <option>Semi-finals (10)</option>
+                                <option>Alliance 1 Captain (20)</option>
+                                <option>Alliance 2 Captain (19)</option>
+                                <option>Alliance 3 Captain (18)</option>
+                                <option>Alliance 4 Captain (17)</option>
+                            </select>
+                            <button onclick="addAdvancement()"
+                                class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">Add Points</button>
+                        </div>
+                    </div>
+
+                    <!-- Award List -->
+                    <div class="bg-gray-800 p-4 rounded-lg">
+                        <h3 class="font-bold mb-3">Current Awards</h3>
+                        <div id="awards-list" class="space-y-2 max-h-96 overflow-y-auto">
+                            <p class="text-gray-500 text-sm italic">No awards added yet</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="md:col-span-2">
+                    <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-700 text-gray-300 uppercase text-xs">
+                                <tr>
+                                    <th class="px-4 py-2">Rank</th>
+                                    <th class="px-4 py-2">Team</th>
+                                    <th class="px-4 py-2 text-center">Qual Pts</th>
+                                    <th class="px-4 py-2 text-center">Alliance</th>
+                                    <th class="px-4 py-2 text-center">Award</th>
+                                    <th class="px-4 py-2 text-center">Playoff</th>
+                                    <th class="px-4 py-2 text-center font-bold">Total AP</th>
+                                </tr>
+                            </thead>
+                            <tbody id="advancement-body" class="divide-y divide-gray-700 text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team Number Autocomplete Datalist -->
+    <datalist id="team-numbers">
+        <option value="5214">5214 - "B.R.O." (Bot Resources Operation)</option>
+        <option value="11920">11920 - QLS RaD Team</option>
+        <option value="14259">14259 - TURBΩ V8</option>
+        <option value="14770">14770 - Control+Q</option>
+        <option value="23212">23212 - Dublin Robotics Cybirds</option>
+        <option value="23279">23279 - Turbotrons</option>
+        <option value="23304">23304 - Cyber Knights</option>
+        <option value="25627">25627 - Robowarriors</option>
+        <option value="25810">25810 - Cerberus</option>
+        <option value="26891">26891 - Tech Titans</option>
+        <option value="30450">30450 - Sharp Face Robotics</option>
+        <option value="30473">30473 - Duck</option>
+        <option value="30474">30474 - Quantum Sparks</option>
+        <option value="32098">32098 - Robo Raptors</option>
+    </datalist>
+
+    <script>
+        // State management
+        let tournamentMatchCounter = 1;
+        let currentAwards = [];
+        let isHypotheticalMode = false;
+        let hypotheticalMatches = []; // Array of match objects
+
+        function toggleMode() {
+            isHypotheticalMode = document.getElementById('mode-toggle').checked;
+            const body = document.body;
+            const indicator = document.getElementById('data-indicator');
+            const tableTitle = document.querySelector('#content-tournament h2');
+
+            if (isHypotheticalMode) {
+                body.classList.add('hypothetical-mode-active');
+                indicator.innerHTML = '<span class="text-yellow-400 font-bold">⚠ Hypothetical Simulation Active</span>';
+                indicator.classList.remove('text-green-400');
+                if (tableTitle) tableTitle.textContent = "Hypothetical Match Scoring (Local Only)";
+            } else {
+                body.classList.remove('hypothetical-mode-active');
+                indicator.innerHTML = '<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span><span>Live Data Connected</span>';
+                indicator.classList.add('text-green-400');
+                if (tableTitle) tableTitle.textContent = "Tournament Match Scoring";
+            }
+
+            // Refresh data
+            fetchStandings();
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('bg-first', 'text-white');
+                el.classList.add('bg-gray-800');
+            });
+
+            if (tabId.startsWith('meet')) {
+                document.getElementById('content-meet').classList.remove('hidden');
+                fetchMeetMatches(tabId);
+                const titles = { 'meet1': 'Meet 1 Results', 'meet2': 'Meet 2 Results', 'meet3': 'Meet 3 Results' };
+                document.getElementById('meet-title').textContent = titles[tabId];
+            }
+            else {
+                document.getElementById('content-' + tabId).classList.remove('hidden');
+            }
+
+            const btn = document.getElementById('tab-' + tabId);
+            btn.classList.remove('bg-gray-800');
+            btn.classList.add('bg-first', 'text-white');
+
+            if (tabId === 'standings') fetchStandings();
+            if (tabId === 'tournament') initTournamentTable();
+            if (tabId === 'advancement') { fetchAdvancement(); updateAwardsList(); }
+        }
+
+        async function fetchStandings() {
+            let data = [];
+
+            if (isHypotheticalMode) {
+                // Call hypothetical endpoint with local matches
+                const res = await fetch('/api/rankings/hypothetical', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ matches: hypotheticalMatches })
+                });
+                data = await res.json();
+            } else {
+                // Normal live data
+                const res = await fetch('/api/teams');
+                data = await res.json();
+            }
+
+            renderStandings(data);
+        }
+
+        function renderStandings(data) {
+            const tbody = document.getElementById('standings-body');
+            tbody.innerHTML = '';
+
+            data.forEach(t => {
+                const isUser = t.number === "14259";
+                const detailId = `detail-${t.number}`;
+
+                // Diff indicator (not fully implemented, but placeholder)
+                const rankChange = "";
+
+                let breakdownRows = '';
+                t.breakdown.forEach(m => {
+                    const highlight = m.is_counted ? 'bg-green-900/40 text-green-200 font-bold border-l-4 border-green-500' : 'text-gray-500';
+                    const symbol = m.is_counted ? '✓' : '';
+                    const surrogateTag = m.is_surrogate ? ' (Surr)' : '';
+                    breakdownRows += `
+                        <tr class="${highlight} border-b border-gray-700/50">
+                            <td class="px-4 py-1">${m.match_id}${surrogateTag}</td>
+                            <td class="px-4 py-1 text-center">${m.rp}</td>
+                            <td class="px-4 py-1 text-center">${m.score}</td>
+                            <td class="px-4 py-1 text-center">${symbol}</td>
+                        </tr>
+                    `;
+                });
+
+                const mainRow = `
+                    <tr class="cursor-pointer ${isUser ? 'bg-blue-900/30' : 'hover:bg-gray-700'} border-b border-gray-700" onclick="toggleDetails('${detailId}')">
+                        <td class="px-6 py-4 font-bold">${t.rank}</td>
+                        <td class="px-6 py-4 font-mono text-first font-bold">${t.number}</td>
+                        <td class="px-6 py-4 text-gray-300">${t.name}</td>
+                        <td class="px-6 py-4 text-center font-bold text-lg">${t.total_rp}</td>
+                        <td class="px-6 py-4 text-center text-gray-400">${t.avg_score.toFixed(1)}</td>
+                        <td class="px-6 py-4 text-center text-gray-500">${t.matches_played}</td>
+                        <td class="px-6 py-4 text-center text-xs text-gray-500">▼</td>
+                    </tr>
+                `;
+
+                const detailRow = `
+                    <tr id="${detailId}" class="hidden bg-gray-900/50">
+                        <td colspan="7" class="p-4">
+                            <div class="bg-gray-800 rounded p-4">
+                                <h4 class="font-bold text-sm text-gray-400 mb-2">Match Breakdown (Best 10 Counted)</h4>
+                                <table class="w-full text-sm">
+                                    <thead>
+                                        <tr class="text-gray-500 text-xs uppercase">
+                                            <th class="px-4 py-1 text-left">Match</th>
+                                            <th class="px-4 py-1 text-center">RP</th>
+                                            <th class="px-4 py-1 text-center">Score</th>
+                                            <th class="px-4 py-1 text-center">Counted</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${breakdownRows}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+
+                tbody.innerHTML += mainRow + detailRow;
+            });
+        }
+
+        function toggleDetails(id) {
+            document.getElementById(id).classList.toggle('hidden');
+        }
+
+        async function fetchMeetMatches(meetTab) {
+            const res = await fetch('/api/meets/' + meetTab);
+            const data = await res.json();
+            const tbody = document.getElementById('meet-body');
+            tbody.innerHTML = '';
+
+            data.forEach(m => {
+                const row = `
+                    <tr class="hover:bg-gray-750">
+                        <td class="px-4 py-2 font-mono text-gray-400">Q-${m.match_num}</td>
+                        <td class="px-4 py-2 text-right">${m.red[0]}, ${m.red[1]}</td>
+                        <td class="px-4 py-2 text-center font-bold text-red-400">${m.red_score}</td>
+                        <td class="px-4 py-2 text-center font-bold text-blue-400">${m.blue_score}</td>
+                        <td class="px-4 py-2 text-left">${m.blue[0]}, ${m.blue[1]}</td>
+                        <td class="px-4 py-2 text-center">${m.red_rp}</td>
+                        <td class="px-4 py-2 text-center">${m.blue_rp}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function initTournamentTable() {
+            const tbody = document.getElementById('tournament-table-body');
+            if (tbody.children.length === 0) {
+                // Add 18 match rows
+                for (let i = 1; i <= 18; i++) {
+                    addTournamentMatchRow(i);
+                }
+            }
+        }
+
+        function addTournamentMatchRow(matchNum = null) {
+            const tbody = document.getElementById('tournament-table-body');
+            const num = matchNum || tournamentMatchCounter++;
+
+            const row = document.createElement('tr');
+            row.id = `tmatch-${num}`;
+            row.className = 'bg-gray-700';
+            row.innerHTML = `
+                <td class="px-3 py-2">Q-${num}</td>
+                <td class="px-3 py-2"><input type="text" list="team-numbers" class="w-full bg-gray-600 rounded px-2 py-1 text-sm" placeholder="Team"></td>
+                <td class="px-3 py-2"><input type="text" list="team-numbers" class="w-full bg-gray-600 rounded px-2 py-1 text-sm" placeholder="Team"></td>
+                <td class="px-3 py-2"><input type="number" class="w-full bg-gray-600 rounded px-2 py-1 text-sm text-center" placeholder="Score"></td>
+                <td class="px-3 py-2"><input type="number" class="w-full bg-gray-600 rounded px-2 py-1 text-sm text-center" placeholder="RP"></td>
+                <td class="px-3 py-2"><input type="text" list="team-numbers" class="w-full bg-gray-600 rounded px-2 py-1 text-sm" placeholder="Team"></td>
+                <td class="px-3 py-2"><input type="text" list="team-numbers" class="w-full bg-gray-600 rounded px-2 py-1 text-sm" placeholder="Team"></td>
+                <td class="px-3 py-2"><input type="number" class="w-full bg-gray-600 rounded px-2 py-1 text-sm text-center" placeholder="Score"></td>
+                <td class="px-3 py-2"><input type="number" class="w-full bg-gray-600 rounded px-2 py-1 text-sm text-center" placeholder="RP"></td>
+                <td class="px-3 py-2 flex gap-1">
+                    <button onclick="saveTournamentMatch(${num})" class="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs">Save</button>
+                    <button id="del-btn-${num}" onclick="deleteTournamentMatch(${num})" class="hidden bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-xs">Delete</button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        }
+
+        async function saveTournamentMatch(num) {
+            const row = document.getElementById(`tmatch-${num}`);
+            const inputs = row.querySelectorAll('input');
+
+            const payload = {
+                match_id: `Q-${num}`,
+                r1: inputs[0].value,
+                r2: inputs[1].value,
+                rs: parseInt(inputs[2].value || 0),
+                rrp: parseInt(inputs[3].value || 0),
+                b1: inputs[4].value,
+                b2: inputs[5].value,
+                bs: parseInt(inputs[6].value || 0),
+                brp: parseInt(inputs[7].value || 0),
+            };
+
+            if (!payload.r1 || !payload.r2 || !payload.b1 || !payload.b2) {
+                alert('Please enter all team numbers');
+                return;
+            }
+
+            if (isHypotheticalMode) {
+                // Local Save
+                // Remove existing if any
+                hypotheticalMatches = hypotheticalMatches.filter(m => m.match_id !== payload.match_id);
+                hypotheticalMatches.push(payload);
+                updateRowUI(row, inputs, num, true);
+                fetchStandings(); // Update rankings locally
+            } else {
+                // Live Save
+                const res = await fetch('/api/matches', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    updateRowUI(row, inputs, num, true);
+                    await fetchStandings();
+                } else {
+                    alert('Error saving match');
+                }
+            }
+        }
+
+        function updateRowUI(row, inputs, num, isSaved) {
+            if (isSaved) {
+                row.classList.remove('bg-gray-700');
+                row.classList.add(isHypotheticalMode ? 'bg-yellow-900/30' : 'bg-green-900/30');
+                document.getElementById(`del-btn-${num}`).classList.remove('hidden');
+                // Don't disable inputs in hypothetical mode so they can tweak it easy?
+                // Actually safer to disable to show state
+                inputs.forEach(input => input.disabled = true);
+            } else {
+                row.classList.remove('bg-green-900/30', 'bg-yellow-900/30');
+                row.classList.add('bg-gray-700');
+                document.getElementById(`del-btn-${num}`).classList.add('hidden');
+                inputs.forEach(input => {
+                    input.disabled = false;
+                    input.value = '';
+                });
+            }
+        }
+
+        async function deleteTournamentMatch(num) {
+            const matchId = `Q-${num}`;
+            if (!confirm(`Delete match ${matchId}?`)) return;
+
+            if (isHypotheticalMode) {
+                hypotheticalMatches = hypotheticalMatches.filter(m => m.match_id !== matchId);
+                const row = document.getElementById(`tmatch-${num}`);
+                const inputs = row.querySelectorAll('input');
+                updateRowUI(row, inputs, num, false);
+                fetchStandings();
+            } else {
+                const res = await fetch(`/api/matches/${matchId}`, {
+                    method: 'DELETE'
+                });
+
+                if (res.ok) {
+                    const row = document.getElementById(`tmatch-${num}`);
+                    const inputs = row.querySelectorAll('input');
+                    updateRowUI(row, inputs, num, false);
+                    await fetchStandings();
+                }
+            }
+        }
+
+        async function addAdvancement() {
+            const team = document.getElementById('adv_team').value;
+            const sel = document.getElementById('adv_type').value;
+
+            if (!team) {
+                alert('Please enter a team number');
+                return;
+            }
+
+            await fetch('/api/advancement', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'add', team: team, selection: sel })
+            });
+
+            currentAwards.push({ team, award: sel });
+            updateAwardsList();
+            fetchAdvancement();
+
+            document.getElementById('adv_team').value = '';
+        }
+
+        function removeAward(index) {
+            currentAwards.splice(index, 1);
+            updateAwardsList();
+            fetchAdvancement();
+        }
+
+        function updateAwardsList() {
+            const list = document.getElementById('awards-list');
+            list.innerHTML = '';
+
+            if (currentAwards.length === 0) {
+                list.innerHTML = '<p class="text-gray-500 text-sm italic">No awards added yet</p>';
+                return;
+            }
+
+            currentAwards.forEach((award, idx) => {
+                const item = document.createElement('div');
+                item.className = 'bg-gray-700 p-2 rounded flex justify-between items-center';
+                item.innerHTML = `
+                    <div class="text-sm">
+                        <span class="font-bold text-first">${award.team}</span>: ${award.award}
+                    </div>
+                    <button onclick="removeAward(${idx})" class="text-red-500 hover:text-red-300 font-bold px-2">✕</button>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        async function fetchAdvancement() {
+            const res = await fetch('/api/advancement_calc');
+            const data = await res.json();
+            const tbody = document.getElementById('advancement-body');
+            tbody.innerHTML = '';
+            data.forEach((t, i) => {
+                const isUser = t.number === "14259";
+                const isAdvance = i < 2;
+                let bgClass = isUser ? 'bg-blue-900/30' : '';
+                if (isAdvance) bgClass = 'bg-green-900/30 border-l-4 border-green-500';
+
+                tbody.innerHTML += `
+                    <tr class="${bgClass}">
+                        <td class="px-4 py-3 font-bold">${t.rank}</td>
+                         <td class="px-4 py-3 font-mono">${t.number}</td>
+                        <td class="px-4 py-3 text-center text-gray-400">${t.qual_pts}</td>
+                        <td class="px-4 py-3 text-center text-gray-400">${t.alliance_pts}</td>
+                        <td class="px-4 py-3 text-center text-gray-400">${t.award_pts}</td>
+                        <td class="px-4 py-3 text-center text-gray-400">${t.playoff_pts}</td>
+                        <td class="px-4 py-3 text-center font-bold text-white text-lg">${t.total_ap}</td>
+                    </tr>
+                 `;
+            });
+        }
+
+        async function resetAll() {
+            if (!confirm("Reset all hypothetical scenarios?")) return;
+
+            if (isHypotheticalMode) {
+                hypotheticalMatches = [];
+                // Reset all rows
+                const tbody = document.getElementById('tournament-table-body');
+                if (tbody) {
+                    tbody.childNodes.forEach(row => {
+                        if (row.nodeName === "TR") {
+                            const num = row.id.split('-')[1];
+                            const inputs = row.querySelectorAll('input');
+                            updateRowUI(row, inputs, num, false);
+                        }
+                    });
+                }
+                fetchStandings();
+            } else {
+                await fetch('/api/reset', { method: 'POST' });
+                currentAwards = [];
+                location.reload();
+            }
+        }
+
+        // Init
+        switchTab('standings');
+    </script>
+</body>
+
+</html>

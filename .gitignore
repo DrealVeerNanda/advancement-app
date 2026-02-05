@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.DS_Store
+.env
+venv/
+env/
+.idea/
+.vscode/
+advancement_app_deploy.zip
