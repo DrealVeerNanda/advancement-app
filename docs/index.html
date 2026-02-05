@@ -69,6 +69,18 @@
                     <span class="ml-1 text-sm font-bold text-yellow-400">Hypothetical</span>
                 </div>
 
+                <button onclick="app.exportData()"
+                    class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded font-bold transition text-sm flex items-center gap-2 mr-2"
+                    title="Save file to send to teammates">
+                    <span>⬇</span> Save File
+                </button>
+                <label
+                    class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded font-bold transition text-sm flex items-center gap-2 cursor-pointer mr-2"
+                    title="Load file from teammate">
+                    <span>⬆</span> Load File
+                    <input type="file" class="hidden" onchange="app.importData(this)">
+                </label>
+
                 <button onclick="app.fetchLiveData()"
                     class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-bold transition text-sm flex items-center gap-2 mr-2">
                     <span id="refresh-icon">↻</span> Refresh
@@ -770,6 +782,47 @@
                 AppState.awards = [];
                 localStorage.removeItem('eb_advancement_state');
                 location.reload();
+            },
+
+            exportData() {
+                const data = JSON.stringify({
+                    hypotheticalMatches: AppState.hypotheticalMatches,
+                    awards: AppState.awards,
+                    isHypothetical: AppState.isHypothetical
+                }, null, 2);
+                const blob = new Blob([data], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `advancement_data_${new Date().toISOString().slice(0, 10)}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            },
+
+            importData(input) {
+                const file = input.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const s = JSON.parse(e.target.result);
+                        if (s.hypotheticalMatches && s.awards) {
+                            AppState.hypotheticalMatches = s.hypotheticalMatches;
+                            AppState.awards = s.awards;
+                            AppState.isHypothetical = s.isHypothetical || false;
+                            app.saveState();
+                            alert("Data loaded successfully!");
+                            location.reload();
+                        } else {
+                            alert("Invalid data file.");
+                        }
+                    } catch (err) {
+                        alert("Error reading file: " + err);
+                    }
+                };
+                reader.readAsText(file);
             }
         };
 
