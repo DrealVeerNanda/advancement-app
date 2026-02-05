@@ -361,10 +361,26 @@
          * Logic Core
          */
         function calculateRankings() {
-            // Reset Team Stats
-            TEAMS.forEach(t => {
-                AppState.teamsData[t.number] = {
-                    ...t,
+            // 1. Gather all matches (Real + Hypothetical if active)
+            const allMatches = [...AppState.matches];
+            if (AppState.isHypothetical && AppState.hypotheticalMatches.length > 0) {
+                allMatches.push(...AppState.hypotheticalMatches);
+            }
+
+            // 1b. Ensure all teams in matches exist in AppState
+            const dynamicTeams = new Set();
+            allMatches.forEach(m => {
+                [...m.red, ...m.blue].forEach(t => dynamicTeams.add(t));
+            });
+
+            // Reset Team Stats (Initialize for ALL teams found)
+            TEAMS.forEach(t => dynamicTeams.add(t.number)); // Ensure known teams are included
+
+            AppState.teamsData = {};
+            dynamicTeams.forEach(tNum => {
+                const known = TEAM_MAP[tNum] || { number: tNum, name: 'Unknown Team' };
+                AppState.teamsData[tNum] = {
+                    ...known,
                     matches: [],
                     league_stats: { rp: 0, score: 0 },
                     total_rp: 0,
@@ -381,14 +397,8 @@
                 };
             });
 
-            // 1. Gather all matches (Real + Hypothetical if active)
-            const allMatches = [...AppState.matches];
-            if (AppState.isHypothetical && AppState.hypotheticalMatches.length > 0) {
-                allMatches.push(...AppState.hypotheticalMatches);
-            }
-
             // 2. Calculate OPR
-            const allTeamNums = TEAMS.map(t => t.number);
+            const allTeamNums = Array.from(dynamicTeams);
             const oprs = solveOPR(allMatches, allTeamNums);
 
             // 3. Distribute matches to teams
@@ -685,6 +695,12 @@
                 AppState.hypotheticalMatches.push(match);
                 app.saveState();
                 app.updateRowUI(row, i, num, true);
+
+                // Auto-enable Hypothetical Mode if forced
+                if (!AppState.isHypothetical) {
+                    document.getElementById('mode-toggle').checked = true;
+                    app.toggleMode(false); // Enable without re-render loop
+                }
                 app.renderStandings(); // Re-render to update OPR
             },
 
