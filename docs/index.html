@@ -137,272 +137,312 @@
                     class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-bold transition text-sm">Clear
                     All</button>
             </div>
-        </header>
+    </div>
+    </header>
 
-        <!-- Cloud Modal -->
-        <div id="cloud-modal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
-            <div class="bg-gray-800 p-6 rounded-lg shadow-xl w-full max-w-md border border-gray-700">
-                <h2 class="text-xl font-bold mb-4 flex items-center gap-2"><span class="text-indigo-400">☁</span> Cloud
-                    Sync</h2>
+    <!-- Custom Confirmation Modal -->
+    <div id="confirm-modal" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-50 backdrop-blur-sm">
+        <div
+            class="bg-gray-800 border border-gray-600 rounded-lg p-6 max-w-md w-full shadow-2xl transform scale-100 transition-all">
+            <h3 class="text-xl font-bold text-white mb-4">⚠️ Clear All Data?</h3>
+            <p class="text-gray-300 mb-2">This will clear ALL local data from this device:</p>
+            <ul class="list-disc list-inside text-gray-400 mb-6 text-sm ml-2">
+                <li>Hypothetical matches</li>
+                <li>Awards</li>
+                <li>Alliance selections</li>
+                <li>Team notes</li>
+            </ul>
 
-                <p class="text-sm text-gray-400 mb-4">Sync your data across devices using Firebase. Your data is
-                    automatically saved and synced in real-time.</p>
-
-                <div class="mb-4 p-4 bg-gray-900 rounded border border-gray-700">
-                    <div class="text-sm mb-2">
-                        <span class="font-bold text-green-400">●</span>
-                        <span id="sync-status">Syncing...</span>
+            <div id="cloud-wipe-option" class="mb-6 p-3 bg-red-900/30 border border-red-700/50 rounded hidden">
+                <label class="flex items-start gap-3 cursor-pointer">
+                    <input type="checkbox" id="wipe-cloud-checkbox"
+                        class="mt-1 w-5 h-5 rounded border-gray-600 text-red-600 focus:ring-red-500 bg-gray-700">
+                    <div>
+                        <span class="font-bold text-red-400 block">Also wipe Cloud Data?</span>
+                        <span class="text-xs text-red-300/70">Warning: This deletes data for EVERYONE on the
+                            team.</span>
                     </div>
-                    <div class="text-xs text-gray-500">
-                        Last synced: <span id="last-sync-time">Never</span>
-                    </div>
-                </div>
+                </label>
+            </div>
 
-                <div class="flex gap-2 mb-4">
-                    <button onclick="app.forceSyncToCloud()"
-                        class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded font-bold">
-                        ⬆ Manual Save</button>
-                    <button onclick="app.forceSyncFromCloud()"
-                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-bold">
-                        ⬇ Manual Reload</button>
-                    <button onclick="app.clearCloudData()"
-                        class="px-3 bg-red-600 hover:bg-red-700 text-white py-2 rounded font-bold"
-                        title="Wipe Cloud Data">🗑</button>
-                </div>
-
-                <div id="cloud-status" class="text-center text-sm mb-4 h-6 text-gray-300"></div>
-
-                <button onclick="document.getElementById('cloud-modal').classList.add('hidden')"
-                    class="w-full bg-gray-700 hover:bg-gray-600 text-gray-300 py-2 rounded">Close</button>
+            <div class="flex justify-end gap-3">
+                <button onclick="document.getElementById('confirm-modal').classList.add('hidden')"
+                    class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded font-medium transition">
+                    Cancel
+                </button>
+                <button onclick="app.executeClearAll()"
+                    class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded font-bold shadow-lg transition flex items-center gap-2">
+                    <span class="text-lg">🗑️</span> Confirm Clear
+                </button>
             </div>
         </div>
+    </div>
 
-        <!-- Tabs -->
-        <div class="flex flex-wrap space-x-1 mb-6 border-b border-gray-700 overflow-x-auto">
-            <button onclick="app.switchTab('standings')" id="tab-standings"
-                class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700 active-tab">League
-                Standings</button>
-            <button onclick="app.switchTab('meet1')" id="tab-meet1"
-                class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Meet 1</button>
-            <button onclick="app.switchTab('meet2')" id="tab-meet2"
-                class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Meet 2</button>
-            <button onclick="app.switchTab('meet3')" id="tab-meet3"
-                class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Meet 3</button>
-            <button onclick="app.switchTab('tournament')" id="tab-tournament"
-                class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Tournament (Hypothetical)</button>
-            <button onclick="app.switchTab('tournament-real')" id="tab-tournament-real"
-                class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Tournament (Real)</button>
-            <button onclick="app.switchTab('advancement')" id="tab-advancement"
-                class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Advancement</button>
-            <button onclick="app.switchTab('alliance')" id="tab-alliance"
-                class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Selection</button>
-        </div>
 
-        <!-- STANDINGS -->
-        <div id="content-standings" class="tab-content block">
-            <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead class="bg-gray-700 text-gray-300 uppercase text-sm">
-                            <tr>
-                                <th class="px-6 py-3">Rank</th>
-                                <th class="px-6 py-3">Team</th>
-                                <th class="px-6 py-3">Name</th>
-                                <th class="px-6 py-3 text-center" title="Meet 1 OPR">M1</th>
-                                <th class="px-6 py-3 text-center" title="Meet 2 OPR">M2</th>
-                                <th class="px-6 py-3 text-center" title="Meet 3 OPR">M3</th>
-                                <th class="px-6 py-3 text-center" title="Tournament OPR">Tourn</th>
-                                <th class="px-6 py-3 text-center">Total RP</th>
-                                <th class="px-6 py-3 text-center">Avg Score</th>
-                                <th class="px-6 py-3 text-center">Matches</th>
-                                <th class="px-6 py-3"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="standings-body" class="divide-y divide-gray-700"></tbody>
-                    </table>
+    <!-- Cloud Modal -->
+    <div id="cloud-modal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+        <div class="bg-gray-800 p-6 rounded-lg shadow-xl w-full max-w-md border border-gray-700">
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-2"><span class="text-indigo-400">☁</span> Cloud
+                Sync</h2>
+
+            <p class="text-sm text-gray-400 mb-4">Sync your data across devices using Firebase. Your data is
+                automatically saved and synced in real-time.</p>
+
+            <div class="mb-4 p-4 bg-gray-900 rounded border border-gray-700">
+                <div class="text-sm mb-2">
+                    <span class="font-bold text-green-400">●</span>
+                    <span id="sync-status">Syncing...</span>
+                </div>
+                <div class="text-xs text-gray-500">
+                    Last synced: <span id="last-sync-time">Never</span>
                 </div>
             </div>
-            <p class="text-sm text-gray-400 mt-2">* Top 10 League Matches + Top 5 Tournament Matches</p>
-        </div>
 
-        <!-- MEETS (Generic View) -->
-        <div id="content-meet" class="tab-content hidden">
-            <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-                <h2 id="meet-title" class="text-xl font-bold p-4 bg-gray-750 border-b border-gray-700">Match Results
-                </h2>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-gray-700 text-gray-300">
-                            <tr>
-                                <th class="px-4 py-2">Match</th>
-                                <th class="px-4 py-2 text-right text-red-400">Red Alliance</th>
-                                <th class="px-4 py-2 text-center text-red-500 font-bold">Score</th>
-                                <th class="px-4 py-2 text-center text-blue-500 font-bold">Score</th>
-                                <th class="px-4 py-2 text-left text-blue-400">Blue Alliance</th>
-                                <th class="px-4 py-2 text-center">Red RP</th>
-                                <th class="px-4 py-2 text-center">Blue RP</th>
-                            </tr>
-                        </thead>
-                        <tbody id="meet-body" class="divide-y divide-gray-700"></tbody>
-                    </table>
-                </div>
+            <div class="flex gap-2 mb-4">
+                <button onclick="app.forceSyncToCloud()"
+                    class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded font-bold">
+                    ⬆ Manual Save</button>
+                <button onclick="app.forceSyncFromCloud()"
+                    class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-bold">
+                    ⬇ Manual Reload</button>
+                <button onclick="app.clearCloudData()"
+                    class="px-3 bg-red-600 hover:bg-red-700 text-white py-2 rounded font-bold"
+                    title="Wipe Cloud Data">🗑</button>
+            </div>
+
+            <div id="cloud-status" class="text-center text-sm mb-4 h-6 text-gray-300"></div>
+
+            <button onclick="document.getElementById('cloud-modal').classList.add('hidden')"
+                class="w-full bg-gray-700 hover:bg-gray-600 text-gray-300 py-2 rounded">Close</button>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex flex-wrap space-x-1 mb-6 border-b border-gray-700 overflow-x-auto">
+        <button onclick="app.switchTab('standings')" id="tab-standings"
+            class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700 active-tab">League
+            Standings</button>
+        <button onclick="app.switchTab('meet1')" id="tab-meet1"
+            class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Meet 1</button>
+        <button onclick="app.switchTab('meet2')" id="tab-meet2"
+            class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Meet 2</button>
+        <button onclick="app.switchTab('meet3')" id="tab-meet3"
+            class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Meet 3</button>
+        <button onclick="app.switchTab('tournament')" id="tab-tournament"
+            class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Tournament (Hypothetical)</button>
+        <button onclick="app.switchTab('tournament-real')" id="tab-tournament-real"
+            class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Tournament (Real)</button>
+        <button onclick="app.switchTab('advancement')" id="tab-advancement"
+            class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Advancement</button>
+        <button onclick="app.switchTab('alliance')" id="tab-alliance"
+            class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Selection</button>
+    </div>
+
+    <!-- STANDINGS -->
+    <div id="content-standings" class="tab-content block">
+        <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-gray-700 text-gray-300 uppercase text-sm">
+                        <tr>
+                            <th class="px-6 py-3">Rank</th>
+                            <th class="px-6 py-3">Team</th>
+                            <th class="px-6 py-3">Name</th>
+                            <th class="px-6 py-3 text-center" title="Meet 1 OPR">M1</th>
+                            <th class="px-6 py-3 text-center" title="Meet 2 OPR">M2</th>
+                            <th class="px-6 py-3 text-center" title="Meet 3 OPR">M3</th>
+                            <th class="px-6 py-3 text-center" title="Tournament OPR">Tourn</th>
+                            <th class="px-6 py-3 text-center">Total RP</th>
+                            <th class="px-6 py-3 text-center">Avg Score</th>
+                            <th class="px-6 py-3 text-center">Matches</th>
+                            <th class="px-6 py-3"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="standings-body" class="divide-y divide-gray-700"></tbody>
+                </table>
             </div>
         </div>
+        <p class="text-sm text-gray-400 mt-2">* Top 10 League Matches + Top 5 Tournament Matches</p>
+    </div>
 
-        <!-- TOURNAMENT INPUT -->
-        <div id="content-tournament" class="tab-content hidden">
-            <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
-                <h2 class="text-xl font-bold mb-4 text-first">Tournament Match Scoring</h2>
-                <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
-                    <table class="w-full text-sm">
-                        <thead class="bg-gray-700 text-gray-300 sticky top-0">
-                            <tr>
-                                <th class="px-3 py-2">Match</th>
-                                <th class="px-3 py-2 text-red-400">R1</th>
-                                <th class="px-3 py-2 text-red-400">R2</th>
-                                <th class="px-3 py-2 text-center text-red-500">Score</th>
-                                <th class="px-3 py-2 text-center text-red-500">RP</th>
-                                <th class="px-3 py-2 text-blue-400">B1</th>
-                                <th class="px-3 py-2 text-blue-400">B2</th>
-                                <th class="px-3 py-2 text-center text-blue-500">Score</th>
-                                <th class="px-3 py-2 text-center text-blue-500">RP</th>
-                                <th class="px-3 py-2"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="tournament-table-body" class="divide-y divide-gray-700"></tbody>
-                    </table>
-                </div>
-                <button onclick="app.addTournamentMatchRow()"
-                    class="mt-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">+ Add Match</button>
+    <!-- MEETS (Generic View) -->
+    <div id="content-meet" class="tab-content hidden">
+        <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+            <h2 id="meet-title" class="text-xl font-bold p-4 bg-gray-750 border-b border-gray-700">Match Results
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-gray-700 text-gray-300">
+                        <tr>
+                            <th class="px-4 py-2">Match</th>
+                            <th class="px-4 py-2 text-right text-red-400">Red Alliance</th>
+                            <th class="px-4 py-2 text-center text-red-500 font-bold">Score</th>
+                            <th class="px-4 py-2 text-center text-blue-500 font-bold">Score</th>
+                            <th class="px-4 py-2 text-left text-blue-400">Blue Alliance</th>
+                            <th class="px-4 py-2 text-center">Red RP</th>
+                            <th class="px-4 py-2 text-center">Blue RP</th>
+                        </tr>
+                    </thead>
+                    <tbody id="meet-body" class="divide-y divide-gray-700"></tbody>
+                </table>
             </div>
         </div>
+    </div>
 
-        <!-- TOURNAMENT REAL -->
-        <div id="content-tournament-real" class="tab-content hidden">
-            <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold text-first">Tournament (Real) - Live Matches</h2>
-                    <button onclick="app.fetchTournamentReal()"
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-bold flex items-center gap-2">
-                        <span id="tournament-refresh-icon">↻</span> Reload Tournament Data
-                    </button>
-                </div>
-                <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
-                    <table class="w-full text-sm">
-                        <thead class="bg-gray-700 text-gray-300 sticky top-0">
-                            <tr>
-                                <th class="px-3 py-2">Match</th>
-                                <th class="px-3 py-2 text-red-400">R1</th>
-                                <th class="px-3 py-2 text-red-400">R2</th>
-                                <th class="px-3 py-2 text-center text-red-500">Score</th>
-                                <th class="px-3 py-2 text-center text-red-500">RP</th>
-                                <th class="px-3 py-2 text-blue-400">B1</th>
-                                <th class="px-3 py-2 text-blue-400">B2</th>
-                                <th class="px-3 py-2 text-center text-blue-500">Score</th>
-                                <th class="px-3 py-2 text-center text-blue-500">RP</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tournament-real-body" class="divide-y divide-gray-700"></tbody>
-                    </table>
-                </div>
-                <p class="text-xs text-gray-400 mt-4">
-                    Click "Reload Tournament Data" to fetch latest matches from FTCScout.
-                    Real matches will auto-populate the Tournament (Hypothetical) tab.
-                </p>
+    <!-- TOURNAMENT INPUT -->
+    <div id="content-tournament" class="tab-content hidden">
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h2 class="text-xl font-bold mb-4 text-first">Tournament Match Scoring</h2>
+            <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-700 text-gray-300 sticky top-0">
+                        <tr>
+                            <th class="px-3 py-2">Match</th>
+                            <th class="px-3 py-2 text-red-400">R1</th>
+                            <th class="px-3 py-2 text-red-400">R2</th>
+                            <th class="px-3 py-2 text-center text-red-500">Score</th>
+                            <th class="px-3 py-2 text-center text-red-500">RP</th>
+                            <th class="px-3 py-2 text-blue-400">B1</th>
+                            <th class="px-3 py-2 text-blue-400">B2</th>
+                            <th class="px-3 py-2 text-center text-blue-500">Score</th>
+                            <th class="px-3 py-2 text-center text-blue-500">RP</th>
+                            <th class="px-3 py-2"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tournament-table-body" class="divide-y divide-gray-700"></tbody>
+                </table>
             </div>
+            <button onclick="app.addTournamentMatchRow()"
+                class="mt-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">+ Add Match</button>
         </div>
+    </div>
 
-
-        <!-- ADVANCEMENT -->
-        <div id="content-advancement" class="tab-content hidden">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Inputs -->
-                <div class="md:col-span-1 space-y-4">
-                    <div class="bg-gray-800 p-4 rounded-lg">
-                        <h3 class="font-bold mb-3">Add Awards/Results</h3>
-                        <div class="space-y-3">
-                            <input type="text" id="adv_team" placeholder="Team Number" list="team-numbers"
-                                class="w-full bg-gray-700 border-gray-600 rounded px-3 py-2">
-                            <select id="adv_type" class="w-full bg-gray-700 border-gray-600 rounded px-3 py-2">
-                                <option value="60">Inspire 1 (60)</option>
-                                <option value="50">Inspire 2 (50)</option>
-                                <option value="40">Inspire 3 (40)</option>
-                                <option value="45">Think/Connect 1 (45)</option>
-                                <option value="40">Winning Alliance (40)</option>
-                                <option value="20">Finalist Alliance (20)</option>
-                                <option value="10">Semi-finals (10)</option>
-                                <option value="20">Alliance 1 Captain (20)</option>
-                                <option value="19">Alliance 2 Captain (19)</option>
-                                <option value="18">Alliance 3 Captain (18)</option>
-                                <option value="17">Alliance 4 Captain (17)</option>
-                            </select>
-                            <button onclick="app.addAdvancement()"
-                                class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">Add
-                                Points</button>
-                        </div>
-                    </div>
-
-                    <!-- Award List -->
-                    <div class="bg-gray-800 p-4 rounded-lg">
-                        <h3 class="font-bold mb-3">Current Awards</h3>
-                        <div id="awards-list" class="space-y-2 max-h-96 overflow-y-auto"></div>
-                    </div>
-                </div>
-
-                <!-- Table -->
-                <div class="md:col-span-2">
-                    <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left">
-                                <thead class="bg-gray-700 text-gray-300 uppercase text-xs">
-                                    <tr>
-                                        <th class="px-4 py-3 font-bold text-gray-200">Rank</th>
-                                        <th class="px-4 py-3 font-bold text-gray-200">Team</th>
-                                        <th class="px-4 py-3 text-center font-bold text-gray-200" title="M1 OPR">M1
-                                        </th>
-                                        <th class="px-4 py-3 text-center font-bold text-gray-200" title="M2 OPR">M2
-                                        </th>
-                                        <th class="px-4 py-3 text-center font-bold text-gray-200" title="M3 OPR">M3
-                                        </th>
-                                        <th class="px-4 py-3 text-center font-bold text-gray-200" title="Tourn OPR">
-                                            Tourn</th>
-                                        <th class="px-4 py-3 text-center font-bold text-gray-200">Qual Pts</th>
-                                        <th class="px-4 py-3 text-center font-bold text-gray-200">Alliance</th>
-                                        <th class="px-4 py-3 text-center font-bold text-gray-200">Award</th>
-                                        <th class="px-4 py-3 text-center font-bold text-gray-200">Playoff</th>
-                                        <th class="px-4 py-3 text-center font-bold text-white">Total AP</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="advancement-body" class="divide-y divide-gray-700 text-sm"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+    <!-- TOURNAMENT REAL -->
+    <div id="content-tournament-real" class="tab-content hidden">
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-first">Tournament (Real) - Live Matches</h2>
+                <button onclick="app.fetchTournamentReal()"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-bold flex items-center gap-2">
+                    <span id="tournament-refresh-icon">↻</span> Reload Tournament Data
+                </button>
             </div>
+            <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-700 text-gray-300 sticky top-0">
+                        <tr>
+                            <th class="px-3 py-2">Match</th>
+                            <th class="px-3 py-2 text-red-400">R1</th>
+                            <th class="px-3 py-2 text-red-400">R2</th>
+                            <th class="px-3 py-2 text-center text-red-500">Score</th>
+                            <th class="px-3 py-2 text-center text-red-500">RP</th>
+                            <th class="px-3 py-2 text-blue-400">B1</th>
+                            <th class="px-3 py-2 text-blue-400">B2</th>
+                            <th class="px-3 py-2 text-center text-blue-500">Score</th>
+                            <th class="px-3 py-2 text-center text-blue-500">RP</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tournament-real-body" class="divide-y divide-gray-700"></tbody>
+                </table>
+            </div>
+            <p class="text-xs text-gray-400 mt-4">
+                Click "Reload Tournament Data" to fetch latest matches from FTCScout.
+                Real matches will auto-populate the Tournament (Hypothetical) tab.
+            </p>
         </div>
+    </div>
 
-        <!-- ALLIANCE SELECTION -->
-        <div id="content-alliance" class="tab-content hidden">
-            <div class="grid grid-cols-2 gap-6">
-                <!-- Available Teams -->
-                <div class="bg-gray-800 rounded-lg p-4 shadow-lg">
-                    <h3 class="font-bold mb-3 text-lg text-gray-300">Available Teams</h3>
-                    <input type="text" id="alliance-search" placeholder="Search team..."
-                        class="w-full bg-gray-700 text-white rounded p-2 mb-3 border border-gray-600 text-base"
-                        onkeyup="app.renderAlliance()">
-                    <div id="alliance-available" class="space-y-2 max-h-[60vh] overflow-y-auto"></div>
-                </div>
 
-                <!-- My Selection List -->
-                <div class="bg-gray-800 rounded-lg p-4 shadow-lg">
-                    <h3 class="font-bold mb-3 text-lg text-yellow-400">My Draft List (In Order)</h3>
-                    <p class="text-xs text-gray-400 mb-2">Drag teams here in order of preference. #1 = most wanted.</p>
-                    <div id="alliance-selected"
-                        class="space-y-2 max-h-[60vh] overflow-y-auto min-h-[200px] border-2 border-dashed border-gray-700 rounded p-2">
+    <!-- ADVANCEMENT -->
+    <div id="content-advancement" class="tab-content hidden">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Inputs -->
+            <div class="md:col-span-1 space-y-4">
+                <div class="bg-gray-800 p-4 rounded-lg">
+                    <h3 class="font-bold mb-3">Add Awards/Results</h3>
+                    <div class="space-y-3">
+                        <input type="text" id="adv_team" placeholder="Team Number" list="team-numbers"
+                            class="w-full bg-gray-700 border-gray-600 rounded px-3 py-2">
+                        <select id="adv_type" class="w-full bg-gray-700 border-gray-600 rounded px-3 py-2">
+                            <option value="60">Inspire 1 (60)</option>
+                            <option value="50">Inspire 2 (50)</option>
+                            <option value="40">Inspire 3 (40)</option>
+                            <option value="45">Think/Connect 1 (45)</option>
+                            <option value="40">Winning Alliance (40)</option>
+                            <option value="20">Finalist Alliance (20)</option>
+                            <option value="10">Semi-finals (10)</option>
+                            <option value="20">Alliance 1 Captain (20)</option>
+                            <option value="19">Alliance 2 Captain (19)</option>
+                            <option value="18">Alliance 3 Captain (18)</option>
+                            <option value="17">Alliance 4 Captain (17)</option>
+                        </select>
+                        <button onclick="app.addAdvancement()"
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">Add
+                            Points</button>
                     </div>
                 </div>
+
+                <!-- Award List -->
+                <div class="bg-gray-800 p-4 rounded-lg">
+                    <h3 class="font-bold mb-3">Current Awards</h3>
+                    <div id="awards-list" class="space-y-2 max-h-96 overflow-y-auto"></div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="md:col-span-2">
+                <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-700 text-gray-300 uppercase text-xs">
+                                <tr>
+                                    <th class="px-4 py-3 font-bold text-gray-200">Rank</th>
+                                    <th class="px-4 py-3 font-bold text-gray-200">Team</th>
+                                    <th class="px-4 py-3 text-center font-bold text-gray-200" title="M1 OPR">M1
+                                    </th>
+                                    <th class="px-4 py-3 text-center font-bold text-gray-200" title="M2 OPR">M2
+                                    </th>
+                                    <th class="px-4 py-3 text-center font-bold text-gray-200" title="M3 OPR">M3
+                                    </th>
+                                    <th class="px-4 py-3 text-center font-bold text-gray-200" title="Tourn OPR">
+                                        Tourn</th>
+                                    <th class="px-4 py-3 text-center font-bold text-gray-200">Qual Pts</th>
+                                    <th class="px-4 py-3 text-center font-bold text-gray-200">Alliance</th>
+                                    <th class="px-4 py-3 text-center font-bold text-gray-200">Award</th>
+                                    <th class="px-4 py-3 text-center font-bold text-gray-200">Playoff</th>
+                                    <th class="px-4 py-3 text-center font-bold text-white">Total AP</th>
+                                </tr>
+                            </thead>
+                            <tbody id="advancement-body" class="divide-y divide-gray-700 text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
+
+    <!-- ALLIANCE SELECTION -->
+    <div id="content-alliance" class="tab-content hidden">
+        <div class="grid grid-cols-2 gap-6">
+            <!-- Available Teams -->
+            <div class="bg-gray-800 rounded-lg p-4 shadow-lg">
+                <h3 class="font-bold mb-3 text-lg text-gray-300">Available Teams</h3>
+                <input type="text" id="alliance-search" placeholder="Search team..."
+                    class="w-full bg-gray-700 text-white rounded p-2 mb-3 border border-gray-600 text-base"
+                    onkeyup="app.renderAlliance()">
+                <div id="alliance-available" class="space-y-2 max-h-[60vh] overflow-y-auto"></div>
+            </div>
+
+            <!-- My Selection List -->
+            <div class="bg-gray-800 rounded-lg p-4 shadow-lg">
+                <h3 class="font-bold mb-3 text-lg text-yellow-400">My Draft List (In Order)</h3>
+                <p class="text-xs text-gray-400 mb-2">Drag teams here in order of preference. #1 = most wanted.</p>
+                <div id="alliance-selected"
+                    class="space-y-2 max-h-[60vh] overflow-y-auto min-h-[200px] border-2 border-dashed border-gray-700 rounded p-2">
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
     </div>
 
@@ -1267,8 +1307,27 @@
                 });
             },
 
-            async resetAll() {
-                if (!confirm("Clear all data? This will:\n- Clear all hypothetical matches\n- Clear all awards\n- Clear alliance selections\n- Clear team notes\n\nAre you sure?")) return;
+            resetAll() {
+                // Show custom modal
+                const modal = document.getElementById('confirm-modal');
+                const cloudOption = document.getElementById('cloud-wipe-option');
+                const checkbox = document.getElementById('wipe-cloud-checkbox');
+
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+
+                // Only show cloud wipe option if firebase is enabled
+                if (firebaseEnabled) {
+                    cloudOption.classList.remove('hidden');
+                    checkbox.checked = false;
+                } else {
+                    cloudOption.classList.add('hidden');
+                }
+            },
+
+            async executeClearAll() {
+                const wipeCloud = document.getElementById('wipe-cloud-checkbox').checked;
+                document.getElementById('confirm-modal').classList.add('hidden'); // Close modal
 
                 // Clear local state
                 AppState.hypotheticalMatches = [];
@@ -1277,15 +1336,24 @@
                 AppState.allianceList = [];
                 AppState.tournamentRealMatches = [];
 
-                // Ask about cloud data
-                if (firebaseEnabled && confirm("Do you also want to WIPE THE CLOUD DATA?\n\nThis will delete data for EVERYONE on your team!")) {
-                    await app.clearCloudData();
+                // Handle cloud data
+                if (firebaseEnabled && wipeCloud) {
+                    app.setCloudStatus('Wiping cloud data...', 'text-red-400');
+                    try {
+                        await app.clearCloudData();
+                        alert('All data (Local + Cloud) has been wiped.');
+                        location.reload();
+                    } catch (e) {
+                        alert('Error wiping cloud data: ' + e.message);
+                        location.reload();
+                    }
                 } else {
-                    // Just clear local
+                    // Just clear local and reload
                     localStorage.removeItem('app_state');
                     location.reload();
                 }
             },
+
 
 
 
