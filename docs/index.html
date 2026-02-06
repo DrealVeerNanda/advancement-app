@@ -1591,17 +1591,18 @@
         // BOOT
 
         // Update Firebase status in modal
-        const statusEl = document.getElementById('firebase-status');
+        // Update Firebase status
         const syncStatusEl = document.getElementById('sync-status');
-        if (statusEl) {
+        if (syncStatusEl) {
             if (firebaseEnabled) {
-                statusEl.innerHTML = '<span class="text-green-400">✓ Connected to Firebase</span>';
-                if (syncStatusEl) syncStatusEl.textContent = 'Connected - auto-syncing enabled';
+                syncStatusEl.textContent = 'Live - Waiting for changes';
+                syncStatusEl.className = 'text-green-400 font-bold';
             } else {
-                statusEl.innerHTML = '<span class="text-red-400">✗ Firebase not configured</span>';
-                if (syncStatusEl) syncStatusEl.textContent = 'Not connected - local storage only';
+                syncStatusEl.textContent = 'Offline - Local storage only';
+                syncStatusEl.className = 'text-gray-400';
             }
         }
+
 
         // Auto-load from cloud on init
         if (firebaseEnabled) {
