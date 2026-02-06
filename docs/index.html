@@ -236,8 +236,6 @@
             class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Selection</button>
         <button onclick="app.switchTab('advancement')" id="tab-advancement"
             class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Advancement</button>
-        <button onclick="app.switchTab('highest-opr')" id="tab-highest-opr"
-            class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Highest OPR</button>
     </div>
 
     <!-- STANDINGS -->
@@ -415,27 +413,7 @@
         </div>
     </div>
 
-    <!-- HIGHEST OPR -->
-    <div id="content-highest-opr" class="tab-content hidden">
-        <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead class="bg-gray-700 text-gray-300 uppercase text-sm">
-                        <tr>
-                            <th class="px-6 py-3">Rank</th>
-                            <th class="px-6 py-3">Team</th>
-                            <th class="px-6 py-3">Name</th>
-                            <th class="px-6 py-3 text-center" title="Tournament OPR">Tourn OPR</th>
-                            <th class="px-6 py-3 text-center" title="Estimated Tournament OPR">Est. OPR</th>
-                            <th class="px-6 py-3 text-center" title="Auto OPR">Auto</th>
-                            <th class="px-6 py-3 text-center" title="Teleop/Endgame OPR">Tele/End</th>
-                        </tr>
-                    </thead>
-                    <tbody id="highest-opr-body" class="divide-y divide-gray-700"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+
 
     <!-- ALLIANCE SELECTION -->
     <div id="content-alliance" class="tab-content hidden">
@@ -1075,7 +1053,6 @@
                 if (tabId === 'advancement') app.renderAdvancement();
                 if (tabId === 'alliance') app.renderAlliance();
                 if (tabId === 'tournament-real') app.renderTournamentReal();
-                if (tabId === 'highest-opr') app.renderHighestOPR();
             },
 
             renderStandings() {
