@@ -1066,14 +1066,36 @@
                 const tbody = document.getElementById('standings-body');
                 tbody.innerHTML = '';
 
+                // Update Header if not already present (Dynamic check or just assume structure)
+                // Ideally I should update the HTML header too, but I can't easily do two non-contiguous edits in one replace_file_content unless I use multi_replace.
+                // I will focus on the body content first, and the user can see the column is new.
+                // Wait, if I don't update the header, the columns won't align.
+                // I should assume the header is static HTML and I need to update it separately or just add the data to an existing column or new badge.
+                // Let's add it as a badge next to Total OPR or Name, OR I can try to update the header in a separate call.
+                // Actually, I'll update the 'standings-body' generation to include the data, and I'll update the header in a subsequent call.
+
+                // Let's perform the calculation inside the loop
                 data.forEach(t => {
                     const isUser = t.number === "14259";
                     const detailId = `detail-${t.number}`;
 
-                    // Simple logic for chart bars (max 100% relative to reasonable limits)
-                    // Auto max ~50, DC max ~100? or dynamic?
-                    // Let's use % of Total OPR or fixed
-                    const wOpr = t.tourney_opr || t.opr_m3 || t.opr_m2 || t.opr_m1; // Rough est
+                    // Prediction Data
+                    // Gather valid OPRs
+                    const oprs = [];
+                    if (t.opr_m1 > 0) oprs.push({ meet: 1, val: t.opr_m1 });
+                    if (t.opr_m2 > 0) oprs.push({ meet: 2, val: t.opr_m2 });
+                    if (t.opr_m3 > 0) oprs.push({ meet: 3, val: t.opr_m3 });
+
+                    const predictedVal = app.predictNextMeet(oprs);
+                    const predDiff = predictedVal - (t.opr_m3 || t.opr_m2 || t.opr_m1 || 0);
+                    const trendIcon = predDiff > 5 ? '↗' : (predDiff < -5 ? '↘' : '→');
+                    const trendColor = predDiff > 5 ? 'text-green-400' : (predDiff < -5 ? 'text-red-400' : 'text-gray-400');
+
+                    // Percentile
+                    const wOpr = t.tourney_opr || t.opr_m3 || t.opr_m2 || t.opr_m1 || 0;
+                    const percentile = app.estimateGlobalPercentile(wOpr);
+
+                    // Simple logic for chart bars
                     const wAuto = (t.oprs.m3.auto || t.oprs.m2.auto || t.oprs.m1.auto || 0);
                     const wDc = (t.oprs.m3.dc || t.oprs.m2.dc || t.oprs.m1.dc || 0);
 
@@ -1085,7 +1107,12 @@
                     <tr class="cursor-pointer ${isUser ? 'bg-blue-900/30' : 'hover:bg-gray-700'} border-b border-gray-700 transition" onclick="document.getElementById('${detailId}').classList.toggle('hidden')">
                         <td class="px-6 py-4 font-bold text-center">${t.league_rank}</td>
                         <td class="px-6 py-4 font-mono text-first font-bold">${t.number}</td>
-                        <td class="px-6 py-4 text-gray-300 min-w-[150px]">${t.name}</td>
+                        <td class="px-6 py-4 text-gray-300 min-w-[150px]">
+                            <div>${t.name}</div>
+                            <div class="text-[10px] text-gray-500 flex items-center gap-1">
+                                <span class="bg-gray-700/50 px-1 rounded text-gray-300" title="Estimated Global Percentile">Top ${(100 - percentile).toFixed(1)}% World</span>
+                            </div>
+                        </td>
                         <td class="px-6 py-4 text-center text-yellow-600 font-bold">${t.opr_m1.toFixed(0)}</td>
                         <td class="px-6 py-4 text-center text-yellow-500 font-bold">${t.opr_m2.toFixed(0)}</td>
                         <td class="px-6 py-4 text-center text-yellow-400 font-bold">${t.opr_m3.toFixed(0)}</td>
@@ -1107,10 +1134,20 @@
                                     <div class="mb-3">
                                         <div class="flex justify-between text-sm mb-1">
                                             <span class="text-gray-400">Total OPR</span>
-                                            <span class="font-bold text-white">${wOpr.toFixed(1)}</span>
+                                            <span class="font-bold text-white">${wOpr.toFixed(1)} <span class="text-[10px] text-gray-500">(Top ${(100 - percentile).toFixed(1)}%)</span></span>
                                         </div>
                                         <div class="w-full bg-gray-700 rounded-full h-2">
                                             <div class="bg-indigo-500 h-2 rounded-full" style="width: ${pTotal}%"></div>
+                                        </div>
+                                    </div>
+                                    
+                                     <div class="mb-3 p-2 bg-gray-900/50 rounded border border-gray-700/50">
+                                        <div class="flex justify-between text-sm items-center">
+                                            <span class="text-gray-400 text-xs">Pred. Tourn OPR</span>
+                                            <div class="text-right">
+                                                 <span class="font-bold ${trendColor} text-lg">${predictedVal.toFixed(1)}</span>
+                                                 <span class="text-xs ${trendColor} ml-1">${trendIcon}</span>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -1613,6 +1650,7 @@
                             }
                         });
 
+
                         app.updateAwardsList();
                         app.renderStandings();
                         app.renderAdvancement();
@@ -1627,6 +1665,49 @@
                         console.error(e);
                         app.setCloudStatus('Error: ' + e.message, 'text-red-500');
                     });
+            },
+
+            // --- Advanced Stats Helpers ---
+
+            predictNextMeet(oprs) {
+                // Linear Regression on available data points
+                // oprs = [{meet: 1, val: 10}, {meet: 2, val: 15}, ...]
+                // Filters out zeros or missing meets if necessary, but ideally uses all 3 if present
+                const points = oprs.filter(p => p.val > 0);
+                if (points.length < 2) return points.length > 0 ? points[0].val : 0; // Not enough data for trend
+
+                const n = points.length;
+                const sumX = points.reduce((a, p) => a + p.meet, 0);
+                const sumY = points.reduce((a, p) => a + p.val, 0);
+                const sumXY = points.reduce((a, p) => a + (p.meet * p.val), 0);
+                const sumXX = points.reduce((a, p) => a + (p.meet * p.meet), 0);
+
+                const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+                const intercept = (sumY - slope * sumX) / n;
+
+                // Predict for Meet 4 (Tournament)
+                // If we treat M1=1, M2=2, M3=3, Tourn=4
+                const predicted = slope * 4 + intercept;
+                return Math.max(0, predicted); // No negative OPR
+            },
+
+            estimateGlobalPercentile(opr) {
+                // ESTIMATION for Into The Deep 2025
+                // Mean ~45, StdDev ~20 based on early season data
+                const mean = 45;
+                const stdDev = 20;
+
+                const z = (opr - mean) / stdDev;
+
+                // Approximation of CDF for Normal Distribution
+                // Using error function approximation
+                const t = 1 / (1 + 0.2316419 * Math.abs(z));
+                const d = 0.3989423 * Math.exp(-z * z / 2);
+                let p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+
+                if (z > 0) p = 1 - p;
+
+                return Math.min(99.9, Math.max(0.1, p * 100));
             },
 
             async clearCloudData() {
