@@ -423,26 +423,6 @@
             path: 'docs/data/shared_state.json'
         };
 
-        // Firebase Configuration (optional - falls back to localStorage only)
-        let firebaseEnabled = false;
-        try {
-            const firebaseConfig = {
-                apiKey: "AIzaSyD6_YourActualKeyHere",
-                authDomain: "east-bay-advancement.firebaseapp.com",
-                databaseURL: "https://east-bay-advancement-default-rtdb.firebaseio.com",
-                projectId: "east-bay-advancement"
-            };
-            
-            firebase.initializeApp(firebaseConfig);
-            firebaseEnabled = true;
-            console.log("Firebase initialized successfully");
-        } catch (e) {
-            console.warn("Firebase not configured properly, using localStorage only");
-            firebaseEnabled = false;
-        }
-
-
-
         const MEETS = [
             { code: "USCANOEBM1", prefix: "M1" },
             { code: "USCANOEBM2", prefix: "M2" },
@@ -1253,115 +1233,25 @@
 
 
             async saveToCloud() {
-                if (!firebaseEnabled) {
-                    app.setCloudStatus('Firebase not configured - data saved locally only', 'text-yellow-500');
-                    setTimeout(() => app.setCloudStatus("", ""), 3000);
-                    return;
-                }
-                
-                app.setCloudStatus('Saving...', 'text-yellow-400');
-                try {
-                    const data = {
-                        hypotheticalMatches: AppState.hypotheticalMatches,
-                        awards: AppState.awards,
-                        teamNotes: AppState.teamNotes,
-                        allianceList: AppState.allianceList,
-                        isHypothetical: AppState.isHypothetical,
-                        timestamp: new Date().toISOString()
-                    };
-                    await firebase.database().ref('eb_advancement_state').set(data);
-                    app.setCloudStatus('Saved to cloud! ✓', 'text-green-500');
-                    setTimeout(() => app.setCloudStatus("", ""), 2000);
-                } catch (e) {
-                    console.error(e);
-                    app.setCloudStatus('Error: ' + e.message, 'text-red-500');
-                }
+                app.setCloudStatus('Saved locally ✓', 'text-green-500');
+                setTimeout(() => app.setCloudStatus("", ""), 2000);
+                // Note: Cloud sync requires Firebase setup
+                alert('Data is saved locally in your browser.\n\nTo sync across devices, Firebase needs to be configured.\n\nFor now, all data is in localStorage.');
             },
 
             async loadFromCloud() {
-                if (!firebaseEnabled) {
-                    app.setCloudStatus('Firebase not configured', 'text-yellow-500');
-                    setTimeout(() => app.setCloudStatus("", ""), 3000);
-                    return;
-                }
-                
-                app.setCloudStatus("Loading...", "text-yellow-400");
-                try {
-                    const snapshot = await firebase.database().ref('eb_advancement_state').once('value');
-                    const data = snapshot.val();
-                    if (!data) {
-                        app.setCloudStatus('No data', 'text-gray-400');
-                        return;
-                    }
-
-                    // Reset
-                    AppState.hypotheticalMatches = [];
-                    AppState.awards = [];
-                    AppState.teamNotes = {};
-                    AppState.allianceList = [];
-                    document.querySelectorAll("input[type=text], input[type=number]").forEach(i => i.value = "");
-                    document.querySelectorAll("[id^=tmatch-]").forEach(r => {
-                        r.classList.remove("bg-yellow-900/40");
-                        r.classList.add("bg-gray-700");
-                    });
-
-                    // Load
-                    AppState.hypotheticalMatches = data.hypotheticalMatches || [];
-                    AppState.awards = data.awards || [];
-                    AppState.teamNotes = data.teamNotes || {};
-                    AppState.allianceList = data.allianceList || [];
-                    AppState.isHypothetical = data.isHypothetical || false;
-                    app.saveState();
-
-                    document.getElementById("mode-toggle").checked = AppState.isHypothetical;
-                    if (AppState.isHypothetical) document.body.classList.add("hypothetical-mode-active");
-                    else document.body.classList.remove("hypothetical-mode-active");
-
-                    // Restore matches
-                    AppState.hypotheticalMatches.forEach(m => {
-                        const num = m.match_id.split("-")[1];
-                        const row = document.getElementById(`tmatch-${num}`);
-                        if (row) {
-                            const inputs = row.querySelectorAll("input");
-                            inputs[0].value = m.r1; inputs[1].value = m.r2;
-                            inputs[2].value = m.red_score; inputs[3].value = m.red_rp;
-                            inputs[4].value = m.b1; inputs[5].value = m.b2;
-                            inputs[6].value = m.blue_score; inputs[7].value = m.blue_rp;
-                            app.updateRowUI(row, inputs, num, true);
-                        }
-                    });
-
-                    app.updateAwardsList();
-                    app.renderStandings();
-                    app.renderAdvancement();
-                    app.renderAlliance();
-
-                    app.setCloudStatus("Loaded! ✓", "text-green-500");
-                    setTimeout(() => app.setCloudStatus("", ""), 2000);
-                } catch (e) {
-                    console.error(e);
-                    app.setCloudStatus("Error: " + e.message, "text-red-500");
-                }
+                app.setCloudStatus("Data is already loaded from localStorage", "text-yellow-400");
+                setTimeout(() => app.setCloudStatus("", ""), 2000);
+                // All data is already in localStorage
             },
 
             async clearCloudData() {
-                if (!firebaseEnabled) {
-                    app.setCloudStatus('Firebase not configured', 'text-yellow-500');
-                    setTimeout(() => app.setCloudStatus("", ""), 3000);
-                    return;
-                }
-                
-                if (!confirm("DANGER: Wipe cloud data?")) return;
-                app.setCloudStatus('Clearing...', 'text-yellow-400');
-                try {
-                    await firebase.database().ref('eb_advancement_state').remove();
-                    app.setCloudStatus('Cleared! ✓', 'text-green-500');
-                } catch (e) {
-                    console.error(e);
-                    app.setCloudStatus('Error: ' + e.message, 'text-red-500');
-                }
+                if (!confirm("DANGER: Clear all local data?")) return;
+                localStorage.clear();
+                location.reload();
             },
 
+            
             
 
             setCloudStatus(msg, color) {
