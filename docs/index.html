@@ -385,16 +385,23 @@
             path: 'docs/data/shared_state.json'
         };
 
-        // Firebase Configuration  
-        const firebaseConfig = {
-            apiKey: "AIzaSy D6_YourActualKeyHere",
-            authDomain: "east-bay-advancement.firebaseapp.com",
-            databaseURL: "https://east-bay-advancement-default-rtdb.firebaseio.com",
-            projectId: "east-bay-advancement"
-        };
-        
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
+        // Firebase Configuration (optional - falls back to localStorage only)
+        let firebaseEnabled = false;
+        try {
+            const firebaseConfig = {
+                apiKey: "AIzaSyD6_YourActualKeyHere",
+                authDomain: "east-bay-advancement.firebaseapp.com",
+                databaseURL: "https://east-bay-advancement-default-rtdb.firebaseio.com",
+                projectId: "east-bay-advancement"
+            };
+            
+            firebase.initializeApp(firebaseConfig);
+            firebaseEnabled = true;
+            console.log("Firebase initialized successfully");
+        } catch (e) {
+            console.warn("Firebase not configured properly, using localStorage only");
+            firebaseEnabled = false;
+        }
 
 
 
@@ -1107,6 +1114,12 @@
 
 
             async saveToCloud() {
+                if (!firebaseEnabled) {
+                    app.setCloudStatus('Firebase not configured - data saved locally only', 'text-yellow-500');
+                    setTimeout(() => app.setCloudStatus("", ""), 3000);
+                    return;
+                }
+                
                 app.setCloudStatus('Saving...', 'text-yellow-400');
                 try {
                     const data = {
@@ -1118,7 +1131,7 @@
                         timestamp: new Date().toISOString()
                     };
                     await firebase.database().ref('eb_advancement_state').set(data);
-                    app.setCloudStatus('Saved! ✓', 'text-green-500');
+                    app.setCloudStatus('Saved to cloud! ✓', 'text-green-500');
                     setTimeout(() => app.setCloudStatus("", ""), 2000);
                 } catch (e) {
                     console.error(e);
@@ -1127,6 +1140,12 @@
             },
 
             async loadFromCloud() {
+                if (!firebaseEnabled) {
+                    app.setCloudStatus('Firebase not configured', 'text-yellow-500');
+                    setTimeout(() => app.setCloudStatus("", ""), 3000);
+                    return;
+                }
+                
                 app.setCloudStatus("Loading...", "text-yellow-400");
                 try {
                     const snapshot = await firebase.database().ref('eb_advancement_state').once('value');
@@ -1187,6 +1206,12 @@
             },
 
             async clearCloudData() {
+                if (!firebaseEnabled) {
+                    app.setCloudStatus('Firebase not configured', 'text-yellow-500');
+                    setTimeout(() => app.setCloudStatus("", ""), 3000);
+                    return;
+                }
+                
                 if (!confirm("DANGER: Wipe cloud data?")) return;
                 app.setCloudStatus('Clearing...', 'text-yellow-400');
                 try {
