@@ -1971,7 +1971,7 @@
                 const defenseImpact = globalAvgScore - dpr; // Positive means good defense (low DPR)
 
                 // Match Difficulty by Meet
-                const matchDifficulty = app.calculateMatchDifficulty(team.number, allMatches, AppState.teams);
+                const matchDifficulty = app.calculateMatchDifficulty(team.number, allMatches);
 
                 return {
                     consistency,
@@ -1984,33 +1984,31 @@
                 };
             },
 
-            calculateMatchDifficulty(teamNum, allMatches, teams) {
+            calculateMatchDifficulty(teamNum, allMatches) {
                 // Calculate OPRs for each meet
                 const m1Matches = allMatches.filter(m => m.match_id.includes('M1-'));
                 const m2Matches = allMatches.filter(m => m.match_id.includes('M2-'));
                 const m3Matches = allMatches.filter(m => m.match_id.includes('M3-'));
                 const tournamentMatches = allMatches.filter(m => !m.match_id.includes('M1-') && !m.match_id.includes('M2-') && !m.match_id.includes('M3-'));
 
-                const allTeamNumbers = teams.map(t => t.number);
+                // Extract all team numbers from matches
+                const allTeamNumbers = [...new Set(allMatches.flatMap(m => [...(m.red || []), ...(m.blue || [])]))].filter(t => t);
+
                 const m1OPR = solveOPR(m1Matches, allTeamNumbers);
                 const m2OPR = solveOPR(m1Matches.concat(m2Matches), allTeamNumbers);
                 const m3OPR = solveOPR(m1Matches.concat(m2Matches, m3Matches), allTeamNumbers);
 
-                // Get predicted OPR from team data
-                const teamData = teams.find(t => t.number === teamNum);
-                const predictedOPR = teamData ? (teamData.predicted_tourney_opr || teamData.tourney_opr) : {};
-
                 // Helper to calculate avg opponent OPR for a set of matches
                 const getAvgOpponentOPR = (matches, oprMap) => {
-                    const teamMatches = matches.filter(m => m.red.includes(teamNum) || m.blue.includes(teamNum));
+                    const teamMatches = matches.filter(m => (m.red || []).includes(teamNum) || (m.blue || []).includes(teamNum));
                     if (teamMatches.length === 0) return 0;
 
                     let totalOPR = 0;
                     let count = 0;
 
                     teamMatches.forEach(m => {
-                        const isRed = m.red.includes(teamNum);
-                        const opponents = isRed ? m.blue : m.red;
+                        const isRed = (m.red || []).includes(teamNum);
+                        const opponents = isRed ? (m.blue || []) : (m.red || []);
 
                         opponents.forEach(opp => {
                             const oppOPR = oprMap[opp] || 0;
