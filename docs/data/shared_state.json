@@ -1,1 +1,46 @@
-{}
+{
+  "hypotheticalMatches": [
+    {
+      "match_id": "Q-1",
+      "r1": "14259",
+      "r2": "5214",
+      "red_score": 67,
+      "red_rp": 5,
+      "red": [
+        "14259",
+        "5214"
+      ],
+      "b1": "25627",
+      "b2": "14770",
+      "blue_score": 50,
+      "blue_rp": 1,
+      "blue": [
+        "25627",
+        "14770"
+      ],
+      "match_type": "TOURNAMENT"
+    },
+    {
+      "match_id": "Q-2",
+      "r1": "23212",
+      "r2": "11920",
+      "red_score": 100,
+      "red_rp": 1,
+      "red": [
+        "23212",
+        "11920"
+      ],
+      "b1": "14259",
+      "b2": "25627",
+      "blue_score": 100,
+      "blue_rp": 6,
+      "blue": [
+        "14259",
+        "25627"
+      ],
+      "match_type": "TOURNAMENT"
+    }
+  ],
+  "awards": [],
+  "timestamp": "2026-02-06T01:52:57.136Z"
+}
