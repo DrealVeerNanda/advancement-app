@@ -562,8 +562,8 @@
                     teams { teamNumber alliance surrogate }
                     scores {
                         ... on MatchScores2025 {
-                            red { totalPoints penaltyPointsByOpp movementRp goalRp patternRp }
-                            blue { totalPoints penaltyPointsByOpp movementRp goalRp patternRp }
+                            red { totalPoints penaltyPointsByOpp movementRp goalRp patternRp autoPoints dcPoints }
+                            blue { totalPoints penaltyPointsByOpp movementRp goalRp patternRp autoPoints dcPoints }
                         }
                     }
                 }
@@ -578,6 +578,7 @@
                 });
                 const json = await res.json();
                 if (!json.data || !json.data.eventByCode) return [];
+
 
                 return json.data.eventByCode.matches.map(m => processMatch(m, prefix));
             } catch (e) {
