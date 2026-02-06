@@ -814,12 +814,19 @@
                 });
             },
 
-            resetAll() {
-                if (!confirm("Clear all local data?")) return;
+            async resetAll() {
+                if (!confirm("Clear all LOCAL data? (This only cleans this computer)")) return;
+                
                 AppState.hypotheticalMatches = [];
                 AppState.awards = [];
-                localStorage.removeItem('eb_advancement_state');
-                location.reload();
+                localStorage.removeItem("eb_advancement_state");
+
+                const token = localStorage.getItem("gh_token");
+                if (token && confirm("Do you ALSO want to wipe the CLOUD data (GitHub)?\n\nThis will remove the shared file for everyone.")) {
+                    await app.clearCloudData(true);
+                } else {
+                    location.reload();
+                }
             },
 
 
@@ -949,14 +956,18 @@
                 }
             },
 
-            async clearCloudData() {
-                if (!confirm("DANGER: This will WIPE the cloud file for everyone. Continue?")) return;
+            async clearCloudData(skipConfirm = false) {
+                if (!skipConfirm && !confirm("DANGER: This will WIPE the cloud file for everyone. Continue?")) return;
 
                 const token = document.getElementById('gh-token').value.trim();
-                if (!token) return app.setCloudStatus('Error: Token required.', 'text-red-500');
+                if (!token) {
+                    if (!skipConfirm) app.setCloudStatus('Error: Token required.', 'text-red-500');
+                    else { alert("Cannot clear cloud: No Token found."); location.reload(); }
+                    return;
+                }
                 localStorage.setItem('gh_token', token);
 
-                app.setCloudStatus('Clearing...', 'text-red-400');
+                if (!skipConfirm) app.setCloudStatus('Clearing...', 'text-red-400');
 
                 try {
                     const getUrl = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}`;
@@ -981,10 +992,21 @@
                     });
 
                     if (!putRes.ok) throw new Error('Clear failed');
-                    app.setCloudStatus('Cloud Cleared! ✓', 'text-green-500');
-                    setTimeout(() => app.loadFromCloud(), 1000); // Reload empty state
+
+                    if (!skipConfirm) {
+                        app.setCloudStatus('Cloud Cleared! ✓', 'text-green-500');
+                        setTimeout(() => app.loadFromCloud(), 1000);
+                    } else {
+                        alert("Cloud Data Wiped.");
+                        location.reload();
+                    }
                 } catch (e) {
-                    app.setCloudStatus('Error: ' + e.message, 'text-red-500');
+                    if (!skipConfirm) app.setCloudStatus('Error: ' + e.message, 'text-red-500');
+                    else {
+                        console.error(e);
+                        alert("Failed to clear cloud: " + e.message);
+                        location.reload();
+                    }
                 }
             },
 
