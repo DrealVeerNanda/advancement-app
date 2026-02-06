@@ -684,25 +684,24 @@
             const m3Matches = allMatches.filter(m => m.match_id.startsWith('M3-'));
             const tourneyMatches = allMatches.filter(m => m.match_type === 'TOURNAMENT');
 
-            // Helper to solve for different metrics
+            // Helper to solve for different metrics (Fix for Component OPR access)
             const solveForMetric = (matches, metricName) => {
                 if (metricName === 'score') return solveOPR(matches, allTeamNums);
+
                 // Create shadow matches with swapped scores
+                // Crucial fix: Assign values to red_score/blue_score directly
+                // Access property dynamically: matches[0]['red_auto']
                 const shadow = matches.map(m => {
-                    const r = m[`red_${metricName}`] || 0;
-                    const b = m[`blue_${metricName}`] || 0;
+                    // Extract component scores (fallback to 0)
+                    const r = (m[`red_${metricName}`] !== undefined) ? m[`red_${metricName}`] : 0;
+                    const b = (m[`blue_${metricName}`] !== undefined) ? m[`blue_${metricName}`] : 0;
+
                     return {
                         ...m,
                         red_score: r,
                         blue_score: b
                     };
                 });
-
-                // Debug log for Auto OPR issue
-                if (metricName === 'auto' && matches.length > 0) {
-                    // console.log(`DEBUG OPR AUTO: Match ${matches[0].match_id} RedAutoOriginal: ${matches[0].red_auto} RedScoreShadow: ${shadow[0].red_score}`);
-                }
-
                 return solveOPR(shadow, allTeamNums);
             };
 
@@ -710,6 +709,7 @@
             const oprM2 = solveForMetric(m2Matches, 'score');
             const oprM3 = solveForMetric(m3Matches, 'score');
 
+            // Pass explicit component arrays to ensure isolation
             const oprAutoM1 = solveForMetric(m1Matches, 'auto');
             const oprAutoM2 = solveForMetric(m2Matches, 'auto');
             const oprAutoM3 = solveForMetric(m3Matches, 'auto');
