@@ -1116,7 +1116,7 @@
                                 </div>
 
                                 <!-- Average Scores & Match History -->
-                                <div class="bg-gray-800 rounded p-4 border border-gray-700 col-span-2">
+                                <div class="bg-gray-800 rounded p-4 border border-gray-700 col-span-2 flex flex-col">
                                     <div class="grid grid-cols-4 gap-4 text-center mb-4">
                                         <div class="p-2 bg-gray-750 rounded">
                                             <div class="text-[10px] text-gray-400 uppercase">Avg Score</div>
@@ -1136,7 +1136,13 @@
                                         </div>
                                     </div>
                                     
-                                    <div class="overflow-x-auto max-h-40 overflow-y-auto">
+                                    <!-- Trend Graph -->
+                                    <div class="mb-4 h-16 w-full bg-gray-800/50 rounded relative">
+                                        <div class="absolute top-1 left-2 text-[10px] text-gray-500 uppercase font-bold tracking-wider">Score Trend</div>
+                                        ${app.generateSparkline(t.matches.filter(m => !m.is_surrogate).sort((a, b) => a.match_id.localeCompare(b.match_id)))}
+                                    </div>
+
+                                    <div class="overflow-x-auto flex-grow max-h-40 overflow-y-auto">
                                         <table class="w-full text-xs text-left">
                                             <thead class="text-gray-500 border-b border-gray-700 sticky top-0 bg-gray-800">
                                                 <tr>
