@@ -6,11 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>East Bay League Advancement</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-    
+
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -150,14 +150,14 @@
 
                 <div class="mb-4 p-4 bg-gray-900 rounded border border-gray-700">
                     <div class="text-sm mb-2">
-                        <span class="font-bold text-green-400">●</span> 
+                        <span class="font-bold text-green-400">●</span>
                         <span id="sync-status">Syncing...</span>
                     </div>
                     <div class="text-xs text-gray-500">
                         Last synced: <span id="last-sync-time">Never</span>
                     </div>
                 </div>
-                
+
                 <div class="flex gap-2 mb-4">
                     <button onclick="app.forceSyncToCloud()"
                         class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded font-bold">
@@ -282,7 +282,7 @@
             <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl font-bold text-first">Tournament (Real) - Live Matches</h2>
-                    <button onclick="app.fetchTournamentReal()" 
+                    <button onclick="app.fetchTournamentReal()"
                         class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-bold flex items-center gap-2">
                         <span id="tournament-refresh-icon">↻</span> Reload Tournament Data
                     </button>
@@ -306,7 +306,7 @@
                     </table>
                 </div>
                 <p class="text-xs text-gray-400 mt-4">
-                    Click "Reload Tournament Data" to fetch latest matches from FTCScout. 
+                    Click "Reload Tournament Data" to fetch latest matches from FTCScout.
                     Real matches will auto-populate the Tournament (Hypothetical) tab.
                 </p>
             </div>
@@ -438,7 +438,7 @@
             path: 'docs/data/shared_state.json'
         };
 
-        
+
         // ===========================================
         // FIREBASE CONFIGURATION
         // ===========================================
@@ -454,7 +454,7 @@
             appId: "1:270294651199:web:242603b53c22773914438a",
             measurementId: "G-G42Q0L0MML"
         };
-        
+
         // Initialize Firebase
         let firebaseEnabled = false;
         let database = null;
@@ -469,12 +469,12 @@
         }
         // ===========================================
 
-const MEETS = [
+        const MEETS = [
             { code: "USCANOEBM1", prefix: "M1" },
             { code: "USCANOEBM2", prefix: "M2" },
             { code: "USCANOEBM3", prefix: "M3" }
         ];
-        
+
         const TOURNAMENT_EVENT = { code: "USCANOEBT", prefix: "TOURN" };
 
         const TEAMS = [
@@ -744,23 +744,23 @@ const MEETS = [
          * UI Controller
          */
         const app = {
-            
+
             async fetchTournamentReal() {
                 const icon = document.getElementById('tournament-refresh-icon');
                 if (icon) icon.classList.add('animate-spin');
-                
+
                 try {
                     const matches = await fetchMeetData(TOURNAMENT_EVENT.code, TOURNAMENT_EVENT.prefix);
-                    
+
                     // Store tournament matches
                     AppState.tournamentRealMatches = matches || [];
-                    
+
                     // Render in Tournament (Real) tab
                     app.renderTournamentReal();
-                    
+
                     // Auto-populate Tournament (Hypothetical) tab
                     app.populateHypotheticalFromReal();
-                    
+
                     alert(`Loaded ${matches.length} tournament matches!`);
                 } catch (e) {
                     console.error(e);
@@ -773,14 +773,14 @@ const MEETS = [
             renderTournamentReal() {
                 const tbody = document.getElementById('tournament-real-body');
                 if (!tbody) return;
-                
+
                 tbody.innerHTML = '';
-                
+
                 if (!AppState.tournamentRealMatches || AppState.tournamentRealMatches.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-gray-500">No tournament matches loaded yet. Click "Reload Tournament Data".</td></tr>';
                     return;
                 }
-                
+
                 AppState.tournamentRealMatches.forEach(m => {
                     const row = document.createElement('tr');
                     row.className = 'hover:bg-gray-750';
@@ -801,10 +801,10 @@ const MEETS = [
 
             populateHypotheticalFromReal() {
                 if (!AppState.tournamentRealMatches || AppState.tournamentRealMatches.length === 0) return;
-                
+
                 // Clear existing hypothetical matches
                 AppState.hypotheticalMatches = [];
-                
+
                 // Populate from real
                 AppState.tournamentRealMatches.forEach(m => {
                     const matchNum = m.match_id.replace('TOURN-Q', '');
@@ -823,7 +823,7 @@ const MEETS = [
                         match_type: 'TOURNAMENT'
                     };
                     AppState.hypotheticalMatches.push(hypo);
-                    
+
                     // Update UI row
                     const row = document.getElementById(`tmatch-${matchNum}`);
                     if (row) {
@@ -835,12 +835,12 @@ const MEETS = [
                         app.updateRowUI(row, inputs, matchNum, true);
                     }
                 });
-                
+
                 app.saveState();
                 app.renderStandings();
             },
 
-            
+
             async init() {
                 // Load Token
                 const token = localStorage.getItem('gh_token');
@@ -1281,11 +1281,18 @@ const MEETS = [
             forceSyncToCloud() {
                 if (!firebaseEnabled) {
                     app.setCloudStatus('Firebase not configured - check console', 'text-yellow-500');
+                    setTimeout(() => app.setCloudStatus('', ''), 3000);
                     return;
                 }
-                
+
                 app.setCloudStatus('Saving to cloud...', 'text-yellow-400');
-                
+
+                // Safety timeout - clear status after 10 seconds if something goes wrong
+                const timeoutId = setTimeout(() => {
+                    app.setCloudStatus('Sync timeout - please refresh', 'text-red-500');
+                    setTimeout(() => app.setCloudStatus('', ''), 3000);
+                }, 10000);
+
                 const data = {
                     hypotheticalMatches: AppState.hypotheticalMatches,
                     awards: AppState.awards,
@@ -1295,27 +1302,31 @@ const MEETS = [
                     tournamentRealMatches: AppState.tournamentRealMatches || [],
                     timestamp: new Date().toISOString()
                 };
-                
+
                 database.ref('eb_advancement_state').set(data)
                     .then(() => {
+                        clearTimeout(timeoutId);
                         app.setCloudStatus('Saved to cloud! ✓', 'text-green-500');
                         document.getElementById('last-sync-time').textContent = new Date().toLocaleTimeString();
                         setTimeout(() => app.setCloudStatus('', ''), 2000);
                     })
                     .catch(e => {
+                        clearTimeout(timeoutId);
                         console.error(e);
                         app.setCloudStatus('Error: ' + e.message, 'text-red-500');
+                        setTimeout(() => app.setCloudStatus('', ''), 5000);
                     });
             },
+
 
             forceSyncFromCloud() {
                 if (!firebaseEnabled) {
                     app.setCloudStatus('Firebase not configured - check console', 'text-yellow-500');
                     return;
                 }
-                
+
                 app.setCloudStatus('Loading from cloud...', 'text-yellow-400');
-                
+
                 database.ref('eb_advancement_state').once('value')
                     .then(snapshot => {
                         const data = snapshot.val();
@@ -1381,15 +1392,15 @@ const MEETS = [
 
             async clearCloudData() {
                 if (!confirm("DANGER: This will wipe cloud data for everyone!")) return;
-                
+
                 if (!firebaseEnabled) {
                     localStorage.clear();
                     location.reload();
                     return;
                 }
-                
+
                 app.setCloudStatus('Clearing cloud...', 'text-yellow-400');
-                
+
                 database.ref('eb_advancement_state').remove()
                     .then(() => {
                         app.setCloudStatus('Cloud cleared! ✓', 'text-green-500');
@@ -1402,9 +1413,9 @@ const MEETS = [
                     });
             },
 
-            
-            
-            
+
+
+
 
             setCloudStatus(msg, color) {
                 const el = document.getElementById('cloud-status');
@@ -1498,27 +1509,27 @@ const MEETS = [
         }
 
         // BOOT
-        
-                // Update Firebase status in modal
-                const statusEl = document.getElementById('firebase-status');
-                const syncStatusEl = document.getElementById('sync-status');
-                if (statusEl) {
-                    if (firebaseEnabled) {
-                        statusEl.innerHTML = '<span class="text-green-400">✓ Connected to Firebase</span>';
-                        if (syncStatusEl) syncStatusEl.textContent = 'Connected - auto-syncing enabled';
-                    } else {
-                        statusEl.innerHTML = '<span class="text-red-400">✗ Firebase not configured</span>';
-                        if (syncStatusEl) syncStatusEl.textContent = 'Not connected - local storage only';
-                    }
-                }
-                
-                // Auto-load from cloud on init
-                if (firebaseEnabled) {
-                    app.forceSyncFromCloud();
-                }
 
-                
-                document.addEventListener('DOMContentLoaded', app.init);
+        // Update Firebase status in modal
+        const statusEl = document.getElementById('firebase-status');
+        const syncStatusEl = document.getElementById('sync-status');
+        if (statusEl) {
+            if (firebaseEnabled) {
+                statusEl.innerHTML = '<span class="text-green-400">✓ Connected to Firebase</span>';
+                if (syncStatusEl) syncStatusEl.textContent = 'Connected - auto-syncing enabled';
+            } else {
+                statusEl.innerHTML = '<span class="text-red-400">✗ Firebase not configured</span>';
+                if (syncStatusEl) syncStatusEl.textContent = 'Not connected - local storage only';
+            }
+        }
+
+        // Auto-load from cloud on init
+        if (firebaseEnabled) {
+            app.forceSyncFromCloud();
+        }
+
+
+        document.addEventListener('DOMContentLoaded', app.init);
     </script>
 </body>
 
