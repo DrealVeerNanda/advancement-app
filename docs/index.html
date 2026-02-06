@@ -276,6 +276,8 @@
                         <tr>
                             <th class="px-4 py-2">Match</th>
                             <th class="px-4 py-2 text-right text-red-400">Red Alliance</th>
+                            <th class="px-4 py-2 text-center text-yellow-400" title="Predicted Red win probability">Win
+                                %</th>
                             <th class="px-4 py-2 text-center text-red-500 font-bold">Score</th>
                             <th class="px-4 py-2 text-center text-blue-500 font-bold">Score</th>
                             <th class="px-4 py-2 text-left text-blue-400">Blue Alliance</th>
@@ -1345,11 +1347,43 @@
                 const matches = AppState.matches.filter(m => m.match_id.startsWith(prefix));
                 const tbody = document.getElementById('meet-body');
                 tbody.innerHTML = '';
+
+                // Calculate OPRs based on what was available before this meet
+                // For M1: use default/initial OPR estimates (we'll use 0 or league avg)
+                // For M2: use M1 OPR data
+                // For M3: use M1+M2 OPR data
+                let allPreviousMatches = [];
+                if (prefix === 'M2') {
+                    allPreviousMatches = AppState.matches.filter(m => m.match_id.startsWith('M1'));
+                } else if (prefix === 'M3') {
+                    allPreviousMatches = AppState.matches.filter(m => m.match_id.startsWith('M1') || m.match_id.startsWith('M2'));
+                }
+
+                const allTeamNumbers = [...new Set(matches.flatMap(m => [...m.red, ...m.blue]))];
+                const oprData = allPreviousMatches.length > 0 ? solveOPR(allPreviousMatches, allTeamNumbers) : {};
+
+                // Helper function to calculate win probability
+                const calculateWinProb = (redTeams, blueTeams) => {
+                    const redOPR = redTeams.reduce((sum, team) => sum + (oprData[team] || 35), 0); // Default 35 if no data
+                    const blueOPR = blueTeams.reduce((sum, team) => sum + (oprData[team] || 35), 0);
+                    const totalOPR = redOPR + blueOPR;
+                    return totalOPR > 0 ? (redOPR / totalOPR * 100) : 50;
+                };
+
+                // Helper to color-code probability
+                const getWinProbColor = (prob) => {
+                    if (prob > 60) return 'text-green-400';
+                    if (prob < 40) return 'text-red-400';
+                    return 'text-gray-400';
+                };
+
                 matches.forEach(m => {
+                    const winProb = calculateWinProb(m.red, m.blue);
                     tbody.innerHTML += `
                     <tr class="hover:bg-gray-750">
                         <td class="px-4 py-2 font-mono text-gray-400">${m.match_id}</td>
                         <td class="px-4 py-2 text-right">${m.red.join(', ')}</td>
+                        <td class="px-4 py-2 text-center font-bold ${getWinProbColor(winProb)}">${winProb.toFixed(0)}%</td>
                         <td class="px-4 py-2 text-center font-bold text-red-400">${m.red_score}</td>
                         <td class="px-4 py-2 text-center font-bold text-blue-400">${m.blue_score}</td>
                         <td class="px-4 py-2 text-left">${m.blue.join(', ')}</td>
