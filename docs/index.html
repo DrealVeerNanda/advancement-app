@@ -144,16 +144,18 @@
                     automatically saved and synced in real-time.</p>
 
                 <div class="flex gap-2 mb-4">
-                    <button onclick="app.saveToCloud()"
-                        class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded font-bold"
-                        id="btn-save-cloud">⬆ Save to Cloud</button>
-                    <button onclick="app.loadFromCloud()"
-                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-bold"
-                        id="btn-load-cloud">⬇ Load from Cloud</button>
+                    <button onclick="app.exportData()"
+                        class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded font-bold">
+                        📥 Export Data</button>
+                    <button onclick="document.getElementById('import-file').click()"
+                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-bold">
+                        📤 Import Data</button>
                     <button onclick="app.clearCloudData()"
                         class="px-3 bg-red-600 hover:bg-red-700 text-white py-2 rounded font-bold"
-                        title="Wipe Cloud Data">🗑</button>
+                        title="Clear All Data">🗑</button>
                 </div>
+                <input type="file" id="import-file" accept=".json" class="hidden" 
+                    onchange="app.importData(event)">
 
                 <div id="cloud-status" class="text-center text-sm mb-4 h-6 text-gray-300"></div>
 
@@ -1232,17 +1234,97 @@
 
 
 
-            async saveToCloud() {
-                app.setCloudStatus('Saved locally ✓', 'text-green-500');
+            exportData() {
+                const data = {
+                    hypotheticalMatches: AppState.hypotheticalMatches,
+                    awards: AppState.awards,
+                    teamNotes: AppState.teamNotes,
+                    allianceList: AppState.allianceList,
+                    isHypothetical: AppState.isHypothetical,
+                    tournamentRealMatches: AppState.tournamentRealMatches || [],
+                    timestamp: new Date().toISOString()
+                };
+                
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `east-bay-advancement-${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                app.setCloudStatus('Data exported! ✓', 'text-green-500');
                 setTimeout(() => app.setCloudStatus("", ""), 2000);
-                // Note: Cloud sync requires Firebase setup
-                alert('Data is saved locally in your browser.\n\nTo sync across devices, Firebase needs to be configured.\n\nFor now, all data is in localStorage.');
             },
 
-            async loadFromCloud() {
-                app.setCloudStatus("Data is already loaded from localStorage", "text-yellow-400");
-                setTimeout(() => app.setCloudStatus("", ""), 2000);
-                // All data is already in localStorage
+            importData(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        
+                        // Clear current state
+                        AppState.hypotheticalMatches = [];
+                        AppState.awards = [];
+                        AppState.teamNotes = {};
+                        AppState.allianceList = [];
+                        AppState.tournamentRealMatches = [];
+                        document.querySelectorAll("input[type=text], input[type=number]").forEach(i => i.value = "");
+                        document.querySelectorAll("[id^=tmatch-]").forEach(r => {
+                            r.classList.remove("bg-yellow-900/40");
+                            r.classList.add("bg-gray-700");
+                        });
+
+                        // Load imported state
+                        AppState.hypotheticalMatches = data.hypotheticalMatches || [];
+                        AppState.awards = data.awards || [];
+                        AppState.teamNotes = data.teamNotes || {};
+                        AppState.allianceList = data.allianceList || [];
+                        AppState.tournamentRealMatches = data.tournamentRealMatches || [];
+                        AppState.isHypothetical = data.isHypothetical || false;
+                        app.saveState();
+
+                        document.getElementById("mode-toggle").checked = AppState.isHypothetical;
+                        if (AppState.isHypothetical) document.body.classList.add("hypothetical-mode-active");
+                        else document.body.classList.remove("hypothetical-mode-active");
+
+                        // Restore hypothetical matches
+                        AppState.hypotheticalMatches.forEach(m => {
+                            const num = m.match_id.split("-")[1];
+                            const row = document.getElementById(`tmatch-${num}`);
+                            if (row) {
+                                const inputs = row.querySelectorAll("input");
+                                inputs[0].value = m.r1; inputs[1].value = m.r2;
+                                inputs[2].value = m.red_score; inputs[3].value = m.red_rp;
+                                inputs[4].value = m.b1; inputs[5].value = m.b2;
+                                inputs[6].value = m.blue_score; inputs[7].value = m.blue_rp;
+                                app.updateRowUI(row, inputs, num, true);
+                            }
+                        });
+
+                        app.updateAwardsList();
+                        app.renderStandings();
+                        app.renderAdvancement();
+                        app.renderAlliance();
+                        app.renderTournamentReal();
+
+                        app.setCloudStatus("Data imported successfully! ✓", "text-green-500");
+                        setTimeout(() => {
+                            app.setCloudStatus("", "");
+                            document.getElementById('cloud-modal').classList.add('hidden');
+                        }, 2000);
+                    } catch (e) {
+                        console.error(e);
+                        app.setCloudStatus("Import error: " + e.message, "text-red-500");
+                    }
+                };
+                reader.readAsText(file);
+                
+                // Reset file input
+                event.target.value = '';
             },
 
             async clearCloudData() {
