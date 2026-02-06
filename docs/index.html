@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>East Bay League Advancement</title>
+    <title>East Bay League Advancement (Static)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -23,7 +23,6 @@
             transition: all 0.2s ease-in-out;
         }
 
-        /* Toggle Switch */
         .toggle-checkbox:checked {
             right: 0;
             border-color: #68D391;
@@ -37,6 +36,49 @@
             border: 2px solid #F6E05E;
             background: rgba(246, 224, 94, 0.05);
         }
+
+        /* Toggle Checkbox */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #68D391;
+        }
+
+        .toggle-checkbox:checked+.toggle-label {
+            background-color: #68D391;
+        }
+
+        .toggle-checkbox {
+            right: auto;
+            left: 0;
+            z-index: 10;
+        }
+
+        .toggle-label {
+            width: 3rem;
+            height: 1.5rem;
+            background-color: #4A5568;
+            border-radius: 9999px;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .toggle-checkbox {
+            position: absolute;
+            top: 0.125rem;
+            left: 0.125rem;
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 9999px;
+            background-color: white;
+            appearance: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .toggle-checkbox:checked {
+            left: 1.625rem;
+        }
     </style>
 </head>
 
@@ -46,14 +88,14 @@
         <header class="mb-8 border-b border-gray-700 pb-4 flex justify-between items-center">
             <div>
                 <h1 class="text-3xl font-bold text-first mb-2">East Bay League Tournament</h1>
-                <p class="text-gray-400">Hypothetical Scenario Planner | 2025-2026 DECODE Season</p>
+                <p class="text-gray-400">Hypothetical Scenario Planner | 2025-2026 DECODE Season (Static)</p>
             </div>
 
             <div class="flex items-center space-x-6">
-                <!-- Data Source Indicator -->
-                <div id="data-indicator" class="flex items-center space-x-2 text-sm text-green-400">
-                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                    <span>Live Data Connected</span>
+                <!-- Status -->
+                <div id="data-status" class="flex items-center space-x-2 text-sm text-gray-400">
+                    <span class="w-2 h-2 rounded-full bg-gray-500"></span>
+                    <span>Initializing...</span>
                 </div>
 
                 <!-- Mode Toggle -->
@@ -61,61 +103,108 @@
                     <span class="mr-3 text-sm font-bold text-gray-300">Live</span>
                     <div
                         class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
-                        <input type="checkbox" name="toggle" id="mode-toggle"
-                            class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer duration-200 ease-in-out left-0"
-                            onchange="toggleMode()" />
+                        <input type="checkbox" id="mode-toggle"
+                            class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
+                            onchange="app.toggleMode()" />
                         <label for="mode-toggle"
                             class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-600 cursor-pointer"></label>
                     </div>
                     <span class="ml-1 text-sm font-bold text-yellow-400">Hypothetical</span>
                 </div>
 
-                <button onclick="resetAll()"
-                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-bold transition text-sm">
-                    Reset
+
+
+                <button onclick="document.getElementById('cloud-modal').classList.remove('hidden')"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded font-bold transition text-sm flex items-center gap-2 mr-2">
+                    <span>☁</span> Cloud Sync
                 </button>
+
+                <button onclick="app.fetchLiveData()"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-bold transition text-sm flex items-center gap-2 mr-2">
+                    <span id="refresh-icon">↻</span> Refresh
+                </button>
+                <button onclick="app.resetAll()"
+                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-bold transition text-sm">Clear
+                    All</button>
             </div>
         </header>
 
+        <!-- Cloud Modal -->
+        <div id="cloud-modal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+            <div class="bg-gray-800 p-6 rounded-lg shadow-xl w-full max-w-md border border-gray-700">
+                <h2 class="text-xl font-bold mb-4 flex items-center gap-2"><span class="text-indigo-400">☁</span> Cloud
+                    Sync</h2>
+
+                <div class="mb-4">
+                    <label class="block text-xs uppercase text-gray-400 mb-1">GitHub Personal Token (One-time)</label>
+                    <input class="text-base" type="password" id="gh-token" placeholder="ghp_..."
+                        class="w-full bg-gray-700 rounded px-3 py-2 text-white border border-gray-600 focus:border-indigo-500 outline-none">
+                    <p class="text-xs text-gray-500 mt-1">Required only for Saving. Saved securely in your browser.</p>
+                </div>
+
+                <div class="flex gap-2 mb-4">
+                    <button onclick="app.saveToCloud()"
+                        class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded font-bold"
+                        id="btn-save-cloud">⬆ Save to Cloud</button>
+                    <button onclick="app.loadFromCloud()"
+                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-bold"
+                        id="btn-load-cloud">⬇ Load from Cloud</button>
+                    <button onclick="app.clearCloudData()"
+                        class="px-3 bg-red-600 hover:bg-red-700 text-white py-2 rounded font-bold"
+                        title="Wipe Cloud Data">🗑</button>
+                </div>
+
+                <div id="cloud-status" class="text-center text-sm mb-4 h-6 text-gray-300"></div>
+
+                <button onclick="document.getElementById('cloud-modal').classList.add('hidden')"
+                    class="w-full bg-gray-700 hover:bg-gray-600 text-gray-300 py-2 rounded">Close</button>
+            </div>
+        </div>
+
         <!-- Tabs -->
         <div class="flex flex-wrap space-x-1 mb-6 border-b border-gray-700 overflow-x-auto">
-            <button onclick="switchTab('standings')" id="tab-standings"
+            <button onclick="app.switchTab('standings')" id="tab-standings"
                 class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700 active-tab">League
                 Standings</button>
-            <button onclick="switchTab('meet1')" id="tab-meet1"
+            <button onclick="app.switchTab('meet1')" id="tab-meet1"
                 class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Meet 1</button>
-            <button onclick="switchTab('meet2')" id="tab-meet2"
+            <button onclick="app.switchTab('meet2')" id="tab-meet2"
                 class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Meet 2</button>
-            <button onclick="switchTab('meet3')" id="tab-meet3"
+            <button onclick="app.switchTab('meet3')" id="tab-meet3"
                 class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Meet 3</button>
-            <button onclick="switchTab('tournament')" id="tab-tournament"
+            <button onclick="app.switchTab('tournament')" id="tab-tournament"
                 class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Tournament (Hypothetical)</button>
-            <button onclick="switchTab('selection')" id="tab-selection"
-                class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Alliance Selection</button>
-            <button onclick="switchTab('advancement')" id="tab-advancement"
+            <button onclick="app.switchTab('advancement')" id="tab-advancement"
                 class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Advancement</button>
+            <button onclick="app.switchTab('alliance')" id="tab-alliance"
+                class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Selection</button>
         </div>
 
         <!-- STANDINGS -->
         <div id="content-standings" class="tab-content block">
             <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-                <table class="w-full text-left border-collapse">
-                    <thead class="bg-gray-700 text-gray-300 uppercase text-sm">
-                        <tr>
-                            <th class="px-6 py-3">Rank</th>
-                            <th class="px-6 py-3">Team</th>
-                            <th class="px-6 py-3">Name</th>
-                            <th class="px-6 py-3 text-center">Total RP (Top 10)</th>
-                            <th class="px-6 py-3 text-center">Avg Score</th>
-                            <th class="px-6 py-3 text-center">Matches</th>
-                            <th class="px-6 py-3"></th>
-                        </tr>
-                    </thead>
-                    <tbody id="standings-body" class="divide-y divide-gray-700">
-                    </tbody>
-                </table>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-gray-700 text-gray-300 uppercase text-sm">
+                            <tr>
+                                <th class="px-6 py-3">Rank</th>
+                                <th class="px-6 py-3">Team</th>
+                                <th class="px-6 py-3">Name</th>
+                                <th class="px-6 py-3 text-center" title="Meet 1 OPR">M1</th>
+                                <th class="px-6 py-3 text-center" title="Meet 2 OPR">M2</th>
+                                <th class="px-6 py-3 text-center" title="Meet 3 OPR">M3</th>
+                                <th class="px-6 py-3 text-center" title="Tournament OPR">Tourn</th>
+                                <th class="px-6 py-3 text-center">Total RP</th>
+                                <th class="px-6 py-3 text-center">Avg Score</th>
+                                <th class="px-6 py-3 text-center">Matches</th>
+                                <th class="px-6 py-3"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="standings-body" class="divide-y divide-gray-700"></tbody>
+                    </table>
+                </div>
             </div>
-            <p class="text-sm text-gray-400 mt-2">* Click on a row to see the exact 10 matches counted.</p>
+            <p class="text-sm text-gray-400 mt-2">* Top 10 League Matches + Top 5 Tournament Matches</p>
         </div>
 
         <!-- MEETS (Generic View) -->
@@ -146,123 +235,123 @@
         <div id="content-tournament" class="tab-content hidden">
             <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
                 <h2 class="text-xl font-bold mb-4 text-first">Tournament Match Scoring</h2>
-                <p class="text-gray-400 text-sm mb-4">Enter scores for all qualification matches. The system will
-                    auto-calculate RPs based on win/loss and bonus points.</p>
-
                 <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
                     <table class="w-full text-sm">
                         <thead class="bg-gray-700 text-gray-300 sticky top-0">
                             <tr>
                                 <th class="px-3 py-2">Match</th>
-                                <th class="px-3 py-2 text-red-400">Red 1</th>
-                                <th class="px-3 py-2 text-red-400">Red 2</th>
+                                <th class="px-3 py-2 text-red-400">R1</th>
+                                <th class="px-3 py-2 text-red-400">R2</th>
                                 <th class="px-3 py-2 text-center text-red-500">Score</th>
                                 <th class="px-3 py-2 text-center text-red-500">RP</th>
-                                <th class="px-3 py-2 text-blue-400">Blue 1</th>
-                                <th class="px-3 py-2 text-blue-400">Blue 2</th>
+                                <th class="px-3 py-2 text-blue-400">B1</th>
+                                <th class="px-3 py-2 text-blue-400">B2</th>
                                 <th class="px-3 py-2 text-center text-blue-500">Score</th>
                                 <th class="px-3 py-2 text-center text-blue-500">RP</th>
                                 <th class="px-3 py-2"></th>
                             </tr>
                         </thead>
-                        <tbody id="tournament-table-body" class="divide-y divide-gray-700">
-                        </tbody>
+                        <tbody id="tournament-table-body" class="divide-y divide-gray-700"></tbody>
                     </table>
                 </div>
-
-                <button onclick="addTournamentMatchRow()"
-                    class="mt-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
-                    + Add Match
-                </button>
-            </div>
-        </div>
-
-        <!-- Alliance Selection Tab -->
-        <div id="content-selection" class="tab-content hidden">
-            <div class="grid grid-cols-2 gap-6">
-                <!-- Available Teams -->
-                <div class="bg-gray-800 rounded-lg p-4 shadow-lg">
-                    <h3 class="font-bold mb-3 text-lg text-gray-300">Available Teams</h3>
-                    <input type="text" id="team-search" placeholder="Search team..."
-                        class="w-full bg-gray-700 text-white rounded p-2 mb-3 border border-gray-600 text-base"
-                        onkeyup="filterSelectionTeams()">
-                    <div id="available-teams-list" class="space-y-2 max-h-[60vh] overflow-y-auto"></div>
-                </div>
-
-                <!-- My Selection List -->
-                <div class="bg-gray-800 rounded-lg p-4 shadow-lg">
-                    <h3 class="font-bold mb-3 text-lg text-yellow-400">My Draft List (In Order)</h3>
-                    <p class="text-xs text-gray-400 mb-2">Drag teams here in order of preference. #1 = most wanted.</p>
-                    <div id="selected-teams-list"
-                        class="space-y-2 max-h-[60vh] overflow-y-auto min-h-[200px] border-2 border-dashed border-gray-700 rounded p-2"
-                        ondrop="drop(event)" ondragover="allowDrop(event)" data-zone="selected"></div>
-                </div>
+                <button onclick="app.addTournamentMatchRow()"
+                    class="mt-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">+ Add Match</button>
             </div>
         </div>
 
         <!-- ADVANCEMENT -->
         <div id="content-advancement" class="tab-content hidden">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Inputs -->
-                <div class="md:col-span-1 space-y-4">
+            <!-- Similar structure to original but simplified for JS logic -->
+            <div class="grid grid-cols-4 gap-6">
+                <div class="col-span-1 space-y-4">
                     <div class="bg-gray-800 p-4 rounded-lg">
                         <h3 class="font-bold mb-3">Add Awards/Results</h3>
                         <div class="space-y-3">
-                            <input type="text" id="adv_team" placeholder="Team Number" list="team-numbers"
-                                class="w-full bg-gray-700 border-gray-600 rounded px-3 py-2">
-                            <select id="adv_type" class="w-full bg-gray-700 border-gray-600 rounded px-3 py-2">
-                                <option>Inspire 1 (60)</option>
-                                <option>Inspire 2 (50)</option>
-                                <option>Inspire 3 (40)</option>
-                                <option>Think/Connect 1 (45)</option>
-                                <option>Winning Alliance (40)</option>
-                                <option>Finalist Alliance (20)</option>
-                                <option>Semi-finals (10)</option>
-                                <option>Alliance 1 Captain (20)</option>
-                                <option>Alliance 2 Captain (19)</option>
-                                <option>Alliance 3 Captain (18)</option>
-                                <option>Alliance 4 Captain (17)</option>
-                            </select>
-                            <button onclick="addAdvancement()"
-                                class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">Add Points</button>
+                            <div class="space-y-3">
+                                <input type="text" id="adv_team" placeholder="Team Number" list="team-numbers"
+                                    class="w-full bg-gray-700 border-gray-600 rounded px-3 py-2 text-base">
+                                <select id="adv_type" class="w-full bg-gray-700 border-gray-600 rounded px-3 py-2">
+                                    <option value="60">Inspire 1 (60)</option>
+                                    <option value="50">Inspire 2 (50)</option>
+                                    <option value="40">Inspire 3 (40)</option>
+                                    <option value="45">Think/Connect 1 (45)</option>
+                                    <option value="40">Winning Alliance (40)</option>
+                                    <option value="20">Finalist Alliance (20)</option>
+                                    <option value="10">Semi-finals (10)</option>
+                                    <option value="20">Alliance 1 Captain (20)</option>
+                                    <option value="19">Alliance 2 Captain (19)</option>
+                                    <option value="18">Alliance 3 Captain (18)</option>
+                                    <option value="17">Alliance 4 Captain (17)</option>
+                                </select>
+                                <button onclick="app.addAdvancement()"
+                                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">Add
+                                    Points</button>
+                            </div>
+                        </div>
+                        <div class="bg-gray-800 p-4 rounded-lg">
+                            <h3 class="font-bold mb-3">Current Awards</h3>
+                            <div id="awards-list" class="space-y-2 max-h-96 overflow-y-auto"></div>
                         </div>
                     </div>
-
-                    <!-- Award List -->
-                    <div class="bg-gray-800 p-4 rounded-lg">
-                        <h3 class="font-bold mb-3">Current Awards</h3>
-                        <div id="awards-list" class="space-y-2 max-h-96 overflow-y-auto">
-                            <p class="text-gray-500 text-sm italic">No awards added yet</p>
+                    <div class="col-span-3">
+                        <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left">
+                                    <thead class="bg-gray-700 text-gray-300 uppercase text-xs">
+                                        <tr>
+                                            <th class="px-4 py-3 font-bold text-gray-200">Rank</th>
+                                            <th class="px-4 py-3 font-bold text-gray-200">Team</th>
+                                            <th class="px-4 py-3 text-center font-bold text-gray-200" title="M1 OPR">M1
+                                            </th>
+                                            <th class="px-4 py-3 text-center font-bold text-gray-200" title="M2 OPR">M2
+                                            </th>
+                                            <th class="px-4 py-3 text-center font-bold text-gray-200" title="M3 OPR">M3
+                                            </th>
+                                            <th class="px-4 py-3 text-center font-bold text-gray-200" title="Tourn OPR">
+                                                Tourn</th>
+                                            <th class="px-4 py-3 text-center font-bold text-gray-200">Qual Pts</th>
+                                            <th class="px-4 py-3 text-center font-bold text-gray-200">Alliance</th>
+                                            <th class="px-4 py-3 text-center font-bold text-gray-200">Award</th>
+                                            <th class="px-4 py-3 text-center font-bold text-gray-200">Playoff</th>
+                                            <th class="px-4 py-3 text-center font-bold text-white">Total AP</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="advancement-body" class="divide-y divide-gray-700 text-sm"></tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Table -->
-                <div class="md:col-span-2">
-                    <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-                        <table class="w-full text-left border-collapse">
-                            <thead class="bg-gray-700 text-gray-300 uppercase text-sm">
-                                <tr>
-                                    <th class="px-6 py-3">Rank</th>
-                                    <th class="px-6 py-3">Team</th>
-                                    <th class="px-6 py-3 text-center">Qual Pts</th>
-                                    <th class="px-6 py-3 text-center">Alliance</th>
-                                    <th class="px-6 py-3 text-center">Award</th>
-                                    <th class="px-6 py-3 text-center">Playoff</th>
-                                    <th class="px-6 py-3 text-center font-bold">Total AP</th>
-                                </tr>
-                            </thead>
-                            <tbody id="advancement-body" class="divide-y divide-gray-700"></tbody>
-                        </table>
+            <!-- ALLIANCE SELECTION -->
+            <div id="content-alliance" class="tab-content hidden">
+                <div class="grid grid-cols-2 gap-6">
+                    <!-- Available Teams -->
+                    <div class="bg-gray-800 rounded-lg p-4 shadow-lg">
+                        <h3 class="font-bold mb-3 text-lg text-gray-300">Available Teams</h3>
+                        <input type="text" id="alliance-search" placeholder="Search team..."
+                            class="w-full bg-gray-700 text-white rounded p-2 mb-3 border border-gray-600 text-base"
+                            onkeyup="app.renderAlliance()">
+                        <div id="alliance-available" class="space-y-2 max-h-[60vh] overflow-y-auto"></div>
+                    </div>
+
+                    <!-- My List -->
+                    <div class="bg-gray-800 rounded-lg p-4 shadow-lg">
+                        <h3 class="font-bold mb-3 text-lg text-yellow-400">My Selection List</h3>
+                        <p class="text-xs text-gray-400 mb-2">Drag to reorder or use arrows.</p>
+                        <div id="alliance-selected"
+                            class="space-y-2 max-h-[60vh] overflow-y-auto min-h-[200px] border-2 border-dashed border-gray-700 rounded p-2">
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Team Number Autocomplete Datalist -->
+    <!-- Datalist -->
     <datalist id="team-numbers">
-        <option value="5214">5214 - "B.R.O." (Bot Resources Operation)</option>
+        <option value="5214">5214 - "B.R.O."</option>
         <option value="11920">11920 - QLS RaD Team</option>
         <option value="14259">14259 - TURBΩ V8</option>
         <option value="14770">14770 - Control+Q</option>
@@ -278,504 +367,1001 @@
         <option value="32098">32098 - Robo Raptors</option>
     </datalist>
 
+    <!-- LOGIC -->
     <script>
-        // State management
-        let tournamentMatchCounter = 1;
-        let currentAwards = [];
-        let isHypotheticalMode = false;
-        let hypotheticalMatches = []; // Array of match objects
+        /**
+         * LOGIC MODULE
+         * Converting Python backend to pure Client-Side JS
+         */
 
-        function toggleMode() {
-            isHypotheticalMode = document.getElementById('mode-toggle').checked;
-            const body = document.body;
-            const indicator = document.getElementById('data-indicator');
-            const tableTitle = document.querySelector('#content-tournament h2');
+        // Config
+        const CONFIG = {
+            owner: 'DrealVeerNanda',
+            repo: 'advancement-app',
+            path: 'docs/data/shared_state.json'
+        };
 
-            if (isHypotheticalMode) {
-                body.classList.add('hypothetical-mode-active');
-                indicator.innerHTML = '<span class="text-yellow-400 font-bold">⚠ Hypothetical Simulation Active</span>';
-                indicator.classList.remove('text-green-400');
-                if (tableTitle) tableTitle.textContent = "Hypothetical Match Scoring (Local Only)";
-            } else {
-                body.classList.remove('hypothetical-mode-active');
-                indicator.innerHTML = '<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span><span>Live Data Connected</span>';
-                indicator.classList.add('text-green-400');
-                if (tableTitle) tableTitle.textContent = "Tournament Match Scoring";
+        const MEETS = [
+            { code: "USCANOEBM1", prefix: "M1" },
+            { code: "USCANOEBM2", prefix: "M2" },
+            { code: "USCANOEBM3", prefix: "M3" }
+        ];
+
+        const TEAMS = [
+            { number: "5214", name: '"B.R.O." (Bot Resources Operation)' },
+            { number: "11920", name: "QLS RaD Team" },
+            { number: "14259", name: "TURBΩ V8" },
+            { number: "14770", name: "Control+Q" },
+            { number: "23212", name: "Dublin Robotics Cybirds" },
+            { number: "23279", name: "Turbotrons" },
+            { number: "23304", name: "Cyber Knights" },
+            { number: "25627", name: "Robowarriors" },
+            { number: "25810", name: "Cerberus" },
+            { number: "26891", name: "Tech Titans" },
+            { number: "30450", name: "Sharp Face Robotics" },
+            { number: "30473", name: "Duck" },
+            { number: "30474", name: "Quantum Sparks" },
+            { number: "32098", name: "Robo Raptors" },
+        ];
+
+        const TEAM_MAP = {};
+        TEAMS.forEach(t => TEAM_MAP[t.number] = t);
+
+        // App State
+        const AppState = {
+            matches: [],             // All fetched matches
+            hypotheticalMatches: [], // User added matches
+            awards: [],              // User added awards
+            teamNotes: {},           // teamNum -> text note
+            allianceList: [],        // Ordered list of team numbers
+            isHypothetical: false,
+            lastFetch: null,
+            teamsData: {}            // number -> { ...stats, matches: [] }
+        };
+
+        /**
+         * API Fetching
+         */
+        async function fetchMeetData(eventCode, prefix) {
+            const query = `
+        query {
+            eventByCode(code: "${eventCode}", season: 2025) {
+                matches {
+                    matchNum
+                    teams { teamNumber alliance surrogate }
+                    scores {
+                        ... on MatchScores2025 {
+                            red { totalPoints penaltyPointsByOpp movementRp goalRp patternRp }
+                            blue { totalPoints penaltyPointsByOpp movementRp goalRp patternRp }
+                        }
+                    }
+                }
             }
+        }`;
 
-            // Refresh data
-            fetchStandings();
+            try {
+                const res = await fetch("https://api.ftcscout.org/graphql", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ query })
+                });
+                const json = await res.json();
+                if (!json.data || !json.data.eventByCode) return [];
+
+                return json.data.eventByCode.matches.map(m => processMatch(m, prefix));
+            } catch (e) {
+                console.error("Fetch error:", e);
+                return [];
+            }
         }
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(el => {
-                el.classList.remove('bg-first', 'text-white');
-                el.classList.add('bg-gray-800');
+        function processMatch(m, prefix) {
+            // Convert API match to our internal format
+            const redTeams = m.teams.filter(t => t.alliance === 'Red');
+            const blueTeams = m.teams.filter(t => t.alliance === 'Blue');
+
+            let r_rp = 0, b_rp = 0, r_score = 0, b_score = 0;
+
+            if (m.scores) {
+                r_score = m.scores.red.totalPoints;
+                b_score = m.scores.blue.totalPoints;
+
+                // Calc Base RP
+                const r_base = (r_score > b_score) ? 3 : (r_score === b_score ? 1 : 0);
+                const b_base = (b_score > r_score) ? 3 : (b_score === r_score ? 1 : 0);
+
+                // Bonus
+                const r_bonus = (m.scores.red.movementRp || 0) + (m.scores.red.goalRp || 0) + (m.scores.red.patternRp || 0);
+                const b_bonus = (m.scores.blue.movementRp || 0) + (m.scores.blue.goalRp || 0) + (m.scores.blue.patternRp || 0);
+
+                r_rp = r_base + r_bonus;
+                b_rp = b_base + b_bonus;
+            }
+
+            return {
+                match_id: `${prefix}-Q${m.matchNum}`,
+                red: redTeams.map(t => t.teamNumber.toString()),
+                blue: blueTeams.map(t => t.teamNumber.toString()),
+                red_score: r_score,
+                blue_score: b_score,
+                red_score_np: (r_score - (m.scores?.red?.penaltyPointsByOpp || 0)),
+                blue_score_np: (b_score - (m.scores?.blue?.penaltyPointsByOpp || 0)),
+                red_rp: r_rp,
+                blue_rp: b_rp,
+                surrogates: m.teams.filter(t => t.surrogate).map(t => t.teamNumber.toString()),
+                match_type: "MEET"
+            };
+        }
+
+        /**
+         * Logic Core
+         */
+        function calculateRankings() {
+            // 1. Gather all matches (Real + Hypothetical if active)
+            const allMatches = [...AppState.matches];
+            if (AppState.isHypothetical && AppState.hypotheticalMatches.length > 0) {
+                allMatches.push(...AppState.hypotheticalMatches);
+            }
+
+            // 1b. Ensure all teams in matches exist in AppState
+            const dynamicTeams = new Set();
+            allMatches.forEach(m => {
+                [...m.red, ...m.blue].forEach(t => dynamicTeams.add(t));
             });
 
-            if (tabId.startsWith('meet')) {
-                document.getElementById('content-meet').classList.remove('hidden');
-                fetchMeetMatches(tabId);
-                const titles = { 'meet1': 'Meet 1 Results', 'meet2': 'Meet 2 Results', 'meet3': 'Meet 3 Results' };
-                document.getElementById('meet-title').textContent = titles[tabId];
-            }
-            else {
-                document.getElementById('content-' + tabId).classList.remove('hidden');
-            }
+            // Reset Team Stats (Initialize for ALL teams found)
+            TEAMS.forEach(t => dynamicTeams.add(t.number)); // Ensure known teams are included
 
-            const btn = document.getElementById('tab-' + tabId);
-            btn.classList.remove('bg-gray-800');
-            btn.classList.add('bg-first', 'text-white');
+            AppState.teamsData = {};
+            dynamicTeams.forEach(tNum => {
+                const known = TEAM_MAP[tNum] || { number: tNum, name: 'Unknown Team' };
+                AppState.teamsData[tNum] = {
+                    ...known,
+                    matches: [],
+                    league_stats: { rp: 0, score: 0 },
+                    total_rp: 0,
+                    avg_score: 0,
+                    matches_played: 0,
+                    breakdown: [],
+                    league_rank: 0,
+                    advancement_points: 0,
+                    qual_pts: 0,
+                    alliance_pts: 0,
+                    award_pts: 0,
+                    playoff_pts: 0,
+                    opr: 0
+                };
+            });
 
-            if (tabId === 'standings') fetchStandings();
-            if (tabId === 'tournament') initTournamentTable();
-            if (tabId === 'selection') { loadSelectionTeams(); fetchSelectionState(); }
-            if (tabId === 'advancement') { fetchAdvancement(); updateAwardsList(); }
+            // 2. Calculate Split OPR
+            const allTeamNums = Array.from(dynamicTeams);
+            const m1Matches = allMatches.filter(m => m.match_id.startsWith('M1-'));
+            const m2Matches = allMatches.filter(m => m.match_id.startsWith('M2-'));
+            const m3Matches = allMatches.filter(m => m.match_id.startsWith('M3-'));
+            const tourneyMatches = allMatches.filter(m => m.match_type === 'TOURNAMENT');
+
+            const oprM1 = solveOPR(m1Matches, allTeamNums);
+            const oprM2 = solveOPR(m2Matches, allTeamNums);
+            const oprM3 = solveOPR(m3Matches, allTeamNums);
+            const tourneyOPR = solveOPR(tourneyMatches, allTeamNums);
+
+            // 3. Distribute matches to teams
+            allMatches.forEach(m => {
+                const teamsInMatch = [...m.red, ...m.blue];
+                teamsInMatch.forEach(tNum => {
+                    if (AppState.teamsData[tNum]) {
+                        const isRed = m.red.includes(tNum);
+                        const isSurrogate = (m.surrogates || []).includes(tNum);
+
+                        const perf = {
+                            match_id: m.match_id,
+                            rp: isRed ? m.red_rp : m.blue_rp,
+                            score: isRed ? m.red_score : m.blue_score,
+                            is_surrogate: isSurrogate,
+                            match_type: m.match_type
+                        };
+
+                        AppState.teamsData[tNum].matches.push(perf);
+                    }
+                });
+            });
+
+            // 4. Calculate Stats per Team
+            Object.values(AppState.teamsData).forEach(team => {
+                // Assign OPR
+                team.opr_m1 = oprM1[team.number] || 0;
+                team.opr_m2 = oprM2[team.number] || 0;
+                team.opr_m3 = oprM3[team.number] || 0;
+                team.tourney_opr = tourneyOPR[team.number] || 0;
+
+                // League Meets (Top 10)
+                const leagueMatches = team.matches.filter(m => m.match_type === 'MEET' && !m.is_surrogate)
+                    .sort((a, b) => (b.rp - a.rp) || (b.score - a.score));
+                const top10League = leagueMatches.slice(0, 10);
+
+                // Tournament (Top 5)
+                const tourneyMatches = team.matches.filter(m => m.match_type === 'TOURNAMENT')
+                    .sort((a, b) => (b.rp - a.rp) || (b.score - a.score));
+                const top5Tourney = tourneyMatches.slice(0, 5);
+
+                // Sums
+                const leagueRP = top10League.reduce((s, m) => s + m.rp, 0);
+                const tourneyRP = top5Tourney.reduce((s, m) => s + m.rp, 0);
+
+                team.total_rp = leagueRP + tourneyRP;
+
+                // Avg Score (All matches count)
+                const validMatches = team.matches.filter(m => !m.is_surrogate);
+                team.matches_played = validMatches.length;
+                const totalScore = validMatches.reduce((s, m) => s + m.score, 0);
+                team.avg_score = team.matches_played > 0 ? totalScore / team.matches_played : 0;
+
+                // Breakdown for UI
+                const countedIds = new Set([...top10League, ...top5Tourney].map(m => m.match_id));
+                team.breakdown = team.matches.sort((a, b) => a.match_id.localeCompare(b.match_id)).map(m => ({
+                    ...m,
+                    is_counted: countedIds.has(m.match_id)
+                }));
+            });
+
+            // 4. Sort and Rank
+            const ranked = Object.values(AppState.teamsData).sort((a, b) =>
+                (b.total_rp - a.total_rp) || (b.avg_score - a.avg_score)
+            );
+
+            ranked.forEach((t, i) => {
+                t.league_rank = i + 1;
+            });
+
+            return ranked;
         }
 
-        async function fetchStandings() {
-            let data = [];
+        function calculateAdvancement() {
+            // First ensure rankings are fresh
+            const rankedTeams = calculateRankings();
 
-            if (isHypotheticalMode) {
-                // Call hypothetical endpoint with local matches
-                const res = await fetch('/api/rankings/hypothetical', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ matches: hypotheticalMatches })
+            rankedTeams.forEach(t => {
+                // Qual Pts
+                t.qual_pts = Math.max(2, 17 - t.league_rank);
+
+                // Awards/Alliance
+                t.award_pts = 0;
+                t.alliance_pts = 0;
+                t.playoff_pts = 0;
+
+                AppState.awards.forEach(a => {
+                    if (a.team === t.number) {
+                        if (a.award.includes('Alliance')) {
+                            // Simplify parsing logic
+                            const pts = parseInt(a.award_val); // Stored value
+                            if (a.award.includes('Captain')) t.alliance_pts += pts;
+                            else if (a.award.includes('Winning') || a.award.includes('Finalist') || a.award.includes('Semi')) t.playoff_pts += pts;
+                        } else {
+                            t.award_pts += parseInt(a.award_val);
+                        }
+                    }
                 });
-                data = await res.json();
-            } else {
-                // Normal live data
-                const res = await fetch('/api/teams');
-                data = await res.json();
-            }
 
-            renderStandings(data);
+                t.advancement_points = t.qual_pts + t.alliance_pts + t.award_pts + t.playoff_pts;
+            });
+
+            // Re-sort by Advancement Points
+            return rankedTeams.sort((a, b) => b.advancement_points - a.advancement_points);
         }
 
-        function renderStandings(data) {
-            const tbody = document.getElementById('standings-body');
-            tbody.innerHTML = '';
+        /**
+         * UI Controller
+         */
+        const app = {
+            async init() {
+                // Load Token
+                const token = localStorage.getItem('gh_token');
+                if (token) document.getElementById('gh-token').value = token;
 
-            data.forEach(t => {
-                const isUser = t.number === "14259";
-                const detailId = `detail-${t.number}`;
+                // Load from LocalStorage
+                const stored = localStorage.getItem('eb_advancement_state');
+                if (stored) {
+                    const s = JSON.parse(stored);
+                    AppState.hypotheticalMatches = s.hypotheticalMatches || [];
+                    AppState.awards = s.awards || [];
+                    AppState.teamNotes = s.teamNotes || {};
+                    AppState.allianceList = s.allianceList || [];
+                    AppState.isHypothetical = s.isHypothetical || false;
+                    document.getElementById('mode-toggle').checked = AppState.isHypothetical;
+                    app.toggleMode(false); // Update UI only
+                    app.updateAwardsList();
+                }
 
-                // Diff indicator (not fully implemented, but placeholder)
-                const rankChange = "";
+                // Init Tournament Rows
+                for (let i = 1; i <= 18; i++) app.addTournamentMatchRow(i);
 
-                let breakdownRows = '';
-                t.breakdown.forEach(m => {
-                    const highlight = m.is_counted ? 'bg-green-900/40 text-green-200 font-bold border-l-4 border-green-500' : 'text-gray-500';
-                    const symbol = m.is_counted ? '✓' : '';
-                    const surrogateTag = m.is_surrogate ? ' (Surr)' : '';
-                    breakdownRows += `
-                        <tr class="${highlight} border-b border-gray-700/50">
-                            <td class="px-4 py-1">${m.match_id}${surrogateTag}</td>
-                            <td class="px-4 py-1 text-center">${m.rp}</td>
-                            <td class="px-4 py-1 text-center">${m.score}</td>
-                            <td class="px-4 py-1 text-center">${symbol}</td>
-                        </tr>
-                    `;
+                // Restore match inputs if any
+                AppState.hypotheticalMatches.forEach(m => {
+                    const num = m.match_id.split('-')[1];
+                    const row = document.getElementById(`tmatch-${num}`);
+                    if (row) {
+                        const inputs = row.querySelectorAll('input');
+                        inputs[0].value = m.r1; inputs[1].value = m.r2;
+                        inputs[2].value = m.red_score; inputs[3].value = m.red_rp;
+                        inputs[4].value = m.b1; inputs[5].value = m.b2;
+                        inputs[6].value = m.blue_score; inputs[7].value = m.blue_rp;
+                        app.updateRowUI(row, inputs, num, true);
+                    }
                 });
 
-                const mainRow = `
-                    <tr class="cursor-pointer ${isUser ? 'bg-blue-900/30' : 'hover:bg-gray-700'} border-b border-gray-700" onclick="toggleDetails('${detailId}')">
-                        <td class="px-6 py-4 font-bold">${t.rank}</td>
+                // Initial Fetch
+                await app.fetchLiveData();
+            },
+
+            async fetchLiveData() {
+                const btnIcon = document.getElementById('refresh-icon');
+                if (btnIcon) btnIcon.classList.add('animate-spin', 'inline-block');
+                document.getElementById('data-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-yellow-500 animate-pulse"></span><span>Fetching...</span>';
+
+                try {
+                    const allPromises = MEETS.map(m => fetchMeetData(m.code, m.prefix));
+                    const results = await Promise.all(allPromises);
+                    AppState.matches = results.flat();
+                    document.getElementById('data-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-green-500"></span><span>Live Data Ready</span>';
+                    app.renderStandings();
+                } catch (e) {
+                    console.error(e);
+                    document.getElementById('data-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500"></span><span>Fetch Error</span>';
+                } finally {
+                    if (btnIcon) btnIcon.classList.remove('animate-spin', 'inline-block');
+                }
+            },
+
+            saveState() {
+                localStorage.setItem('eb_advancement_state', JSON.stringify({
+                    hypotheticalMatches: AppState.hypotheticalMatches,
+                    awards: AppState.awards,
+                    isHypothetical: AppState.isHypothetical
+                }));
+            },
+
+            toggleMode(refresh = true) {
+                AppState.isHypothetical = document.getElementById('mode-toggle').checked;
+                const body = document.body;
+                if (AppState.isHypothetical) {
+                    body.classList.add('hypothetical-mode-active');
+                } else {
+                    body.classList.remove('hypothetical-mode-active');
+                }
+                if (refresh) {
+                    app.saveState();
+                    app.renderStandings();
+                }
+            },
+
+            switchTab(tabId) {
+                document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+                document.querySelectorAll('.tab-btn').forEach(el => {
+                    el.classList.remove('bg-first', 'text-white');
+                    el.classList.add('bg-gray-800');
+                });
+
+                if (tabId.startsWith('meet')) {
+                    document.getElementById('content-meet').classList.remove('hidden');
+                    app.renderMeet(tabId);
+                    const titles = { 'meet1': 'Meet 1 Results', 'meet2': 'Meet 2 Results', 'meet3': 'Meet 3 Results' };
+                    document.getElementById('meet-title').textContent = titles[tabId];
+                } else {
+                    document.getElementById('content-' + tabId).classList.remove('hidden');
+                }
+
+                const btn = document.getElementById('tab-' + tabId);
+                btn.classList.remove('bg-gray-800');
+                btn.classList.add('bg-first', 'text-white');
+
+                if (tabId === 'standings') app.renderStandings();
+                if (tabId === 'advancement') app.renderAdvancement();
+                if (tabId === 'alliance') app.renderAlliance();
+            },
+
+            renderStandings() {
+                const data = calculateRankings();
+                const tbody = document.getElementById('standings-body');
+                tbody.innerHTML = '';
+
+                data.forEach(t => {
+                    const isUser = t.number === "14259";
+                    const detailId = `detail-${t.number}`;
+                    const breakdownRows = t.breakdown.map(m => `
+                    <tr class="${m.is_counted ? 'bg-green-900/40 text-green-200' : 'text-gray-500'} border-b border-gray-700/50">
+                        <td class="px-4 py-1">${m.match_id}${m.is_surrogate ? ' (S)' : ''}</td>
+                        <td class="px-4 py-1 text-center">${m.rp}</td>
+                        <td class="px-4 py-1 text-center">${m.score}</td>
+                        <td class="px-4 py-1 text-center">${m.is_counted ? '✓' : ''}</td>
+                    </tr>
+                 `).join('');
+
+                    tbody.innerHTML += `
+                    <tr class="cursor-pointer ${isUser ? 'bg-blue-900/30' : 'hover:bg-gray-700'} border-b border-gray-700" onclick="document.getElementById('${detailId}').classList.toggle('hidden')">
+                        <td class="px-6 py-4 font-bold text-center">${t.league_rank}</td>
                         <td class="px-6 py-4 font-mono text-first font-bold">${t.number}</td>
-                        <td class="px-6 py-4 text-gray-300">${t.name}</td>
+                        <td class="px-6 py-4 text-gray-300 min-w-[150px]">${t.name}</td>
+                        <td class="px-6 py-4 text-center text-yellow-600 font-bold">${t.opr_m1.toFixed(0)}</td>
+                        <td class="px-6 py-4 text-center text-yellow-500 font-bold">${t.opr_m2.toFixed(0)}</td>
+                        <td class="px-6 py-4 text-center text-yellow-400 font-bold">${t.opr_m3.toFixed(0)}</td>
+                        <td class="px-6 py-4 text-center text-orange-500 font-bold">${t.tourney_opr.toFixed(0)}</td>
                         <td class="px-6 py-4 text-center font-bold text-lg">${t.total_rp}</td>
                         <td class="px-6 py-4 text-center text-gray-400">${t.avg_score.toFixed(1)}</td>
                         <td class="px-6 py-4 text-center text-gray-500">${t.matches_played}</td>
                         <td class="px-6 py-4 text-center text-xs text-gray-500">▼</td>
                     </tr>
-                `;
-
-                const detailRow = `
                     <tr id="${detailId}" class="hidden bg-gray-900/50">
-                        <td colspan="7" class="p-4">
+                        <td colspan="11" class="p-4">
+                            <div class="bg-gray-800 rounded p-4 mb-3">
+                                <h4 class="font-bold mb-2 text-xs text-gray-400 uppercase">Match Breakdown</h4>
+                                <table class="w-full text-sm"><tbody>${breakdownRows}</tbody></table>
+                            </div>
                             <div class="bg-gray-800 rounded p-4">
-                                <h4 class="font-bold text-sm text-gray-400 mb-2">Match Breakdown (Best 10 Counted)</h4>
-                                <table class="w-full text-sm">
-                                    <thead>
-                                        <tr class="text-gray-500 text-xs uppercase">
-                                            <th class="px-4 py-1 text-left">Match</th>
-                                            <th class="px-4 py-1 text-center">RP</th>
-                                            <th class="px-4 py-1 text-center">Score</th>
-                                            <th class="px-4 py-1 text-center">Counted</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${breakdownRows}
-                                    </tbody>
-                                </table>
+                                <h4 class="font-bold mb-2 text-xs text-gray-400 uppercase">Team Notes (Shared)</h4>
+                                <textarea 
+                                    class="w-full bg-gray-700 text-white rounded p-2 text-sm"
+                                    rows="3" 
+                                    placeholder="Add notes for this team (e.g. Robot capabilities, strategy)..."
+                                    onchange="app.saveTeamNote('${t.number}', this.value)"
+                                >${AppState.teamNotes[t.number] || ''}</textarea>
+                                <div class="text-xs text-gray-500 mt-1 text-right">Auto-saves on change</div>
                             </div>
                         </td>
                     </tr>
-                `;
+                 `;
+                });
+            },
 
-                tbody.innerHTML += mainRow + detailRow;
-            });
-        }
-
-        function toggleDetails(id) {
-            document.getElementById(id).classList.toggle('hidden');
-        }
-
-        async function fetchMeetMatches(meetTab) {
-            const res = await fetch('/api/meets/' + meetTab);
-            const data = await res.json();
-            const tbody = document.getElementById('meet-body');
-            tbody.innerHTML = '';
-
-            data.forEach(m => {
-                const row = `
+            renderMeet(tabId) {
+                const prefix = tabId === 'meet1' ? 'M1' : (tabId === 'meet2' ? 'M2' : 'M3');
+                const matches = AppState.matches.filter(m => m.match_id.startsWith(prefix));
+                const tbody = document.getElementById('meet-body');
+                tbody.innerHTML = '';
+                matches.forEach(m => {
+                    tbody.innerHTML += `
                     <tr class="hover:bg-gray-750">
-                        <td class="px-4 py-2 font-mono text-gray-400">Q-${m.match_num}</td>
-                        <td class="px-4 py-2 text-right">${m.red[0]}, ${m.red[1]}</td>
+                        <td class="px-4 py-2 font-mono text-gray-400">${m.match_id}</td>
+                        <td class="px-4 py-2 text-right">${m.red.join(', ')}</td>
                         <td class="px-4 py-2 text-center font-bold text-red-400">${m.red_score}</td>
                         <td class="px-4 py-2 text-center font-bold text-blue-400">${m.blue_score}</td>
-                        <td class="px-4 py-2 text-left">${m.blue[0]}, ${m.blue[1]}</td>
+                        <td class="px-4 py-2 text-left">${m.blue.join(', ')}</td>
                         <td class="px-4 py-2 text-center">${m.red_rp}</td>
                         <td class="px-4 py-2 text-center">${m.blue_rp}</td>
-                    </tr>
-                `;
-                tbody.innerHTML += row;
-            });
-        }
+                    </tr>`;
+                });
+            },
 
-        function initTournamentTable() {
-            const tbody = document.getElementById('tournament-table-body');
-            if (tbody.children.length === 0) {
-                // Add 18 match rows
-                for (let i = 1; i <= 18; i++) {
-                    addTournamentMatchRow(i);
-                }
-            }
-        }
-
-        function addTournamentMatchRow(matchNum = null) {
-            const tbody = document.getElementById('tournament-table-body');
-            const num = matchNum || tournamentMatchCounter++;
-
-            const row = document.createElement('tr');
-            row.id = `tmatch-${num}`;
-            row.className = 'bg-gray-700';
-            row.innerHTML = `
+            addTournamentMatchRow(num) {
+                const tbody = document.getElementById('tournament-table-body');
+                const row = document.createElement('tr');
+                row.id = `tmatch-${num}`;
+                row.className = 'bg-gray-700';
+                row.innerHTML = `
                 <td class="px-3 py-2">Q-${num}</td>
-                <td class="px-3 py-2"><input type="text" list="team-numbers" class="w-full bg-gray-600 rounded px-2 py-1 text-sm" placeholder="Team"></td>
-                <td class="px-3 py-2"><input type="text" list="team-numbers" class="w-full bg-gray-600 rounded px-2 py-1 text-sm" placeholder="Team"></td>
-                <td class="px-3 py-2"><input type="number" class="w-full bg-gray-600 rounded px-2 py-1 text-sm text-center" placeholder="Score"></td>
-                <td class="px-3 py-2"><input type="number" class="w-full bg-gray-600 rounded px-2 py-1 text-sm text-center" placeholder="RP"></td>
-                <td class="px-3 py-2"><input type="text" list="team-numbers" class="w-full bg-gray-600 rounded px-2 py-1 text-sm" placeholder="Team"></td>
-                <td class="px-3 py-2"><input type="text" list="team-numbers" class="w-full bg-gray-600 rounded px-2 py-1 text-sm" placeholder="Team"></td>
-                <td class="px-3 py-2"><input type="number" class="w-full bg-gray-600 rounded px-2 py-1 text-sm text-center" placeholder="Score"></td>
-                <td class="px-3 py-2"><input type="number" class="w-full bg-gray-600 rounded px-2 py-1 text-sm text-center" placeholder="RP"></td>
+                <td class="px-3 py-2"><input type="text" list="team-numbers" class="w-full bg-gray-600 rounded px-2 py-1 text-sm text-base" placeholder="R1"></td>
+                <td class="px-3 py-2"><input type="text" list="team-numbers" class="w-full bg-gray-600 rounded px-2 py-1 text-sm text-base" placeholder="R2"></td>
+                <td class="px-3 py-2"><input type="number" class="w-full bg-gray-600 rounded px-2 py-1 text-sm text-center text-base" placeholder="Score"></td>
+                <td class="px-3 py-2"><input type="number" class="w-full bg-gray-600 rounded px-2 py-1 text-sm text-center text-base" placeholder="RP"></td>
+                <td class="px-3 py-2"><input type="text" list="team-numbers" class="w-full bg-gray-600 rounded px-2 py-1 text-sm text-base" placeholder="B1"></td>
+                <td class="px-3 py-2"><input type="text" list="team-numbers" class="w-full bg-gray-600 rounded px-2 py-1 text-sm text-base" placeholder="B2"></td>
+                <td class="px-3 py-2"><input type="number" class="w-full bg-gray-600 rounded px-2 py-1 text-sm text-center text-base" placeholder="Score"></td>
+                <td class="px-3 py-2"><input type="number" class="w-full bg-gray-600 rounded px-2 py-1 text-sm text-center text-base" placeholder="RP"></td>
                 <td class="px-3 py-2 flex gap-1">
-                    <button onclick="saveTournamentMatch(${num})" class="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs">Save</button>
-                    <button id="del-btn-${num}" onclick="deleteTournamentMatch(${num})" class="hidden bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-xs">Delete</button>
+                    <button onclick="app.saveTournamentMatch(${num})" class="bg-green-600 text-white px-2 py-1 rounded text-xs">Save</button>
+                    <button onclick="app.clearTournamentMatch(${num})" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs" title="Reset match">✕</button>
                 </td>
             `;
-            tbody.appendChild(row);
-        }
+                tbody.appendChild(row);
+            },
 
-        async function saveTournamentMatch(num) {
-            const row = document.getElementById(`tmatch-${num}`);
-            const inputs = row.querySelectorAll('input');
+            saveTournamentMatch(num) {
+                const row = document.getElementById(`tmatch-${num}`);
+                const i = row.querySelectorAll('input');
+                const match = {
+                    match_id: `Q-${num}`,
+                    r1: i[0].value, r2: i[1].value, red_score: parseInt(i[2].value || 0), red_rp: parseInt(i[3].value || 0), red: [i[0].value, i[1].value],
+                    b1: i[4].value, b2: i[5].value, blue_score: parseInt(i[6].value || 0), blue_rp: parseInt(i[7].value || 0), blue: [i[4].value, i[5].value],
+                    match_type: "TOURNAMENT"
+                };
 
-            const payload = {
-                match_id: `Q-${num}`,
-                r1: inputs[0].value,
-                r2: inputs[1].value,
-                rs: parseInt(inputs[2].value || 0),
-                rrp: parseInt(inputs[3].value || 0),
-                b1: inputs[4].value,
-                b2: inputs[5].value,
-                bs: parseInt(inputs[6].value || 0),
-                brp: parseInt(inputs[7].value || 0),
-            };
+                // Upsert
+                AppState.hypotheticalMatches = AppState.hypotheticalMatches.filter(m => m.match_id !== match.match_id);
+                AppState.hypotheticalMatches.push(match);
+                app.saveState();
+                app.updateRowUI(row, i, num, true);
 
-            if (!payload.r1 || !payload.r2 || !payload.b1 || !payload.b2) {
-                alert('Please enter all team numbers');
-                return;
-            }
-
-            if (isHypotheticalMode) {
-                // Local Save
-                // Remove existing if any
-                hypotheticalMatches = hypotheticalMatches.filter(m => m.match_id !== payload.match_id);
-                hypotheticalMatches.push(payload);
-                updateRowUI(row, inputs, num, true);
-                fetchStandings(); // Update rankings locally
-            } else {
-                // Live Save
-                const res = await fetch('/api/matches', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (res.ok) {
-                    updateRowUI(row, inputs, num, true);
-                    await fetchStandings();
-                } else {
-                    alert('Error saving match');
+                // Auto-enable Hypothetical Mode if forced
+                if (!AppState.isHypothetical) {
+                    document.getElementById('mode-toggle').checked = true;
+                    app.toggleMode(false); // Enable without re-render loop
                 }
-            }
-        }
+                app.renderStandings(); // Re-render to update OPR
+            },
 
-        function updateRowUI(row, inputs, num, isSaved) {
-            if (isSaved) {
-                row.classList.remove('bg-gray-700');
-                row.classList.add(isHypotheticalMode ? 'bg-yellow-900/30' : 'bg-green-900/30');
-                document.getElementById(`del-btn-${num}`).classList.remove('hidden');
-                // Don't disable inputs in hypothetical mode so they can tweak it easy?
-                // Actually safer to disable to show state
-                inputs.forEach(input => input.disabled = true);
-            } else {
-                row.classList.remove('bg-green-900/30', 'bg-yellow-900/30');
-                row.classList.add('bg-gray-700');
-                document.getElementById(`del-btn-${num}`).classList.add('hidden');
-                inputs.forEach(input => {
-                    input.disabled = false;
-                    input.value = '';
-                });
-            }
-        }
+            clearTournamentMatch(num) {
+                // 1. Remove from State
+                const matchId = `Q-${num}`;
+                AppState.hypotheticalMatches = AppState.hypotheticalMatches.filter(m => m.match_id !== matchId);
+                app.saveState();
 
-        async function deleteTournamentMatch(num) {
-            const matchId = `Q-${num}`;
-            if (!confirm(`Delete match ${matchId}?`)) return;
-
-            if (isHypotheticalMode) {
-                hypotheticalMatches = hypotheticalMatches.filter(m => m.match_id !== matchId);
+                // 2. Clear Inputs
                 const row = document.getElementById(`tmatch-${num}`);
                 const inputs = row.querySelectorAll('input');
-                updateRowUI(row, inputs, num, false);
-                fetchStandings();
-            } else {
-                const res = await fetch(`/api/matches/${matchId}`, {
-                    method: 'DELETE'
-                });
+                inputs.forEach(i => i.value = '');
 
-                if (res.ok) {
-                    const row = document.getElementById(`tmatch-${num}`);
-                    const inputs = row.querySelectorAll('input');
-                    updateRowUI(row, inputs, num, false);
-                    await fetchStandings();
+                // 3. Reset UI
+                row.classList.remove('bg-yellow-900/40');
+                row.classList.add('bg-gray-700');
+
+                // 4. Update Rankings
+                app.renderStandings();
+                app.renderAdvancement(); app.renderAlliance();
+            },
+
+            updateRowUI(row, inputs, num, saved) {
+                if (saved) {
+                    row.classList.remove('bg-gray-700');
+                    row.classList.add('bg-yellow-900/40'); // Always yellow as it's hypothetical/local
                 }
-            }
-        }
+            },
 
-        async function addAdvancement() {
-            const team = document.getElementById('adv_team').value;
-            const sel = document.getElementById('adv_type').value;
+            addAdvancement() {
+                const t = document.getElementById('adv_team').value;
+                const sel = document.getElementById('adv_type');
+                const label = sel.options[sel.selectedIndex].text;
+                const val = sel.value;
+                // Allow adding 0 value awards if needed, checking explicitly for null/undefined if that was the intent,
+                // but here just checking team existence
+                if (!t) return;
 
-            if (!team) {
-                alert('Please enter a team number');
-                return;
-            }
+                AppState.awards.push({ team: t, award: label, award_val: val });
+                app.saveState();
+                app.updateAwardsList();
+                app.renderAdvancement(); app.renderAlliance();
+                document.getElementById('adv_team').value = '';
+            },
 
-            await fetch('/api/advancement', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'add', team: team, selection: sel })
-            });
+            updateAwardsList() {
+                const div = document.getElementById('awards-list');
+                div.innerHTML = AppState.awards.map((a, i) => `
+                <div class="bg-gray-700 p-2 rounded flex justify-between">
+                    <span><b>${a.team}</b>: ${a.award}</span>
+                    <button onclick="app.removeAward(${i})" class="text-red-500">✕</button>
+                </div>
+            `).join('');
+            },
 
-            currentAwards.push({ team, award: sel });
-            updateAwardsList();
-            fetchAdvancement();
+            saveTeamNote(teamNum, note) {
+                if (!AppState.teamNotes) AppState.teamNotes = {};
+                AppState.teamNotes[teamNum] = note;
+                app.saveState();
+            },
 
-            document.getElementById('adv_team').value = '';
-        }
 
-        function removeAward(index) {
-            currentAwards.splice(index, 1);
-            updateAwardsList();
-            fetchAdvancement();
-        }
 
-        function updateAwardsList() {
-            const list = document.getElementById('awards-list');
-            list.innerHTML = '';
+            // ALLIANCE FUNCTIONS
+            addToAlliance(teamNum) {
+                if (!AppState.allianceList) AppState.allianceList = [];
+                if (!AppState.allianceList.includes(teamNum)) {
+                    AppState.allianceList.push(teamNum);
+                    app.saveState();
+                    app.renderAlliance();
+                }
+            },
 
-            if (currentAwards.length === 0) {
-                list.innerHTML = '<p class="text-gray-500 text-sm italic">No awards added yet</p>';
-                return;
-            }
+            removeFromAlliance(teamNum) {
+                AppState.allianceList = AppState.allianceList.filter(t => t !== teamNum);
+                app.saveState();
+                app.renderAlliance();
+            },
 
-            currentAwards.forEach((award, idx) => {
-                const item = document.createElement('div');
-                item.className = 'bg-gray-700 p-2 rounded flex justify-between items-center';
-                item.innerHTML = `
-                    <div class="text-sm">
-                        <span class="font-bold text-first">${award.team}</span>: ${award.award}
-                    </div>
-                    <button onclick="removeAward(${idx})" class="text-red-500 hover:text-red-300 font-bold px-2">✕</button>
-                `;
-                list.appendChild(item);
-            });
-        }
+            moveAllianceItem(index, direction) {
+                const list = AppState.allianceList;
+                if (direction === -1 && index > 0) {
+                    [list[index], list[index - 1]] = [list[index - 1], list[index]];
+                } else if (direction === 1 && index < list.length - 1) {
+                    [list[index], list[index + 1]] = [list[index + 1], list[index]];
+                }
+                app.saveState();
+                app.renderAlliance();
+            },
 
-        async function fetchAdvancement() {
-            const res = await fetch('/api/advancement_calc');
-            const data = await res.json();
-            const tbody = document.getElementById('advancement-body');
-            tbody.innerHTML = '';
-            data.forEach((t, i) => {
-                const isUser = t.number === "14259";
-                const isAdvance = i < 2;
-                let bgClass = isUser ? 'bg-blue-900/30' : '';
-                if (isAdvance) bgClass = 'bg-green-900/30 border-l-4 border-green-500';
+            renderAlliance() {
+                const search = (document.getElementById('alliance-search')?.value || '').toLowerCase();
+                const availableDiv = document.getElementById('alliance-available');
+                const selectedDiv = document.getElementById('alliance-selected');
 
-                tbody.innerHTML += `
-                    <tr class="${bgClass}">
-                        <td class="px-6 py-4 font-bold">${t.rank}</td>
-                         <td class="px-6 py-4 font-mono">${t.number}</td>
-                        <td class="px-6 py-4 text-center text-gray-400">${t.qual_pts}</td>
-                        <td class="px-6 py-4 text-center text-gray-400">${t.alliance_pts}</td>
-                        <td class="px-6 py-4 text-center text-gray-400">${t.award_pts}</td>
-                        <td class="px-6 py-4 text-center text-gray-400">${t.playoff_pts}</td>
-                        <td class="px-6 py-4 text-center font-bold text-white text-lg">${t.total_ap}</td>
+                if (!availableDiv || !selectedDiv) return;
+
+                // Render Available
+                const selectedSet = new Set(AppState.allianceList || []);
+                const allTeams = calculateRankings(); // Get stats for display
+
+                const filteredTeams = allTeams.filter(t => !selectedSet.has(t.number) && (t.number.includes(search) || t.name.toLowerCase().includes(search)));
+
+                if (filteredTeams.length === 0) {
+                    availableDiv.innerHTML = '<div class="text-gray-500 text-center italic p-4">No teams found. Try refreshing matches.</div>';
+                } else {
+                    availableDiv.innerHTML = filteredTeams.map(t => `
+                        <div class="bg-gray-700 p-3 rounded flex justify-between items-center hover:bg-gray-600 cursor-pointer transition"
+                             onclick="app.addToAlliance('${t.number}')">
+                            <div class="flex flex-col">
+                                <span class="font-bold text-white">${t.number} <span class="font-normal text-gray-400 text-sm">- ${t.name}</span></span>
+                                <div class="text-xs text-gray-300 mt-1 flex space-x-3">
+                                    <span>Rank: <b class="text-white">${t.league_rank}</b></span>
+                                    <span>NP-OPR: <b class="text-yellow-400">${Math.max(t.opr_m1, t.opr_m2, t.opr_m3).toFixed(0)}</b></span>
+                                    <span>T-OPR: <b class="text-orange-400">${t.tourney_opr.toFixed(0)}</b></span>
+                                </div>
+                            </div>
+                            <button class="text-green-400 font-bold hover:text-green-300 text-xl">+</button>
+                        </div>
+                    `).join('');
+                }
+
+                // Render Selected (Draggable)
+                selectedDiv.innerHTML = (AppState.allianceList || []).map((teamNum, i) => {
+                    const t = allTeams.find(x => x.number === teamNum) || { number: teamNum, name: 'Unknown', opr_m3: 0, tourney_opr: 0 };
+                    return `
+                        <div class="bg-gray-700 p-3 rounded flex justify-between items-center group relative border-l-4 border-yellow-500" draggable="true"
+                             ondragstart="app.dragStart(event, ${i})" ondragover="app.dragOver(event)" ondrop="app.drop(event, ${i})">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-gray-500 font-mono text-xs w-4">${i + 1}</span>
+                                <div>
+                                    <div class="font-bold text-white">${t.number}</div>
+                                    <div class="text-xs text-gray-400">${t.name}</div>
+                                </div>
+                            </div>
+                             <div class="text-xs text-gray-300 flex space-x-2">
+                                <span>OPR: ${t.opr_m3?.toFixed(0)}</span>
+                             </div>
+                            <div class="flex items-center space-x-1">
+                                <button onclick="app.moveAllianceItem(${i}, -1)" class="p-1 text-gray-400 hover:text-white">▲</button>
+                                <button onclick="app.moveAllianceItem(${i}, 1)" class="p-1 text-gray-400 hover:text-white">▼</button>
+                                <button onclick="app.removeFromAlliance('${t.number}')" class="p-1 text-red-500 hover:text-red-400 ml-2">✕</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            },
+
+            dragStart(e, index) { e.dataTransfer.setData('text/plain', index); },
+            dragOver(e) { e.preventDefault(); },
+            drop(e, targetIndex) {
+                e.preventDefault();
+                const sourceIndex = parseInt(e.dataTransfer.getData('text/plain'));
+                if (sourceIndex !== targetIndex) {
+                    const list = AppState.allianceList;
+                    const item = list.splice(sourceIndex, 1)[0];
+                    list.splice(targetIndex, 0, item);
+                    app.saveState();
+                    app.renderAlliance();
+                }
+            },
+
+            removeAward(i) {
+                AppState.awards.splice(i, 1);
+                app.saveState();
+                app.updateAwardsList();
+                app.renderAdvancement();
+                app.renderAlliance();
+            },
+
+            renderAdvancement() {
+                const data = calculateAdvancement();
+                const tbody = document.getElementById('advancement-body');
+                tbody.innerHTML = '';
+                data.forEach((t, i) => {
+                    const bg = i < 2 ? 'bg-green-900/30 border-l-4 border-green-500' : (t.number === '14259' ? 'bg-blue-900/30' : '');
+                    tbody.innerHTML += `
+                    <tr class="${bg}">
+                        <td class="px-4 py-3 font-bold whitespace-nowrap">${t.league_rank}</td>
+                         <td class="px-4 py-3 font-mono whitespace-nowrap">${t.number}</td>
+                         <td class="px-4 py-3 text-center font-mono text-yellow-600 whitespace-nowrap">${t.opr_m1.toFixed(0)}</td>
+                         <td class="px-4 py-3 text-center font-mono text-yellow-500 whitespace-nowrap">${t.opr_m2.toFixed(0)}</td>
+                         <td class="px-4 py-3 text-center font-mono text-yellow-400 whitespace-nowrap">${t.opr_m3.toFixed(0)}</td>
+                         <td class="px-4 py-3 text-center font-mono text-orange-500 whitespace-nowrap">${t.tourney_opr.toFixed(0)}</td>
+                        <td class="px-4 py-3 text-center text-gray-400 whitespace-nowrap">${t.qual_pts}</td>
+                        <td class="px-4 py-3 text-center text-gray-400 whitespace-nowrap">${t.alliance_pts}</td>
+                        <td class="px-4 py-3 text-center text-gray-400 whitespace-nowrap">${t.award_pts}</td>
+                        <td class="px-4 py-3 text-center text-gray-400 whitespace-nowrap">${t.playoff_pts}</td>
+                        <td class="px-4 py-3 text-center font-bold text-white text-lg whitespace-nowrap">${t.advancement_points}</td>
                     </tr>
-                 `;
-            });
-        }
+                `;
+                });
+            },
 
-        async function resetAll() {
-            if (!confirm("Reset all hypothetical scenarios?")) return;
+            async resetAll() {
+                if (!confirm("Clear all LOCAL data? (This only cleans this computer)")) return;
 
-            if (isHypotheticalMode) {
-                hypotheticalMatches = [];
-                // Reset all rows
-                const tbody = document.getElementById('tournament-table-body');
-                if (tbody) {
-                    tbody.childNodes.forEach(row => {
-                        if (row.nodeName === "TR") {
-                            const num = row.id.split('-')[1];
-                            const inputs = row.querySelectorAll('input');
-                            updateRowUI(row, inputs, num, false);
+                AppState.hypotheticalMatches = [];
+                AppState.awards = [];
+                AppState.teamNotes = {};
+                AppState.allianceList = [];
+                localStorage.removeItem("eb_advancement_state");
+
+                const token = localStorage.getItem("gh_token");
+                if (token && confirm("Do you ALSO want to wipe the CLOUD data (GitHub)?\n\nThis will remove the shared file for everyone.")) {
+                    await app.clearCloudData(true);
+                } else {
+                    location.reload();
+                }
+            },
+
+
+
+            async saveToCloud() {
+                const token = document.getElementById('gh-token').value.trim();
+                if (!token) return app.setCloudStatus('Error: Token required to save.', 'text-red-500');
+                localStorage.setItem('gh_token', token);
+
+                app.setCloudStatus('Saving...', 'text-yellow-400');
+
+                try {
+                    // 1. Get SHA
+                    const getUrl = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}`;
+                    const getRes = await fetch(getUrl, { headers: { 'Authorization': `token ${token}` } });
+                    const getJson = await getRes.json();
+
+                    if (!getRes.ok && getRes.status !== 404) throw new Error('Failed to check file');
+
+                    const sha = getJson.sha;
+
+                    // 2. Upload
+                    const content = JSON.stringify({
+                        hypotheticalMatches: AppState.hypotheticalMatches,
+                        awards: AppState.awards,
+                        teamNotes: AppState.teamNotes,
+                        allianceList: AppState.allianceList,
+                        timestamp: new Date().toISOString()
+                    }, null, 2);
+
+                    const putRes = await fetch(getUrl, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: 'Update shared state via App',
+                            content: btoa(content),
+                            sha: sha
+                        })
+                    });
+
+                    if (!putRes.ok) throw new Error('Save failed');
+                    app.setCloudStatus('Saved to GitHub successfully! ✓', 'text-green-500');
+                } catch (e) {
+                    console.error(e);
+                    app.setCloudStatus('Error: ' + e.message, 'text-red-500');
+                    app.setCloudStatus('Load Error: ' + e.message, 'text-red-500');
+                }
+            },
+
+            async loadFromCloud() {
+                app.setCloudStatus("Loading...", "text-yellow-400");
+                try {
+                    let data = null;
+                    const token = document.getElementById("gh-token").value.trim();
+
+                    if (token) {
+                        try {
+                            const apiUrl = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}`;
+                            const apiRes = await fetch(apiUrl, { headers: { "Authorization": `token ${token}` }, cache: "no-store" });
+                            if (apiRes.ok) {
+                                const json = await apiRes.json();
+                                if (json.content) {
+                                    const decoded = atob(json.content);
+                                    data = JSON.parse(decoded);
+                                }
+                            }
+                        } catch (ignore) { console.warn("API load failed, falling back"); }
+                    }
+
+                    if (!data) {
+                        const webPath = CONFIG.path.replace(/^docs\//, "");
+                        const webUrl = `https://${CONFIG.owner}.github.io/${CONFIG.repo}/${webPath}?t=${Date.now()}`;
+                        const res = await fetch(webUrl, { cache: "no-store" });
+                        if (res.ok) data = await res.json();
+                    }
+
+                    if (!data) throw new Error("No data found (check Token or wait for GitHub Pages build)");
+
+                    AppState.hypotheticalMatches = [];
+                    AppState.awards = [];
+                    AppState.teamNotes = {};
+                    AppState.allianceList = [];
+                    document.getElementById("adv_team").value = "";
+                    document.querySelectorAll("input[type=text], input[type=number]").forEach(i => {
+                        if (i.id !== "gh-token") i.value = "";
+                    });
+                    document.querySelectorAll("[id^=tmatch-]").forEach(r => {
+                        r.classList.remove("bg-yellow-900/40");
+                        r.classList.add("bg-gray-700");
+                    });
+
+                    AppState.hypotheticalMatches = data.hypotheticalMatches || [];
+                    AppState.awards = data.awards || [];
+                    AppState.teamNotes = data.teamNotes || {};
+                    AppState.allianceList = data.allianceList || [];
+                    AppState.isHypothetical = data.isHypothetical || false;
+                    app.saveState();
+
+                    document.getElementById("mode-toggle").checked = AppState.isHypothetical;
+                    if (AppState.isHypothetical) document.body.classList.add("hypothetical-mode-active");
+                    else document.body.classList.remove("hypothetical-mode-active");
+
+                    AppState.hypotheticalMatches.forEach(m => {
+                        const num = m.match_id.split("-")[1];
+                        const row = document.getElementById(`tmatch-${num}`);
+                        if (row) {
+                            const inputs = row.querySelectorAll("input");
+                            inputs[0].value = m.r1; inputs[1].value = m.r2;
+                            inputs[2].value = m.red_score; inputs[3].value = m.red_rp;
+                            inputs[4].value = m.b1; inputs[5].value = m.b2;
+                            inputs[6].value = m.blue_score; inputs[7].value = m.blue_rp;
+                            app.updateRowUI(row, inputs, num, true);
                         }
                     });
+
+                    app.updateAwardsList();
+                    app.renderStandings();
+                    app.renderAdvancement(); app.renderAlliance();
+
+                    app.setCloudStatus("Loaded successfully! ✓", "text-green-500");
+                    setTimeout(() => app.setCloudStatus("", ""), 3000);
+                } catch (e) {
+                    console.error(e);
+                    app.setCloudStatus("Load Error: " + e.message, "text-red-500");
                 }
-                fetchStandings();
-            } else {
-                await fetch('/api/reset', { method: 'POST' });
-                currentAwards = [];
-                location.reload();
+            },
+
+            async clearCloudData(skipConfirm = false) {
+                if (!skipConfirm && !confirm("DANGER: This will WIPE the cloud file for everyone. Continue?")) return;
+
+                const token = document.getElementById('gh-token').value.trim();
+                if (!token) {
+                    if (!skipConfirm) app.setCloudStatus('Error: Token required.', 'text-red-500');
+                    else { alert("Cannot clear cloud: No Token found."); location.reload(); }
+                    return;
+                }
+                localStorage.setItem('gh_token', token);
+
+                if (!skipConfirm) app.setCloudStatus('Clearing...', 'text-red-400');
+
+                try {
+                    const getUrl = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}`;
+                    const getRes = await fetch(getUrl, { headers: { 'Authorization': `token ${token}` } });
+
+                    if (!getRes.ok && getRes.status !== 404) throw new Error('Check failed');
+
+                    let sha = null;
+                    if (getRes.ok) {
+                        const json = await getRes.json();
+                        sha = json.sha;
+                    }
+
+                    const content = JSON.stringify({}, null, 2);
+                    const body = { message: 'Clear shared state', content: btoa(content) };
+                    if (sha) body.sha = sha;
+
+                    const putRes = await fetch(getUrl, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body)
+                    });
+
+                    if (!putRes.ok) throw new Error('Clear failed');
+
+                    if (!skipConfirm) {
+                        app.setCloudStatus('Cloud Cleared! ✓', 'text-green-500');
+                        setTimeout(() => app.loadFromCloud(), 1000);
+                    } else {
+                        alert("Cloud Data Wiped.");
+                        location.reload();
+                    }
+                } catch (e) {
+                    if (!skipConfirm) app.setCloudStatus('Error: ' + e.message, 'text-red-500');
+                    else {
+                        console.error(e);
+                        alert("Failed to clear cloud: " + e.message);
+                        location.reload();
+                    }
+                }
+            },
+
+            setCloudStatus(msg, color) {
+                const el = document.getElementById('cloud-status');
+                el.textContent = msg;
+                el.className = `text-center text-sm mb-4 h-6 ${color}`;
             }
+        };
+
+        /**
+         * OPR Math Helper (Gaussian Elimination)
+         * Solves Ax = b
+         */
+        function solveLinearSystem(A, b) {
+            const n = A.length;
+            // Augment A with b
+            const M = A.map((row, i) => [...row, b[i]]);
+
+            for (let i = 0; i < n; i++) {
+                // Find pivot
+                let maxRow = i;
+                for (let k = i + 1; k < n; k++) {
+                    if (Math.abs(M[k][i]) > Math.abs(M[maxRow][i])) maxRow = k;
+                }
+
+                // Swap
+                [M[i], M[maxRow]] = [M[maxRow], M[i]];
+
+                // Make 1
+                const pivot = M[i][i];
+                if (Math.abs(pivot) < 1e-10) continue; // Singular or close to it
+
+                for (let j = i; j <= n; j++) M[i][j] /= pivot;
+
+                // Eliminate
+                for (let k = 0; k < n; k++) {
+                    if (k !== i) {
+                        const factor = M[k][i];
+                        for (let j = i; j <= n; j++) M[k][j] -= factor * M[i][j];
+                    }
+                }
+            }
+
+            return M.map(row => row[n]);
         }
 
-        // SELECTION TAB Logic - Simple Ordered Preference List
-        let selectionList = []; // Array of team numbers in preferred order
+        function solveOPR(matches, teamNumbers) {
+            const uniqueTeams = Array.from(new Set(teamNumbers));
+            const numTeams = uniqueTeams.length;
+            const teamToIndex = new Map(uniqueTeams.map((team, i) => [team, i]));
 
-        async function loadSelectionTeams() {
-            const res = await fetch('data/teams.json');
-            const data = await res.json();
-            window.allTeams = data;
+            // Initialize A matrix and b vector
+            const A = Array(numTeams).fill(0).map(() => Array(numTeams).fill(0));
+            const b = Array(numTeams).fill(0);
 
-            // Load saved list from localStorage
-            const saved = localStorage.getItem('draft_list');
-            if (saved) {
-                selectionList = JSON.parse(saved);
-            }
+            matches.forEach(match => {
+                const redTeams = match.red.filter(t => t && teamToIndex.has(t));
+                const blueTeams = match.blue.filter(t => t && teamToIndex.has(t));
 
-            renderSelectionLists();
-        }
+                const redScore = (typeof match.red_score_np !== 'undefined') ? match.red_score_np : match.red_score;
+                const blueScore = (typeof match.blue_score_np !== 'undefined') ? match.blue_score_np : match.blue_score;
 
-        function renderSelectionLists() {
-            if (!window.allTeams) return;
+                // Red Alliance
+                for (const team1 of redTeams) {
+                    const idx1 = teamToIndex.get(team1);
+                    b[idx1] += redScore;
+                    for (const team2 of redTeams) {
+                        const idx2 = teamToIndex.get(team2);
+                        A[idx1][idx2] += 1;
+                    }
+                }
 
-            const availableList = document.getElementById('available-teams-list');
-            const selectedList = document.getElementById('selected-teams-list');
-
-            const searchTerm = document.getElementById('team-search')?.value.toLowerCase() || '';
-
-            // Filter selected teams out of available
-            const selectedSet = new Set(selectionList);
-            const availableTeams = window.allTeams.filter(t =>
-                !selectedSet.has(t.number) &&
-                (t.number.includes(searchTerm) || t.name.toLowerCase().includes(searchTerm))
-            );
-
-            // Render Available Teams
-            availableList.innerHTML = '';
-            availableTeams.forEach(t => {
-                const el = document.createElement('div');
-                el.className = 'bg-gray-700 p-2 rounded cursor-pointer hover:bg-gray-600 flex justify-between items-center';
-                el.onclick = () => addToSelection(t.number);
-                el.innerHTML = `
-                    <span class="font-mono font-bold text-first">${t.number}</span>
-                    <span class="text-xs text-gray-400 truncate ml-2">${t.name}</span>
-                `;
-                availableList.appendChild(el);
+                // Blue Alliance
+                for (const team1 of blueTeams) {
+                    const idx1 = teamToIndex.get(team1);
+                    b[idx1] += blueScore;
+                    for (const team2 of blueTeams) {
+                        const idx2 = teamToIndex.get(team2);
+                        A[idx1][idx2] += 1;
+                    }
+                }
             });
 
-            // Render Selected List
-            selectedList.innerHTML = '';
-            selectionList.forEach((teamNum, idx) => {
-                const team = window.allTeams.find(t => t.number === teamNum);
-                if (!team) return;
+            const solution = solveLinearSystem(A, b);
 
-                const el = document.createElement('div');
-                el.className = 'bg-yellow-900/30 border border-yellow-500/40 p-2 rounded flex justify-between items-center';
-                el.innerHTML = `
-                    <span class="text-yellow-400 font-bold text-sm mr-2">#${idx + 1}</span>
-                    <span class="font-mono font-bold text-first flex-grow">${team.number}</span>
-                    <span class="text-xs text-gray-400 truncate mr-2">${team.name}</span>
-                    <div class="flex gap-1">
-                        ${idx > 0 ? `<button onclick="moveTeamUp(${idx})" class="text-gray-400 hover:text-white px-1">↑</button>` : ''}
-                        ${idx < selectionList.length - 1 ? `<button onclick="moveTeamDown(${idx})"  class="text-gray-400 hover:text-white px-1">↓</button>` : ''}
-                        <button onclick="removeFromSelection(${idx})" class="text-red-500 hover:text-red-300 ml-1 px-1">✕</button>
-                    </div>
-                `;
-                selectedList.appendChild(el);
+            const oprResults = {};
+            uniqueTeams.forEach((team, i) => {
+                oprResults[team] = solution[i] || 0; // Default to 0 if no solution (e.g., singular matrix)
             });
+
+            return oprResults;
         }
 
-        function addToSelection(teamNum) {
-            selectionList.push(teamNum);
-            saveSelectionList();
-            renderSelectionLists();
-        }
-
-        function removeFromSelection(idx) {
-            selectionList.splice(idx, 1);
-            saveSelectionList();
-            renderSelectionLists();
-        }
-
-        function moveTeamUp(idx) {
-            if (idx === 0) return;
-            [selectionList[idx], selectionList[idx - 1]] = [selectionList[idx - 1], selectionList[idx]];
-            saveSelectionList();
-            renderSelectionLists();
-        }
-
-        function moveTeamDown(idx) {
-            if (idx === selectionList.length - 1) return;
-            [selectionList[idx], selectionList[idx + 1]] = [selectionList[idx + 1], selectionList[idx]];
-            saveSelectionList();
-            renderSelectionLists();
-        }
-
-        function saveSelectionList() {
-            localStorage.setItem('draft_list', JSON.stringify(selectionList));
-        }
-
-        function filterSelectionTeams() {
-            renderSelectionLists();
-        }
-
-        // Dummy functions for backwards compatibility (not needed anymore)
-        function allowDrop(ev) { ev.preventDefault(); }
-        function drag(ev) { }
-        function drop(ev) { ev.preventDefault(); }
-        async function fetchSelectionState() { }
-        async function saveSelectionState() { }
-
-        // Init
+        // BOOT
+        document.addEventListener('DOMContentLoaded', app.init);
     </script>
 </body>
 
