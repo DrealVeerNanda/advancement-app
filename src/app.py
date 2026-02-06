@@ -34,6 +34,12 @@ threading.Thread(target=background_data_fetch, daemon=True).start()
 # In-memory storage for advancement inputs (awards, alliance selection)
 advancement_state = {
     'alliance_selections': {}, 
+    'detailed_alliances': {
+        'alliance1': {'captain': None, 'pick1': None, 'pick2': None},
+        'alliance2': {'captain': None, 'pick1': None, 'pick2': None},
+        'alliance3': {'captain': None, 'pick1': None, 'pick2': None},
+        'alliance4': {'captain': None, 'pick1': None, 'pick2': None}
+    },
     'awards': {}, 
     'playoff_results': {} 
 }
@@ -52,7 +58,23 @@ def load_advancement_state():
     try:
         with open('advancement_state.json', 'r') as f:
             loaded_data = json.load(f)
-            advancement_state.update(loaded_data)
+            # Merge loaded data with default structure to ensure keys exist
+            for k, v in loaded_data.items():
+                if k == 'detailed_alliances' and isinstance(v, dict):
+                    # Ensure all alliances exist
+                    for all_key_default in advancement_state['detailed_alliances']:
+                         if all_key_default not in v:
+                             v[all_key_default] = advancement_state['detailed_alliances'][all_key_default]
+                advancement_state[k] = v
+            
+            # Ensure detailed_alliances exists if not in loaded data
+            if 'detailed_alliances' not in advancement_state:
+                 advancement_state['detailed_alliances'] = {
+                    'alliance1': {'captain': None, 'pick1': None, 'pick2': None},
+                    'alliance2': {'captain': None, 'pick1': None, 'pick2': None},
+                    'alliance3': {'captain': None, 'pick1': None, 'pick2': None},
+                    'alliance4': {'captain': None, 'pick1': None, 'pick2': None}
+                }
     except FileNotFoundError:
         pass
     except Exception as e:
@@ -151,10 +173,31 @@ def delete_match(match_id):
 def reset_scenario():
     data_manager.clear_tournament_matches()
     advancement_state['alliance_selections'].clear()
+    advancement_state['detailed_alliances'] = {
+        'alliance1': {'captain': None, 'pick1': None, 'pick2': None},
+        'alliance2': {'captain': None, 'pick1': None, 'pick2': None},
+        'alliance3': {'captain': None, 'pick1': None, 'pick2': None},
+        'alliance4': {'captain': None, 'pick1': None, 'pick2': None}
+    }
     advancement_state['awards'].clear()
     advancement_state['playoff_results'].clear()
     save_advancement_state()
     return jsonify({'success': True})
+
+@app.route('/api/alliance_selection', methods=['GET', 'POST'])
+def handle_alliance_selection():
+    if request.method == 'GET':
+        return jsonify(advancement_state.get('detailed_alliances', {}))
+    
+    if request.method == 'POST':
+        data = request.json
+        advancement_state['detailed_alliances'] = data
+        
+        # NOTE: User requested this be completely random/irrelevant to advancement points.
+        # So we do NOT update 'alliance_selections' here anymore.
+        
+        save_advancement_state()
+        return jsonify({'success': True})
 
 @app.route('/api/advancement', methods=['POST'])
 def update_advancement():
@@ -167,6 +210,7 @@ def update_advancement():
         pts = int(selection.split('(')[1].strip(')'))
         
         if "Alliance" in selection and "Captain" in selection:
+            # Legacy handling - ignored in favor of drag-n-drop if used
             rank = int(selection.split(' ')[1])
             advancement_state['alliance_selections'][team] = rank
         elif "Winning Alliance" in selection:

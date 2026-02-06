@@ -90,6 +90,8 @@
                 class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Meet 3</button>
             <button onclick="switchTab('tournament')" id="tab-tournament"
                 class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Tournament (Hypothetical)</button>
+            <button onclick="switchTab('selection')" id="tab-selection"
+                class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Alliance Selection</button>
             <button onclick="switchTab('advancement')" id="tab-advancement"
                 class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Advancement</button>
         </div>
@@ -175,6 +177,150 @@
             </div>
         </div>
 
+        <!-- ALLIANCE SELECTION -->
+        <div id="content-selection" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-200px)]">
+                <!-- Left: Available Teams -->
+                <div class="lg:col-span-1 flex flex-col bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+                    <div class="p-4 bg-gray-750 border-b border-gray-700">
+                        <h2 class="text-xl font-bold mb-2">Available Teams</h2>
+                        <input type="text" id="team-search" placeholder="Search teams..."
+                            class="w-full bg-gray-700 border-gray-600 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-first outline-none"
+                            onkeyup="filterSelectionTeams()">
+                    </div>
+                    <div id="available-teams-list" class="flex-1 overflow-y-auto p-4 space-y-2" ondrop="drop(event)"
+                        ondragover="allowDrop(event)">
+                        <!-- Teams injected via JS -->
+                    </div>
+                </div>
+
+                <!-- Right: Alliances -->
+                <div class="lg:col-span-2 overflow-y-auto">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Alliance 1 -->
+                        <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-firstRed/30">
+                            <div
+                                class="bg-firstRed/20 p-2 border-b border-firstRed/30 text-center font-bold text-firstRed">
+                                Alliance 1</div>
+                            <div class="p-4 space-y-3">
+                                <div class="space-y-1">
+                                    <span class="text-xs text-gray-500 uppercase font-bold">Captain</span>
+                                    <div id="alliance1-captain"
+                                        class="drop-zone bg-gray-900/50 rounded border border-dashed border-gray-600 h-12 flex items-center justify-center transition-colors"
+                                        ondrop="drop(event)" ondragover="allowDrop(event)" data-slot="captain"
+                                        data-alliance="alliance1"></div>
+                                </div>
+                                <div class="space-y-1">
+                                    <span class="text-xs text-gray-500 uppercase font-bold">1st Pick</span>
+                                    <div id="alliance1-pick1"
+                                        class="drop-zone bg-gray-900/50 rounded border border-dashed border-gray-600 h-12 flex items-center justify-center transition-colors"
+                                        ondrop="drop(event)" ondragover="allowDrop(event)" data-slot="pick1"
+                                        data-alliance="alliance1"></div>
+                                </div>
+                                <div class="space-y-1">
+                                    <span class="text-xs text-gray-500 uppercase font-bold">2nd Pick</span>
+                                    <div id="alliance1-pick2"
+                                        class="drop-zone bg-gray-900/50 rounded border border-dashed border-gray-600 h-12 flex items-center justify-center transition-colors"
+                                        ondrop="drop(event)" ondragover="allowDrop(event)" data-slot="pick2"
+                                        data-alliance="alliance1"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Alliance 2 -->
+                        <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-blue-500/30">
+                            <div
+                                class="bg-blue-500/20 p-2 border-b border-blue-500/30 text-center font-bold text-blue-400">
+                                Alliance 2</div>
+                            <div class="p-4 space-y-3">
+                                <div class="space-y-1">
+                                    <span class="text-xs text-gray-500 uppercase font-bold">Captain</span>
+                                    <div id="alliance2-captain"
+                                        class="drop-zone bg-gray-900/50 rounded border border-dashed border-gray-600 h-12 flex items-center justify-center transition-colors"
+                                        ondrop="drop(event)" ondragover="allowDrop(event)" data-slot="captain"
+                                        data-alliance="alliance2"></div>
+                                </div>
+                                <div class="space-y-1">
+                                    <span class="text-xs text-gray-500 uppercase font-bold">1st Pick</span>
+                                    <div id="alliance2-pick1"
+                                        class="drop-zone bg-gray-900/50 rounded border border-dashed border-gray-600 h-12 flex items-center justify-center transition-colors"
+                                        ondrop="drop(event)" ondragover="allowDrop(event)" data-slot="pick1"
+                                        data-alliance="alliance2"></div>
+                                </div>
+                                <div class="space-y-1">
+                                    <span class="text-xs text-gray-500 uppercase font-bold">2nd Pick</span>
+                                    <div id="alliance2-pick2"
+                                        class="drop-zone bg-gray-900/50 rounded border border-dashed border-gray-600 h-12 flex items-center justify-center transition-colors"
+                                        ondrop="drop(event)" ondragover="allowDrop(event)" data-slot="pick2"
+                                        data-alliance="alliance2"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Alliance 3 -->
+                        <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-green-500/30">
+                            <div
+                                class="bg-green-500/20 p-2 border-b border-green-500/30 text-center font-bold text-green-400">
+                                Alliance 3</div>
+                            <div class="p-4 space-y-3">
+                                <div class="space-y-1">
+                                    <span class="text-xs text-gray-500 uppercase font-bold">Captain</span>
+                                    <div id="alliance3-captain"
+                                        class="drop-zone bg-gray-900/50 rounded border border-dashed border-gray-600 h-12 flex items-center justify-center transition-colors"
+                                        ondrop="drop(event)" ondragover="allowDrop(event)" data-slot="captain"
+                                        data-alliance="alliance3"></div>
+                                </div>
+                                <div class="space-y-1">
+                                    <span class="text-xs text-gray-500 uppercase font-bold">1st Pick</span>
+                                    <div id="alliance3-pick1"
+                                        class="drop-zone bg-gray-900/50 rounded border border-dashed border-gray-600 h-12 flex items-center justify-center transition-colors"
+                                        ondrop="drop(event)" ondragover="allowDrop(event)" data-slot="pick1"
+                                        data-alliance="alliance3"></div>
+                                </div>
+                                <div class="space-y-1">
+                                    <span class="text-xs text-gray-500 uppercase font-bold">2nd Pick</span>
+                                    <div id="alliance3-pick2"
+                                        class="drop-zone bg-gray-900/50 rounded border border-dashed border-gray-600 h-12 flex items-center justify-center transition-colors"
+                                        ondrop="drop(event)" ondragover="allowDrop(event)" data-slot="pick2"
+                                        data-alliance="alliance3"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Alliance 4 -->
+                        <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-yellow-500/30">
+                            <div
+                                class="bg-yellow-500/20 p-2 border-b border-yellow-500/30 text-center font-bold text-yellow-400">
+                                Alliance 4</div>
+                            <div class="p-4 space-y-3">
+                                <div class="space-y-1">
+                                    <span class="text-xs text-gray-500 uppercase font-bold">Captain</span>
+                                    <div id="alliance4-captain"
+                                        class="drop-zone bg-gray-900/50 rounded border border-dashed border-gray-600 h-12 flex items-center justify-center transition-colors"
+                                        ondrop="drop(event)" ondragover="allowDrop(event)" data-slot="captain"
+                                        data-alliance="alliance4"></div>
+                                </div>
+                                <div class="space-y-1">
+                                    <span class="text-xs text-gray-500 uppercase font-bold">1st Pick</span>
+                                    <div id="alliance4-pick1"
+                                        class="drop-zone bg-gray-900/50 rounded border border-dashed border-gray-600 h-12 flex items-center justify-center transition-colors"
+                                        ondrop="drop(event)" ondragover="allowDrop(event)" data-slot="pick1"
+                                        data-alliance="alliance4"></div>
+                                </div>
+                                <div class="space-y-1">
+                                    <span class="text-xs text-gray-500 uppercase font-bold">2nd Pick</span>
+                                    <div id="alliance4-pick2"
+                                        class="drop-zone bg-gray-900/50 rounded border border-dashed border-gray-600 h-12 flex items-center justify-center transition-colors"
+                                        ondrop="drop(event)" ondragover="allowDrop(event)" data-slot="pick2"
+                                        data-alliance="alliance4"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- ADVANCEMENT -->
         <div id="content-advancement" class="tab-content hidden">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -215,19 +361,19 @@
                 <!-- Table -->
                 <div class="md:col-span-2">
                     <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-                        <table class="w-full text-left">
-                            <thead class="bg-gray-700 text-gray-300 uppercase text-xs">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-gray-700 text-gray-300 uppercase text-sm">
                                 <tr>
-                                    <th class="px-4 py-2">Rank</th>
-                                    <th class="px-4 py-2">Team</th>
-                                    <th class="px-4 py-2 text-center">Qual Pts</th>
-                                    <th class="px-4 py-2 text-center">Alliance</th>
-                                    <th class="px-4 py-2 text-center">Award</th>
-                                    <th class="px-4 py-2 text-center">Playoff</th>
-                                    <th class="px-4 py-2 text-center font-bold">Total AP</th>
+                                    <th class="px-6 py-3">Rank</th>
+                                    <th class="px-6 py-3">Team</th>
+                                    <th class="px-6 py-3 text-center">Qual Pts</th>
+                                    <th class="px-6 py-3 text-center">Alliance</th>
+                                    <th class="px-6 py-3 text-center">Award</th>
+                                    <th class="px-6 py-3 text-center">Playoff</th>
+                                    <th class="px-6 py-3 text-center font-bold">Total AP</th>
                                 </tr>
                             </thead>
-                            <tbody id="advancement-body" class="divide-y divide-gray-700 text-sm"></tbody>
+                            <tbody id="advancement-body" class="divide-y divide-gray-700"></tbody>
                         </table>
                     </div>
                 </div>
@@ -305,6 +451,7 @@
 
             if (tabId === 'standings') fetchStandings();
             if (tabId === 'tournament') initTournamentTable();
+            if (tabId === 'selection') { loadSelectionTeams(); fetchSelectionState(); }
             if (tabId === 'advancement') { fetchAdvancement(); updateAwardsList(); }
         }
 
@@ -641,8 +788,178 @@
             }
         }
 
+        // SELECTION TAB Logic
+        async function loadSelectionTeams() {
+            const res = await fetch('/api/teams');
+            const data = await res.json();
+            // Store for filtering
+            window.allTeams = data;
+            renderSelectionTeams(data);
+        }
+
+        function renderSelectionTeams(teams) {
+            const list = document.getElementById('available-teams-list');
+            list.innerHTML = '';
+
+            // Get already placed teams to possibly hide or dim them?
+            // For now, list all. If user drags one already placed, we'll handle move logic.
+
+            teams.forEach(t => {
+                const el = document.createElement('div');
+                el.className = 'bg-gray-700 p-2 rounded cursor-grab active:cursor-grabbing hover:bg-gray-600 flex justify-between items-center';
+                el.draggable = true;
+                el.id = `drag-team-${t.number}`;
+                el.dataset.team = t.number;
+                el.ondragstart = drag;
+                el.innerHTML = `
+                    <span class="font-mono font-bold text-first">${t.number}</span>
+                    <span class="text-xs text-gray-400 truncate ml-2">${t.name}</span>
+                `;
+                list.appendChild(el);
+            });
+        }
+
+        function filterSelectionTeams() {
+            const term = document.getElementById('team-search').value.toLowerCase();
+            if (!window.allTeams) return;
+            const filtered = window.allTeams.filter(t =>
+                t.number.includes(term) || t.name.toLowerCase().includes(term)
+            );
+            renderSelectionTeams(filtered);
+        }
+
+        async function fetchSelectionState() {
+            const res = await fetch('/api/alliance_selection');
+            const data = await res.json();
+
+            // Restore slots
+            // Structure: {'alliance1': {'captain': '123', ...}, ...}
+            for (const [allianceKey, members] of Object.entries(data)) {
+                for (const [slotKey, teamNum] of Object.entries(members)) {
+                    if (teamNum) {
+                        // Find the slot
+                        const zone = document.querySelector(`.drop-zone[data-alliance="${allianceKey}"][data-slot="${slotKey}"]`);
+                        if (zone) {
+                            fillSlot(zone, teamNum);
+                        }
+                    }
+                }
+            }
+        }
+
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        function drag(ev) {
+            ev.dataTransfer.setData("team", ev.target.dataset.team);
+            // Also store source ID to handle moving from one slot to another
+            ev.dataTransfer.setData("sourceId", ev.target.parentElement.id);
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            const teamNum = ev.dataTransfer.getData("team");
+            const sourceId = ev.dataTransfer.getData("sourceId");
+
+            // Determine target
+            let target = ev.target;
+            // Traverse up if dropped on child element of a zone
+            while (target && !target.classList.contains('drop-zone') && target.id !== "available-teams-list") {
+                target = target.parentElement;
+            }
+
+            if (!target) return;
+
+            // If dropped back to list
+            if (target.id === "available-teams-list") {
+                // Just remove from current slot if it was in one
+                // We don't "add" to list because list always has all teams (unless we hide them)
+                // Just clear the source slot if it was a drop-zone
+                const sourceEl = document.getElementById(sourceId);
+                if (sourceEl && sourceEl.classList.contains('drop-zone')) {
+                    clearSlot(sourceEl);
+                    saveSelectionState();
+                }
+                return;
+            }
+
+            // Dropped into a slot
+            if (target.classList.contains('drop-zone')) {
+                // If invalid move (same slot), ignore
+
+                // Clear the slot if occupied? Or replace? 
+                // Let's replace.
+
+                // Check if this team is already in another slot?
+                // Ideally yes, remove from old slot first
+                removeTeamFromAllSlots(teamNum);
+
+                fillSlot(target, teamNum);
+                saveSelectionState();
+            }
+        }
+
+        function fillSlot(zone, teamNum) {
+            // Create chip
+            zone.innerHTML = `
+                <div class="bg-first text-white px-2 py-1 rounded text-sm font-bold flex items-center justify-between w-full h-full cursor-grab"
+                     draggable="true" ondragstart="drag(event)" data-team="${teamNum}" id="chip-${teamNum}">
+                    <span>${teamNum}</span>
+                    <button onclick="clearSlotWrapper(event, this)" class="text-white hover:text-red-200 ml-1">✕</button>
+                </div>
+            `;
+            zone.dataset.team = teamNum;
+            zone.classList.remove('bg-gray-900/50', 'border-dashed');
+            zone.classList.add('bg-gray-800', 'border-solid');
+        }
+
+        function clearSlotWrapper(e, btn) {
+            e.stopPropagation(); // Prevent drag start / drop from firing
+            const chip = btn.parentElement;
+            const zone = chip.parentElement;
+            clearSlot(zone);
+            saveSelectionState();
+        }
+
+        function clearSlot(zone) {
+            zone.innerHTML = '';
+            delete zone.dataset.team;
+            zone.classList.add('bg-gray-900/50', 'border-dashed');
+            zone.classList.remove('bg-gray-800', 'border-solid');
+        }
+
+        function removeTeamFromAllSlots(teamNum) {
+            const zones = document.querySelectorAll('.drop-zone');
+            zones.forEach(z => {
+                if (z.dataset.team === teamNum) {
+                    clearSlot(z);
+                }
+            });
+        }
+
+        async function saveSelectionState() {
+            const state = {
+                'alliance1': {}, 'alliance2': {}, 'alliance3': {}, 'alliance4': {}
+            };
+
+            document.querySelectorAll('.drop-zone').forEach(z => {
+                const alliance = z.dataset.alliance;
+                const slot = z.dataset.slot;
+                const team = z.dataset.team;
+                if (alliance && slot && team) {
+                    state[alliance][slot] = team;
+                }
+            });
+
+            await fetch('/api/alliance_selection', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(state)
+            });
+        }
+
         // Init
-        switchTab('standings');
     </script>
 </body>
 
