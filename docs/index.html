@@ -1260,21 +1260,25 @@
             },
 
             async resetAll() {
-                if (!confirm("Clear all LOCAL data? (This only cleans this computer)")) return;
+                if (!confirm("Clear all data? This will:\n- Clear all hypothetical matches\n- Clear all awards\n- Clear alliance selections\n- Clear team notes\n\nAre you sure?")) return;
 
+                // Clear local state
                 AppState.hypotheticalMatches = [];
                 AppState.awards = [];
                 AppState.teamNotes = {};
                 AppState.allianceList = [];
-                localStorage.removeItem("eb_advancement_state");
+                AppState.tournamentRealMatches = [];
 
-                const token = localStorage.getItem("gh_token");
-                if (token && confirm("Do you ALSO want to wipe the CLOUD data (GitHub)?\n\nThis will remove the shared file for everyone.")) {
-                    await app.clearCloudData(true);
+                // Ask about cloud data
+                if (firebaseEnabled && confirm("Do you also want to WIPE THE CLOUD DATA?\n\nThis will delete data for EVERYONE on your team!")) {
+                    await app.clearCloudData();
                 } else {
+                    // Just clear local
+                    localStorage.removeItem('app_state');
                     location.reload();
                 }
             },
+
 
 
 
