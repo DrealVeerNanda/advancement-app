@@ -689,8 +689,7 @@
                 if (metricName === 'score') return solveOPR(matches, allTeamNums);
 
                 // Create shadow matches with swapped scores
-                // Crucial fix: Assign values to red_score/blue_score directly
-                // Access property dynamically: matches[0]['red_auto']
+                // CRITICAL: Must override BOTH red_score AND red_score_np because solveOPR prioritizes _np
                 const shadow = matches.map(m => {
                     // Extract component scores (fallback to 0)
                     const r = (m[`red_${metricName}`] !== undefined) ? m[`red_${metricName}`] : 0;
@@ -699,7 +698,9 @@
                     return {
                         ...m,
                         red_score: r,
-                        blue_score: b
+                        blue_score: b,
+                        red_score_np: r,  // Override _np variant to prevent using total score
+                        blue_score_np: b
                     };
                 });
                 return solveOPR(shadow, allTeamNums);
