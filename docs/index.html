@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>East Bay League Advancement</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -143,19 +148,27 @@
                 <p class="text-sm text-gray-400 mb-4">Sync your data across devices using Firebase. Your data is
                     automatically saved and synced in real-time.</p>
 
+                <div class="mb-4 p-4 bg-gray-900 rounded border border-gray-700">
+                    <div class="text-sm mb-2">
+                        <span class="font-bold text-green-400">●</span> 
+                        <span id="sync-status">Syncing...</span>
+                    </div>
+                    <div class="text-xs text-gray-500">
+                        Last synced: <span id="last-sync-time">Never</span>
+                    </div>
+                </div>
+                
                 <div class="flex gap-2 mb-4">
-                    <button onclick="app.exportData()"
+                    <button onclick="app.forceSyncToCloud()"
                         class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded font-bold">
-                        📥 Export Data</button>
-                    <button onclick="document.getElementById('import-file').click()"
+                        ⬆ Manual Save</button>
+                    <button onclick="app.forceSyncFromCloud()"
                         class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-bold">
-                        📤 Import Data</button>
+                        ⬇ Manual Reload</button>
                     <button onclick="app.clearCloudData()"
                         class="px-3 bg-red-600 hover:bg-red-700 text-white py-2 rounded font-bold"
-                        title="Clear All Data">🗑</button>
+                        title="Wipe Cloud Data">🗑</button>
                 </div>
-                <input type="file" id="import-file" accept=".json" class="hidden" 
-                    onchange="app.importData(event)">
 
                 <div id="cloud-status" class="text-center text-sm mb-4 h-6 text-gray-300"></div>
 
@@ -425,7 +438,37 @@
             path: 'docs/data/shared_state.json'
         };
 
-        const MEETS = [
+        
+        // ===========================================
+        // FIREBASE CONFIGURATION
+        // ===========================================
+        // TODO: Replace this with your actual Firebase config from Firebase Console
+        // Go to: Project Settings > Your apps > Config
+        const firebaseConfig = {
+            apiKey: "REPLACE_WITH_YOUR_API_KEY",
+            authDomain: "REPLACE_WITH_YOUR_PROJECT.firebaseapp.com",
+            databaseURL: "https://REPLACE_WITH_YOUR_PROJECT-default-rtdb.firebaseio.com",
+            projectId: "REPLACE_WITH_YOUR_PROJECT",
+            storageBucket: "REPLACE_WITH_YOUR_PROJECT.appspot.com",
+            messagingSenderId: "REPLACE_WITH_YOUR_SENDER_ID",
+            appId: "REPLACE_WITH_YOUR_APP_ID"
+        };
+        
+        // Initialize Firebase
+        let firebaseEnabled = false;
+        let database = null;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            database = firebase.database();
+            firebaseEnabled = true;
+            console.log("✅ Firebase initialized successfully");
+        } catch (e) {
+            console.warn("⚠️ Firebase not configured:", e.message);
+            firebaseEnabled = false;
+        }
+        // ===========================================
+
+const MEETS = [
             { code: "USCANOEBM1", prefix: "M1" },
             { code: "USCANOEBM2", prefix: "M2" },
             { code: "USCANOEBM3", prefix: "M3" }
@@ -1234,7 +1277,14 @@
 
 
 
-            exportData() {
+            forceSyncToCloud() {
+                if (!firebaseEnabled) {
+                    app.setCloudStatus('Firebase not configured - check console', 'text-yellow-500');
+                    return;
+                }
+                
+                app.setCloudStatus('Saving to cloud...', 'text-yellow-400');
+                
                 const data = {
                     hypotheticalMatches: AppState.hypotheticalMatches,
                     awards: AppState.awards,
@@ -1245,28 +1295,35 @@
                     timestamp: new Date().toISOString()
                 };
                 
-                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `east-bay-advancement-${new Date().toISOString().split('T')[0]}.json`;
-                a.click();
-                URL.revokeObjectURL(url);
-                
-                app.setCloudStatus('Data exported! ✓', 'text-green-500');
-                setTimeout(() => app.setCloudStatus("", ""), 2000);
+                database.ref('eb_advancement_state').set(data)
+                    .then(() => {
+                        app.setCloudStatus('Saved to cloud! ✓', 'text-green-500');
+                        document.getElementById('last-sync-time').textContent = new Date().toLocaleTimeString();
+                        setTimeout(() => app.setCloudStatus('', ''), 2000);
+                    })
+                    .catch(e => {
+                        console.error(e);
+                        app.setCloudStatus('Error: ' + e.message, 'text-red-500');
+                    });
             },
 
-            importData(event) {
-                const file = event.target.files[0];
-                if (!file) return;
+            forceSyncFromCloud() {
+                if (!firebaseEnabled) {
+                    app.setCloudStatus('Firebase not configured - check console', 'text-yellow-500');
+                    return;
+                }
                 
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    try {
-                        const data = JSON.parse(e.target.result);
-                        
-                        // Clear current state
+                app.setCloudStatus('Loading from cloud...', 'text-yellow-400');
+                
+                database.ref('eb_advancement_state').once('value')
+                    .then(snapshot => {
+                        const data = snapshot.val();
+                        if (!data) {
+                            app.setCloudStatus('No cloud data found', 'text-gray-400');
+                            return;
+                        }
+
+                        // Clear current
                         AppState.hypotheticalMatches = [];
                         AppState.awards = [];
                         AppState.teamNotes = {};
@@ -1278,7 +1335,7 @@
                             r.classList.add("bg-gray-700");
                         });
 
-                        // Load imported state
+                        // Load cloud data
                         AppState.hypotheticalMatches = data.hypotheticalMatches || [];
                         AppState.awards = data.awards || [];
                         AppState.teamNotes = data.teamNotes || {};
@@ -1291,7 +1348,7 @@
                         if (AppState.isHypothetical) document.body.classList.add("hypothetical-mode-active");
                         else document.body.classList.remove("hypothetical-mode-active");
 
-                        // Restore hypothetical matches
+                        // Restore matches
                         AppState.hypotheticalMatches.forEach(m => {
                             const num = m.match_id.split("-")[1];
                             const row = document.getElementById(`tmatch-${num}`);
@@ -1311,28 +1368,40 @@
                         app.renderAlliance();
                         app.renderTournamentReal();
 
-                        app.setCloudStatus("Data imported successfully! ✓", "text-green-500");
-                        setTimeout(() => {
-                            app.setCloudStatus("", "");
-                            document.getElementById('cloud-modal').classList.add('hidden');
-                        }, 2000);
-                    } catch (e) {
+                        app.setCloudStatus('Loaded from cloud! ✓', 'text-green-500');
+                        document.getElementById('last-sync-time').textContent = new Date().toLocaleTimeString();
+                        setTimeout(() => app.setCloudStatus('', ''), 2000);
+                    })
+                    .catch(e => {
                         console.error(e);
-                        app.setCloudStatus("Import error: " + e.message, "text-red-500");
-                    }
-                };
-                reader.readAsText(file);
-                
-                // Reset file input
-                event.target.value = '';
+                        app.setCloudStatus('Error: ' + e.message, 'text-red-500');
+                    });
             },
 
             async clearCloudData() {
-                if (!confirm("DANGER: Clear all local data?")) return;
-                localStorage.clear();
-                location.reload();
+                if (!confirm("DANGER: This will wipe cloud data for everyone!")) return;
+                
+                if (!firebaseEnabled) {
+                    localStorage.clear();
+                    location.reload();
+                    return;
+                }
+                
+                app.setCloudStatus('Clearing cloud...', 'text-yellow-400');
+                
+                database.ref('eb_advancement_state').remove()
+                    .then(() => {
+                        app.setCloudStatus('Cloud cleared! ✓', 'text-green-500');
+                        localStorage.clear();
+                        setTimeout(() => location.reload(), 1000);
+                    })
+                    .catch(e => {
+                        console.error(e);
+                        app.setCloudStatus('Error: ' + e.message, 'text-red-500');
+                    });
             },
 
+            
             
             
 
@@ -1428,7 +1497,27 @@
         }
 
         // BOOT
-        document.addEventListener('DOMContentLoaded', app.init);
+        
+                // Update Firebase status in modal
+                const statusEl = document.getElementById('firebase-status');
+                const syncStatusEl = document.getElementById('sync-status');
+                if (statusEl) {
+                    if (firebaseEnabled) {
+                        statusEl.innerHTML = '<span class="text-green-400">✓ Connected to Firebase</span>';
+                        if (syncStatusEl) syncStatusEl.textContent = 'Connected - auto-syncing enabled';
+                    } else {
+                        statusEl.innerHTML = '<span class="text-red-400">✗ Firebase not configured</span>';
+                        if (syncStatusEl) syncStatusEl.textContent = 'Not connected - local storage only';
+                    }
+                }
+                
+                // Auto-load from cloud on init
+                if (firebaseEnabled) {
+                    app.forceSyncFromCloud();
+                }
+
+                
+                document.addEventListener('DOMContentLoaded', app.init);
     </script>
 </body>
 
