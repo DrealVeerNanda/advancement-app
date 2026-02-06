@@ -1629,6 +1629,32 @@
 
 
 
+            getMatchRowsForTeam(teamNum) {
+                const allTeamMatches = AppState.matches.filter(m => m.red.includes(teamNum) || m.blue.includes(teamNum));
+                // Sort by match_id
+                allTeamMatches.sort((a, b) => a.match_id.localeCompare(b.match_id));
+
+                return allTeamMatches.map(m => {
+                    const isRed = m.red.includes(teamNum);
+                    const alliance = isRed ? 'Red' : 'Blue';
+                    const score = isRed ? m.red_score : m.blue_score;
+                    const auto = isRed ? m.red_auto : m.blue_auto; // Should be populated now
+                    const dc = isRed ? m.red_dc : m.blue_dc;
+                    const rp = isRed ? m.red_rp : m.blue_rp;
+                    const color = isRed ? 'text-red-400' : 'text-blue-400';
+                    return `
+                        <tr class="border-b border-gray-700/50 hover:bg-gray-700/50 transition">
+                            <td class="py-1 font-mono text-[10px] text-gray-400">${m.match_id}</td>
+                            <td class="py-1"><span class="${color} font-bold text-[10px] uppercase">${alliance}</span></td>
+                            <td class="py-1 text-right text-green-300 font-mono">${auto !== undefined ? auto : '-'}</td>
+                            <td class="py-1 text-right text-blue-300 font-mono">${dc !== undefined ? dc : '-'}</td>
+                            <td class="py-1 text-right font-bold text-white font-mono">${score}</td>
+                            <td class="py-1 text-center text-yellow-500 font-mono">${rp}</td>
+                        </tr>
+                    `;
+                }).join('');
+            },
+
             setCloudStatus(msg, color) {
                 const el = document.getElementById('cloud-status');
                 el.textContent = msg;
