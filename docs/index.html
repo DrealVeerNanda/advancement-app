@@ -248,6 +248,8 @@
                             <th class="px-6 py-3">Rank</th>
                             <th class="px-6 py-3">Team</th>
                             <th class="px-6 py-3">Name</th>
+                            <th class="px-6 py-3 text-center" title="Estimated Tournament OPR (Prediction)">Est. OPR
+                            </th>
                             <th class="px-6 py-3 text-center" title="Tournament OPR">Tourn OPR</th>
                             <th class="px-6 py-3 text-center">Total RP</th>
                             <th class="px-6 py-3 text-center">Avg Score</th>
@@ -395,6 +397,8 @@
                                 <tr>
                                     <th class="px-4 py-3 font-bold text-gray-200">Rank</th>
                                     <th class="px-4 py-3 font-bold text-gray-200">Team</th>
+                                    <th class="px-4 py-3 text-center font-bold text-gray-200"
+                                        title="Estimated Tournament OPR">Est. OPR</th>
                                     <th class="px-4 py-3 text-center font-bold text-gray-200" title="Tournament OPR">
                                         Tourn OPR</th>
                                     <th class="px-4 py-3 text-center font-bold text-gray-200">Qual Pts</th>
@@ -1134,6 +1138,7 @@
                                 <span class="bg-gray-700/50 px-1 rounded text-gray-300" title="Estimated Global Percentile">Top ${(100 - percentile).toFixed(1)}% World</span>
                             </div>
                         </td>
+                        <td class="px-6 py-4 text-center text-indigo-400 font-bold">${predictedVal.toFixed(0)}</td>
                         <td class="px-6 py-4 text-center text-orange-500 font-bold">${t.tourney_opr.toFixed(0)}</td>
                         <td class="px-6 py-4 text-center font-bold text-lg">${t.total_rp}</td>
                         <td class="px-6 py-4 text-center text-gray-400">${t.avg_score.toFixed(1)}</td>
