@@ -236,6 +236,8 @@
             class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Selection</button>
         <button onclick="app.switchTab('advancement')" id="tab-advancement"
             class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Advancement</button>
+        <button onclick="app.switchTab('highest-opr')" id="tab-highest-opr"
+            class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Highest OPR</button>
     </div>
 
     <!-- STANDINGS -->
@@ -408,6 +410,28 @@
                         </table>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HIGHEST OPR -->
+    <div id="content-highest-opr" class="tab-content hidden">
+        <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-gray-700 text-gray-300 uppercase text-sm">
+                        <tr>
+                            <th class="px-6 py-3">Rank</th>
+                            <th class="px-6 py-3">Team</th>
+                            <th class="px-6 py-3">Name</th>
+                            <th class="px-6 py-3 text-center" title="Tournament OPR">Tourn OPR</th>
+                            <th class="px-6 py-3 text-center" title="Estimated Tournament OPR">Est. OPR</th>
+                            <th class="px-6 py-3 text-center" title="Auto OPR">Auto</th>
+                            <th class="px-6 py-3 text-center" title="Teleop/Endgame OPR">Tele/End</th>
+                        </tr>
+                    </thead>
+                    <tbody id="highest-opr-body" class="divide-y divide-gray-700"></tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -1050,6 +1074,7 @@
                 if (tabId === 'advancement') app.renderAdvancement();
                 if (tabId === 'alliance') app.renderAlliance();
                 if (tabId === 'tournament-real') app.renderTournamentReal();
+                if (tabId === 'highest-opr') app.renderHighestOPR();
             },
 
             renderStandings() {
@@ -1214,6 +1239,26 @@
                                             <div class="flex justify-between text-xs items-center">
                                                 <span class="text-gray-500">Shutdowns</span>
                                                 <div class="text-right">${shutdownsHtml}</div>
+                                            </div>
+                                            <!-- Match Difficulty -->
+                                            <div class="mt-2 pt-2 border-t border-gray-700/30">
+                                                <div class="text-[10px] text-gray-500 uppercase mb-1">Match Difficulty (Avg Opp OPR)</div>
+                                                <div class="flex justify-between text-xs">
+                                                    <span class="text-yellow-600">M1:</span>
+                                                    <span class="font-mono text-gray-300">${advStats.matchDifficulty.m1.toFixed(0)}</span>
+                                                </div>
+                                                <div class="flex justify-between text-xs">
+                                                    <span class="text-yellow-500">M2:</span>
+                                                    <span class="font-mono text-gray-300">${advStats.matchDifficulty.m2.toFixed(0)}</span>
+                                                </div>
+                                                <div class="flex justify-between text-xs">
+                                                    <span class="text-yellow-400">M3:</span>
+                                                    <span class="font-mono text-gray-300">${advStats.matchDifficulty.m3.toFixed(0)}</span>
+                                                </div>
+                                                <div class="flex justify-between text-xs">
+                                                    <span class="text-orange-400">Tourn:</span>
+                                                    <span class="font-mono text-gray-300">${advStats.matchDifficulty.tournament.toFixed(0)}</span>
+                                                </div>
                                             </div>
                                          </div>
                                     </div>
@@ -1563,6 +1608,32 @@
                 });
             },
 
+            renderHighestOPR() {
+                const data = calculateRankings();
+                // Sort by tournament OPR (descending)
+                const sorted = [...data].sort((a, b) => b.tourney_opr - a.tourney_opr);
+
+                const tbody = document.getElementById('highest-opr-body');
+                tbody.innerHTML = '';
+
+                sorted.forEach((t, i) => {
+                    const isUser = t.number === '14259';
+                    const predictedVal = t.predicted_tourney_opr || t.tourney_opr;
+
+                    tbody.innerHTML += `
+                    <tr class="${isUser ? 'bg-blue-900/30' : 'hover:bg-gray-700'} border-b border-gray-700 transition">
+                        <td class="px-6 py-4 font-bold text-center">${i + 1}</td>
+                        <td class="px-6 py-4 font-mono text-first font-bold">${t.number}</td>
+                        <td class="px-6 py-4 text-gray-300">${t.name}</td>
+                        <td class="px-6 py-4 text-center text-orange-500 font-bold">${t.tourney_opr.toFixed(0)}</td>
+                        <td class="px-6 py-4 text-center text-indigo-400 font-bold">${predictedVal.toFixed(0)}</td>
+                        <td class="px-6 py-4 text-center text-green-400">${t.opr_auto.toFixed(0)}</td>
+                        <td class="px-6 py-4 text-center text-blue-400">${t.opr_dc.toFixed(0)}</td>
+                    </tr>
+                `;
+                });
+            },
+
             resetAll() {
                 // Show custom modal
                 const modal = document.getElementById('confirm-modal');
@@ -1899,13 +1970,65 @@
                 const globalAvgScore = 45; // Approx for Into The Deep
                 const defenseImpact = globalAvgScore - dpr; // Positive means good defense (low DPR)
 
+                // Match Difficulty by Meet
+                const matchDifficulty = app.calculateMatchDifficulty(team.number, allMatches, AppState.teams);
+
                 return {
                     consistency,
                     contribution,
                     sos,
                     kryptonite,
                     bestFriends,
-                    defense: { dpr, impact: defenseImpact, shutdowns: [...new Set(lowestAllowed.opp)].slice(0, 3), minAllowed: lowestAllowed.score }
+                    defense: { dpr, impact: defenseImpact, shutdowns: [...new Set(lowestAllowed.opp)].slice(0, 3), minAllowed: lowestAllowed.score },
+                    matchDifficulty // { m1: avg, m2: avg, m3: avg, tournament: avg }
+                };
+            },
+
+            calculateMatchDifficulty(teamNum, allMatches, teams) {
+                // Calculate OPRs for each meet
+                const m1Matches = allMatches.filter(m => m.match_id.includes('M1-'));
+                const m2Matches = allMatches.filter(m => m.match_id.includes('M2-'));
+                const m3Matches = allMatches.filter(m => m.match_id.includes('M3-'));
+                const tournamentMatches = allMatches.filter(m => !m.match_id.includes('M1-') && !m.match_id.includes('M2-') && !m.match_id.includes('M3-'));
+
+                const allTeamNumbers = teams.map(t => t.number);
+                const m1OPR = solveOPR(m1Matches, allTeamNumbers);
+                const m2OPR = solveOPR(m1Matches.concat(m2Matches), allTeamNumbers);
+                const m3OPR = solveOPR(m1Matches.concat(m2Matches, m3Matches), allTeamNumbers);
+
+                // Get predicted OPR from team data
+                const teamData = teams.find(t => t.number === teamNum);
+                const predictedOPR = teamData ? (teamData.predicted_tourney_opr || teamData.tourney_opr) : {};
+
+                // Helper to calculate avg opponent OPR for a set of matches
+                const getAvgOpponentOPR = (matches, oprMap) => {
+                    const teamMatches = matches.filter(m => m.red.includes(teamNum) || m.blue.includes(teamNum));
+                    if (teamMatches.length === 0) return 0;
+
+                    let totalOPR = 0;
+                    let count = 0;
+
+                    teamMatches.forEach(m => {
+                        const isRed = m.red.includes(teamNum);
+                        const opponents = isRed ? m.blue : m.red;
+
+                        opponents.forEach(opp => {
+                            const oppOPR = oprMap[opp] || 0;
+                            if (oppOPR > 0) {
+                                totalOPR += oppOPR;
+                                count++;
+                            }
+                        });
+                    });
+
+                    return count > 0 ? totalOPR / count : 0;
+                };
+
+                return {
+                    m1: getAvgOpponentOPR(m1Matches, m1OPR), // Use M1 OPR for M1 difficulty
+                    m2: getAvgOpponentOPR(m2Matches, m1OPR), // Use M1 OPR for M2 difficulty (what was known before M2)
+                    m3: getAvgOpponentOPR(m3Matches, m2OPR), // Use M2 OPR for M3 difficulty (what was known before M3)
+                    tournament: getAvgOpponentOPR(tournamentMatches, m3OPR) // Use M3 OPR for tournament (or could use predicted)
                 };
             },
 
