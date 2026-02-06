@@ -1,0 +1,1870 @@
+[
+  {
+    "avg_score": 93.62,
+    "breakdown": [
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q14",
+        "rp": 4,
+        "score": 62
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q16",
+        "rp": 1,
+        "score": 45
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q18",
+        "rp": 3,
+        "score": 51
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q3",
+        "rp": 3,
+        "score": 46
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q6",
+        "rp": 3,
+        "score": 46
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": true,
+        "is_tournament": false,
+        "match_id": "M1-Q8",
+        "rp": 0,
+        "score": 0
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q10",
+        "rp": 3,
+        "score": 66
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q12",
+        "rp": 1,
+        "score": 68
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q17",
+        "rp": 5,
+        "score": 121
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q4",
+        "rp": 2,
+        "score": 88
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q7",
+        "rp": 5,
+        "score": 120
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q13",
+        "rp": 4,
+        "score": 86
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q15",
+        "rp": 4,
+        "score": 231
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q4",
+        "rp": 4,
+        "score": 162
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q6",
+        "rp": 6,
+        "score": 205
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q9",
+        "rp": 4,
+        "score": 101
+      }
+    ],
+    "matches_played": 16,
+    "name": "Robowarriors",
+    "number": "25627",
+    "rank": 1,
+    "total_rp": 42
+  },
+  {
+    "avg_score": 115.27,
+    "breakdown": [
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q13",
+        "rp": 3,
+        "score": 94
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q16",
+        "rp": 4,
+        "score": 99
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q2",
+        "rp": 5,
+        "score": 71
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q5",
+        "rp": 4,
+        "score": 108
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q9",
+        "rp": 4,
+        "score": 114
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q1",
+        "rp": 4,
+        "score": 101
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q12",
+        "rp": 4,
+        "score": 126
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q16",
+        "rp": 4,
+        "score": 113
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q5",
+        "rp": 4,
+        "score": 108
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q9",
+        "rp": 4,
+        "score": 116
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q12",
+        "rp": 4,
+        "score": 142
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q17",
+        "rp": 4,
+        "score": 99
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q2",
+        "rp": 4,
+        "score": 161
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q4",
+        "rp": 4,
+        "score": 162
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q8",
+        "rp": 3,
+        "score": 115
+      }
+    ],
+    "matches_played": 15,
+    "name": "TURB\u03a9 V8",
+    "number": "14259",
+    "rank": 2,
+    "total_rp": 41
+  },
+  {
+    "avg_score": 94.0,
+    "breakdown": [
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q11",
+        "rp": 1,
+        "score": 19
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q14",
+        "rp": 4,
+        "score": 62
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q16",
+        "rp": 4,
+        "score": 99
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q2",
+        "rp": 0,
+        "score": 30
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q4",
+        "rp": 4,
+        "score": 66
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q1",
+        "rp": 0,
+        "score": 52
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q10",
+        "rp": 1,
+        "score": 61
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q14",
+        "rp": 4,
+        "score": 101
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q17",
+        "rp": 5,
+        "score": 121
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q6",
+        "rp": 4,
+        "score": 65
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q1",
+        "rp": 3,
+        "score": 87
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q10",
+        "rp": 4,
+        "score": 239
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q12",
+        "rp": 2,
+        "score": 90
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q15",
+        "rp": 2,
+        "score": 113
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q6",
+        "rp": 6,
+        "score": 205
+      }
+    ],
+    "matches_played": 15,
+    "name": "Cerberus",
+    "number": "25810",
+    "rank": 3,
+    "total_rp": 40
+  },
+  {
+    "avg_score": 70.6,
+    "breakdown": [
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q10",
+        "rp": 4,
+        "score": 59
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q13",
+        "rp": 1,
+        "score": 49
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q15",
+        "rp": 3,
+        "score": 46
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q4",
+        "rp": 4,
+        "score": 66
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q6",
+        "rp": 0,
+        "score": 36
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q1",
+        "rp": 0,
+        "score": 52
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q13",
+        "rp": 4,
+        "score": 73
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q15",
+        "rp": 5,
+        "score": 122
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q4",
+        "rp": 4,
+        "score": 123
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q8",
+        "rp": 3,
+        "score": 59
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q10",
+        "rp": 1,
+        "score": 110
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q14",
+        "rp": 4,
+        "score": 108
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q16",
+        "rp": 3,
+        "score": 51
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q4",
+        "rp": 0,
+        "score": 59
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q7",
+        "rp": 0,
+        "score": 46
+      }
+    ],
+    "matches_played": 15,
+    "name": "Turbotrons",
+    "number": "23279",
+    "rank": 4,
+    "total_rp": 35
+  },
+  {
+    "avg_score": 61.8,
+    "breakdown": [
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q1",
+        "rp": 4,
+        "score": 48
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q10",
+        "rp": 0,
+        "score": 8
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q14",
+        "rp": 0,
+        "score": 46
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q18",
+        "rp": 3,
+        "score": 51
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q5",
+        "rp": 4,
+        "score": 108
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q13",
+        "rp": 0,
+        "score": 36
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q17",
+        "rp": 0,
+        "score": 30
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q2",
+        "rp": 1,
+        "score": 66
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q6",
+        "rp": 4,
+        "score": 65
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q9",
+        "rp": 4,
+        "score": 116
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q14",
+        "rp": 4,
+        "score": 108
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q18",
+        "rp": 3,
+        "score": 48
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q3",
+        "rp": 4,
+        "score": 81
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q6",
+        "rp": 0,
+        "score": 80
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q8",
+        "rp": 0,
+        "score": 36
+      }
+    ],
+    "matches_played": 15,
+    "name": "\"B.R.O.\" (Bot Resources Operation)",
+    "number": "5214",
+    "rank": 5,
+    "total_rp": 31
+  },
+  {
+    "avg_score": 55.19,
+    "breakdown": [
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q13",
+        "rp": 3,
+        "score": 94
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q17",
+        "rp": 0,
+        "score": 29
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q3",
+        "rp": 3,
+        "score": 46
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q5",
+        "rp": 0,
+        "score": 39
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q8",
+        "rp": 0,
+        "score": 23
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q12",
+        "rp": 4,
+        "score": 126
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q16",
+        "rp": 0,
+        "score": 25
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q18",
+        "rp": 5,
+        "score": 83
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q3",
+        "rp": 3,
+        "score": 37
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q6",
+        "rp": 1,
+        "score": 54
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": true,
+        "is_tournament": false,
+        "match_id": "M2-Q8",
+        "rp": 0,
+        "score": 0
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q11",
+        "rp": 4,
+        "score": 65
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q16",
+        "rp": 3,
+        "score": 51
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q2",
+        "rp": 1,
+        "score": 30
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q6",
+        "rp": 0,
+        "score": 80
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q9",
+        "rp": 4,
+        "score": 101
+      }
+    ],
+    "matches_played": 16,
+    "name": "Cyber Knights",
+    "number": "23304",
+    "rank": 6,
+    "total_rp": 31
+  },
+  {
+    "avg_score": 75.73,
+    "breakdown": [
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q12",
+        "rp": 3,
+        "score": 25
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q15",
+        "rp": 0,
+        "score": 15
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q3",
+        "rp": 0,
+        "score": 30
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q5",
+        "rp": 0,
+        "score": 39
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q9",
+        "rp": 4,
+        "score": 114
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q10",
+        "rp": 1,
+        "score": 61
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q12",
+        "rp": 1,
+        "score": 68
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q15",
+        "rp": 5,
+        "score": 122
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q2",
+        "rp": 4,
+        "score": 138
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q5",
+        "rp": 4,
+        "score": 108
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q10",
+        "rp": 1,
+        "score": 110
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q12",
+        "rp": 2,
+        "score": 90
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q16",
+        "rp": 0,
+        "score": 49
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q3",
+        "rp": 0,
+        "score": 69
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q5",
+        "rp": 5,
+        "score": 98
+      }
+    ],
+    "matches_played": 15,
+    "name": "Sharp Face Robotics",
+    "number": "30450",
+    "rank": 7,
+    "total_rp": 30
+  },
+  {
+    "avg_score": 52.12,
+    "breakdown": [
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q10",
+        "rp": 4,
+        "score": 59
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q14",
+        "rp": 0,
+        "score": 46
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q17",
+        "rp": 3,
+        "score": 45
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q2",
+        "rp": 0,
+        "score": 30
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q7",
+        "rp": 3,
+        "score": 23
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q1",
+        "rp": 4,
+        "score": 101
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q11",
+        "rp": 4,
+        "score": 59
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q13",
+        "rp": 4,
+        "score": 73
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q18",
+        "rp": 0,
+        "score": 54
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q5",
+        "rp": 0,
+        "score": 46
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q11",
+        "rp": 1,
+        "score": 59
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q15",
+        "rp": 2,
+        "score": 113
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q18",
+        "rp": 3,
+        "score": 48
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q2",
+        "rp": 1,
+        "score": 30
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q5",
+        "rp": 1,
+        "score": 48
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": true,
+        "is_tournament": false,
+        "match_id": "M3-Q8",
+        "rp": 0,
+        "score": 0
+      }
+    ],
+    "matches_played": 16,
+    "name": "Tech Titans",
+    "number": "26891",
+    "rank": 8,
+    "total_rp": 29
+  },
+  {
+    "avg_score": 51.93,
+    "breakdown": [
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q1",
+        "rp": 4,
+        "score": 48
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q11",
+        "rp": 1,
+        "score": 19
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q13",
+        "rp": 1,
+        "score": 49
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q15",
+        "rp": 0,
+        "score": 15
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q7",
+        "rp": 0,
+        "score": 11
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q14",
+        "rp": 1,
+        "score": 47
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q18",
+        "rp": 5,
+        "score": 83
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q2",
+        "rp": 1,
+        "score": 66
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q7",
+        "rp": 0,
+        "score": 27
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q9",
+        "rp": 1,
+        "score": 23
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q1",
+        "rp": 3,
+        "score": 87
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q12",
+        "rp": 4,
+        "score": 142
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q18",
+        "rp": 1,
+        "score": 45
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q7",
+        "rp": 4,
+        "score": 52
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q9",
+        "rp": 1,
+        "score": 65
+      }
+    ],
+    "matches_played": 15,
+    "name": "Robo Raptors",
+    "number": "32098",
+    "rank": 9,
+    "total_rp": 25
+  },
+  {
+    "avg_score": 43.56,
+    "breakdown": [
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q12",
+        "rp": 3,
+        "score": 25
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q15",
+        "rp": 3,
+        "score": 46
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q18",
+        "rp": 0,
+        "score": 11
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q2",
+        "rp": 5,
+        "score": 71
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q6",
+        "rp": 3,
+        "score": 46
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": true,
+        "is_tournament": false,
+        "match_id": "M1-Q8",
+        "rp": 0,
+        "score": 0
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q10",
+        "rp": 3,
+        "score": 66
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q13",
+        "rp": 0,
+        "score": 36
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q16",
+        "rp": 0,
+        "score": 25
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q3",
+        "rp": 0,
+        "score": 33
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q7",
+        "rp": 0,
+        "score": 27
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q1",
+        "rp": 0,
+        "score": 41
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q11",
+        "rp": 4,
+        "score": 65
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q14",
+        "rp": 0,
+        "score": 47
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q17",
+        "rp": 4,
+        "score": 99
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q4",
+        "rp": 0,
+        "score": 59
+      }
+    ],
+    "matches_played": 16,
+    "name": "Duck",
+    "number": "30473",
+    "rank": 10,
+    "total_rp": 25
+  },
+  {
+    "avg_score": 47.47,
+    "breakdown": [
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q11",
+        "rp": 1,
+        "score": 19
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q18",
+        "rp": 0,
+        "score": 11
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q4",
+        "rp": 0,
+        "score": 3
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q7",
+        "rp": 0,
+        "score": 11
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q9",
+        "rp": 0,
+        "score": 28
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q11",
+        "rp": 4,
+        "score": 59
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q15",
+        "rp": 0,
+        "score": 44
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q3",
+        "rp": 0,
+        "score": 33
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q7",
+        "rp": 5,
+        "score": 120
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q9",
+        "rp": 1,
+        "score": 23
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q14",
+        "rp": 0,
+        "score": 47
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q17",
+        "rp": 2,
+        "score": 70
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q3",
+        "rp": 4,
+        "score": 81
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q5",
+        "rp": 5,
+        "score": 98
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q9",
+        "rp": 1,
+        "score": 65
+      }
+    ],
+    "matches_played": 15,
+    "name": "Control+Q",
+    "number": "14770",
+    "rank": 11,
+    "total_rp": 23
+  },
+  {
+    "avg_score": 62.6,
+    "breakdown": [
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q1",
+        "rp": 0,
+        "score": 21
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q11",
+        "rp": 1,
+        "score": 19
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q17",
+        "rp": 3,
+        "score": 45
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q6",
+        "rp": 0,
+        "score": 36
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q9",
+        "rp": 0,
+        "score": 28
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q14",
+        "rp": 4,
+        "score": 101
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q17",
+        "rp": 0,
+        "score": 30
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q3",
+        "rp": 3,
+        "score": 37
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q5",
+        "rp": 0,
+        "score": 46
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q8",
+        "rp": 0,
+        "score": 14
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q10",
+        "rp": 4,
+        "score": 239
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q13",
+        "rp": 1,
+        "score": 46
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q17",
+        "rp": 2,
+        "score": 70
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q2",
+        "rp": 4,
+        "score": 161
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q7",
+        "rp": 0,
+        "score": 46
+      }
+    ],
+    "matches_played": 15,
+    "name": "QLS RaD Team",
+    "number": "11920",
+    "rank": 12,
+    "total_rp": 22
+  },
+  {
+    "avg_score": 49.69,
+    "breakdown": [
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q10",
+        "rp": 0,
+        "score": 8
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q12",
+        "rp": 0,
+        "score": 13
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q16",
+        "rp": 1,
+        "score": 45
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q3",
+        "rp": 0,
+        "score": 30
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q7",
+        "rp": 3,
+        "score": 23
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q11",
+        "rp": 0,
+        "score": 21
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q14",
+        "rp": 1,
+        "score": 47
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q16",
+        "rp": 4,
+        "score": 113
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q2",
+        "rp": 4,
+        "score": 138
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q4",
+        "rp": 2,
+        "score": 88
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q1",
+        "rp": 0,
+        "score": 41
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q13",
+        "rp": 4,
+        "score": 86
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q16",
+        "rp": 0,
+        "score": 49
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q18",
+        "rp": 1,
+        "score": 45
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q5",
+        "rp": 1,
+        "score": 48
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": true,
+        "is_tournament": false,
+        "match_id": "M3-Q8",
+        "rp": 0,
+        "score": 0
+      }
+    ],
+    "matches_played": 16,
+    "name": "Dublin Robotics Cybirds",
+    "number": "23212",
+    "rank": 13,
+    "total_rp": 21
+  },
+  {
+    "avg_score": 54.5,
+    "breakdown": [
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q1",
+        "rp": 0,
+        "score": 21
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q12",
+        "rp": 0,
+        "score": 13
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q17",
+        "rp": 0,
+        "score": 29
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q4",
+        "rp": 0,
+        "score": 3
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M1-Q8",
+        "rp": 3,
+        "score": 53
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q11",
+        "rp": 0,
+        "score": 21
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q15",
+        "rp": 0,
+        "score": 44
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q18",
+        "rp": 0,
+        "score": 54
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q4",
+        "rp": 4,
+        "score": 123
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M2-Q6",
+        "rp": 1,
+        "score": 54
+      },
+      {
+        "is_counted": false,
+        "is_surrogate": true,
+        "is_tournament": false,
+        "match_id": "M2-Q8",
+        "rp": 0,
+        "score": 0
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q11",
+        "rp": 1,
+        "score": 59
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q13",
+        "rp": 1,
+        "score": 46
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q15",
+        "rp": 4,
+        "score": 231
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q3",
+        "rp": 0,
+        "score": 69
+      },
+      {
+        "is_counted": true,
+        "is_surrogate": false,
+        "is_tournament": false,
+        "match_id": "M3-Q7",
+        "rp": 4,
+        "score": 52
+      }
+    ],
+    "matches_played": 16,
+    "name": "Quantum Sparks",
+    "number": "30474",
+    "rank": 14,
+    "total_rp": 18
+  }
+]

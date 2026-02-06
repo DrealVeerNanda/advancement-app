@@ -671,7 +671,7 @@
         let selectionList = []; // Array of team numbers in preferred order
 
         async function loadSelectionTeams() {
-            const res = await fetch('/api/teams');
+            const res = await fetch('data/teams.json');
             const data = await res.json();
             window.allTeams = data;
 
