@@ -275,9 +275,9 @@
                     <thead class="bg-gray-700 text-gray-300">
                         <tr>
                             <th class="px-4 py-2">Match</th>
-                            <th class="px-4 py-2 text-right text-red-400">Red Alliance</th>
                             <th class="px-4 py-2 text-center text-yellow-400" title="Predicted Red win probability">Win
-                                Probability</th>
+                                Probability for Red</th>
+                            <th class="px-4 py-2 text-right text-red-400">Red Alliance</th>
                             <th class="px-4 py-2 text-center text-red-500 font-bold">Score</th>
                             <th class="px-4 py-2 text-center text-blue-500 font-bold">Score</th>
                             <th class="px-4 py-2 text-left text-blue-400">Blue Alliance</th>
@@ -1382,8 +1382,8 @@
                     tbody.innerHTML += `
                     <tr class="hover:bg-gray-750">
                         <td class="px-4 py-2 font-mono text-gray-400">${m.match_id}</td>
-                        <td class="px-4 py-2 text-right">${m.red.join(', ')}</td>
                         <td class="px-4 py-2 text-center font-bold ${getWinProbColor(winProb)}">${winProb.toFixed(0)}%</td>
+                        <td class="px-4 py-2 text-right">${m.red.join(', ')}</td>
                         <td class="px-4 py-2 text-center font-bold text-red-400">${m.red_score}</td>
                         <td class="px-4 py-2 text-center font-bold text-blue-400">${m.blue_score}</td>
                         <td class="px-4 py-2 text-left">${m.blue.join(', ')}</td>
