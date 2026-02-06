@@ -1677,23 +1677,55 @@
                 const height = 60;
                 const width = 300;
 
+                // 1. History Data
                 const scores = matches.map(m => m.score);
-                const min = 0;
-                const max = Math.max(...scores) * 1.1;
-                const range = max - min || 1;
-                const stepX = width / (scores.length - 1);
+                const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
 
+                // 2. Prediction Data (Next 5 Matches)
+                // Simple prediction: Use Average Score for now (visual placeholder)
+                const predictions = Array(5).fill(avg);
+
+                // Combine for scaling
+                const allPoints = [...scores, ...predictions];
+                const min = 0;
+                const max = Math.max(...allPoints) * 1.1;
+                const range = max - min || 1;
+
+                // Total slots = history + 5 predictions
+                const totalPoints = scores.length + 5;
+                const stepX = width / (totalPoints - 1);
+
+                // --- Draw History Line ---
                 let pathD = "";
-                matches.forEach((m, i) => {
+                scores.forEach((s, i) => {
                     const x = i * stepX;
-                    const y = height - ((m.score - min) / range * height);
+                    const y = height - ((s - min) / range * height);
                     if (i === 0) pathD += `M ${x} ${y}`;
                     else pathD += ` L ${x} ${y}`;
                 });
 
-                const lastX = (scores.length - 1) * stepX;
-                const fillD = pathD + ` L ${lastX} ${height} L 0 ${height} Z`;
+                // History Area Fill
+                const lastHistoryX = (scores.length - 1) * stepX;
+                const fillD = pathD + ` L ${lastHistoryX} ${height} L 0 ${height} Z`;
 
+                // --- Draw Trend Line (Prediction) ---
+                let predD = "";
+                // Start from last history point
+                const startX = (scores.length - 1) * stepX;
+                const startY = height - ((scores[scores.length - 1] - min) / range * height);
+                predD += `M ${startX} ${startY}`;
+
+                predictions.forEach((p, i) => {
+                    const x = (scores.length + i) * stepX;
+                    const y = height - ((p - min) / range * height);
+                    predD += ` L ${x} ${y}`;
+                });
+
+                // --- Draw Average Line ---
+                const yAvg = height - ((avg - min) / range * height);
+                const avgLine = `M 0 ${yAvg} L ${width} ${yAvg}`;
+
+                // --- Tooltips for History ---
                 const tooltips = matches.map((m, i) => {
                     const x = i * stepX;
                     return `<rect x="${x - (stepX / 2)}" y="0" width="${stepX}" height="${height}" fill="transparent">
@@ -1709,13 +1741,32 @@
                                 <stop offset="100%" style="stop-color:rgb(99, 102, 241);stop-opacity:0" />
                             </linearGradient>
                         </defs>
+                        
+                        <!-- Average Line -->
+                        <path d="${avgLine}" stroke="#4b5563" stroke-width="1" stroke-dasharray="4,4" />
+                        <text x="2" y="${yAvg - 2}" font-size="8" fill="#9ca3af" class="bg-gray-800 rounded px-1">Avg: ${avg.toFixed(1)}</text>
+
+                        <!-- History Area & Line -->
                         <path d="${fillD}" fill="url(#gradScore)" stroke="none" />
                         <path d="${pathD}" fill="none" stroke="#818cf8" stroke-width="2" vector-effect="non-scaling-stroke" />
-                        ${matches.map((m, i) => {
+                        
+                        <!-- Prediction Line -->
+                        <path d="${predD}" fill="none" stroke="#fbbf24" stroke-width="2" stroke-dasharray="2,2" vector-effect="non-scaling-stroke" />
+
+                        <!-- History Points -->
+                        ${scores.map((s, i) => {
                     const x = i * stepX;
-                    const y = height - ((m.score - min) / range * height);
+                    const y = height - ((s - min) / range * height);
                     return `<circle cx="${x}" cy="${y}" r="2" fill="#c7d2fe" />`;
                 }).join('')}
+                        
+                        <!-- Prediction Points -->
+                        ${predictions.map((p, i) => {
+                    const x = (scores.length + i) * stepX;
+                    const y = height - ((p - min) / range * height);
+                    return `<circle cx="${x}" cy="${y}" r="2" fill="#fbbf24" />`;
+                }).join('')}
+
                         ${tooltips}
                     </svg>
                 `;
