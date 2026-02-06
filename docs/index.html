@@ -1386,6 +1386,7 @@
 
                         if (totalOPR > 0) {
                             winProb = (redOPR / totalOPR) * 100;
+                            winProb = Math.max(0, Math.min(100, winProb));
                         }
                     }
 
