@@ -1048,17 +1048,20 @@
                 data.forEach(t => {
                     const isUser = t.number === "14259";
                     const detailId = `detail-${t.number}`;
-                    const breakdownRows = t.breakdown.map(m => `
-                    <tr class="${m.is_counted ? 'bg-green-900/40 text-green-200' : 'text-gray-500'} border-b border-gray-700/50">
-                        <td class="px-4 py-1">${m.match_id}${m.is_surrogate ? ' (S)' : ''}</td>
-                        <td class="px-4 py-1 text-center">${m.rp}</td>
-                        <td class="px-4 py-1 text-center">${m.score}</td>
-                        <td class="px-4 py-1 text-center">${m.is_counted ? '✓' : ''}</td>
-                    </tr>
-                 `).join('');
+
+                    // Simple logic for chart bars (max 100% relative to reasonable limits)
+                    // Auto max ~50, DC max ~100? or dynamic?
+                    // Let's use % of Total OPR or fixed
+                    const wOpr = t.tourney_opr || t.opr_m3 || t.opr_m2 || t.opr_m1; // Rough est
+                    const wAuto = (t.oprs.m3.auto || t.oprs.m2.auto || t.oprs.m1.auto || 0);
+                    const wDc = (t.oprs.m3.dc || t.oprs.m2.dc || t.oprs.m1.dc || 0);
+
+                    const pAuto = Math.min(100, (wAuto / 60) * 100);
+                    const pDc = Math.min(100, (wDc / 100) * 100);
+                    const pTotal = Math.min(100, (wOpr / 160) * 100);
 
                     tbody.innerHTML += `
-                    <tr class="cursor-pointer ${isUser ? 'bg-blue-900/30' : 'hover:bg-gray-700'} border-b border-gray-700" onclick="document.getElementById('${detailId}').classList.toggle('hidden')">
+                    <tr class="cursor-pointer ${isUser ? 'bg-blue-900/30' : 'hover:bg-gray-700'} border-b border-gray-700 transition" onclick="document.getElementById('${detailId}').classList.toggle('hidden')">
                         <td class="px-6 py-4 font-bold text-center">${t.league_rank}</td>
                         <td class="px-6 py-4 font-mono text-first font-bold">${t.number}</td>
                         <td class="px-6 py-4 text-gray-300 min-w-[150px]">${t.name}</td>
@@ -1071,21 +1074,98 @@
                         <td class="px-6 py-4 text-center text-gray-500">${t.matches_played}</td>
                         <td class="px-6 py-4 text-center text-xs text-gray-500">▼</td>
                     </tr>
-                    <tr id="${detailId}" class="hidden bg-gray-900/50">
+                    <tr id="${detailId}" class="hidden bg-gray-900/80 border-b border-gray-700">
                         <td colspan="11" class="p-4">
-                            <div class="bg-gray-800 rounded p-4 mb-3">
-                                <h4 class="font-bold mb-2 text-xs text-gray-400 uppercase">Match Breakdown</h4>
-                                <table class="w-full text-sm"><tbody>${breakdownRows}</tbody></table>
+                            <!-- Advanced Metrics Layout -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                
+                                <!-- OPR Breakdown Chart -->
+                                <div class="bg-gray-800 rounded p-4 border border-gray-700">
+                                    <h4 class="font-bold mb-4 text-xs text-indigo-400 uppercase tracking-widest">Performance Profile (Est. OPR)</h4>
+                                    
+                                    <div class="mb-3">
+                                        <div class="flex justify-between text-sm mb-1">
+                                            <span class="text-gray-400">Total OPR</span>
+                                            <span class="font-bold text-white">${wOpr.toFixed(1)}</span>
+                                        </div>
+                                        <div class="w-full bg-gray-700 rounded-full h-2">
+                                            <div class="bg-indigo-500 h-2 rounded-full" style="width: ${pTotal}%"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="flex justify-between text-sm mb-1">
+                                            <span class="text-green-400">Auto OPR</span>
+                                            <span class="font-bold text-green-300">${wAuto.toFixed(1)}</span>
+                                        </div>
+                                        <div class="w-full bg-gray-700 rounded-full h-2">
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: ${pAuto}%"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-1">
+                                        <div class="flex justify-between text-sm mb-1">
+                                            <span class="text-blue-400">Tele/End OPR</span>
+                                            <span class="font-bold text-blue-300">${wDc.toFixed(1)}</span>
+                                        </div>
+                                        <div class="w-full bg-gray-700 rounded-full h-2">
+                                            <div class="bg-blue-500 h-2 rounded-full" style="width: ${pDc}%"></div>
+                                        </div>
+                                    </div>
+                                    <p class="text-[10px] text-gray-500 mt-2">*Based on latest meet performance</p>
+                                </div>
+
+                                <!-- Average Scores & Match History -->
+                                <div class="bg-gray-800 rounded p-4 border border-gray-700 col-span-2">
+                                    <div class="grid grid-cols-4 gap-4 text-center mb-4">
+                                        <div class="p-2 bg-gray-750 rounded">
+                                            <div class="text-[10px] text-gray-400 uppercase">Avg Score</div>
+                                            <div class="text-xl font-bold text-white">${t.avg_score.toFixed(1)}</div>
+                                        </div>
+                                        <div class="p-2 bg-gray-750 rounded">
+                                            <div class="text-[10px] text-green-400 uppercase">Avg Auto</div>
+                                            <div class="text-lg font-bold text-white">${t.avg_auto.toFixed(1)}</div>
+                                        </div>
+                                        <div class="p-2 bg-gray-750 rounded">
+                                            <div class="text-[10px] text-blue-400 uppercase">Avg Tele/End</div>
+                                            <div class="text-lg font-bold text-white">${t.avg_dc.toFixed(1)}</div>
+                                        </div>
+                                        <div class="p-2 bg-gray-750 rounded">
+                                            <div class="text-[10px] text-gray-400 uppercase">Matches</div>
+                                            <div class="text-lg font-bold text-white">${t.matches_played}</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="overflow-x-auto max-h-40 overflow-y-auto">
+                                        <table class="w-full text-xs text-left">
+                                            <thead class="text-gray-500 border-b border-gray-700 sticky top-0 bg-gray-800">
+                                                <tr>
+                                                    <th class="py-1 pl-2">Match</th>
+                                                    <th class="py-1">Alliance</th>
+                                                    <th class="py-1 text-right">Auto</th>
+                                                    <th class="py-1 text-right">Tele/End</th>
+                                                    <th class="py-1 text-right">Total</th>
+                                                    <th class="py-1 text-center">RP</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="text-gray-300">
+                                                ${app.getMatchRowsForTeam(t.number)}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="bg-gray-800 rounded p-4">
-                                <h4 class="font-bold mb-2 text-xs text-gray-400 uppercase">Team Notes (Shared)</h4>
+                            
+                            <!-- Notes -->
+                            <div class="mt-3 bg-gray-800 rounded p-4 border border-gray-700 flex flex-col">
+                                <h4 class="font-bold mb-2 text-xs text-yellow-400 uppercase tracking-widest">Team Notes (Shared)</h4>
                                 <textarea 
-                                    class="w-full bg-gray-700 text-white rounded p-2 text-sm"
-                                    rows="3" 
-                                    placeholder="Add notes for this team (e.g. Robot capabilities, strategy)..."
+                                    class="w-full bg-gray-700 text-white rounded p-3 text-sm flex-grow border border-gray-600 focus:border-yellow-500 focus:outline-none transition"
+                                    rows="2" 
+                                    placeholder="Add notes (e.g. Robot reliability, auto paths)..."
                                     onchange="app.saveTeamNote('${t.number}', this.value)"
                                 >${AppState.teamNotes[t.number] || ''}</textarea>
-                                <div class="text-xs text-gray-500 mt-1 text-right">Auto-saves on change</div>
+                                <div class="text-[10px] text-gray-500 mt-1 text-right">Auto-saves to cloud</div>
                             </div>
                         </td>
                     </tr>
