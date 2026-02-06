@@ -175,6 +175,8 @@
                 class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Meet 3</button>
             <button onclick="app.switchTab('tournament')" id="tab-tournament"
                 class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Tournament (Hypothetical)</button>
+            <button onclick="app.switchTab('tournament-real')" id="tab-tournament-real"
+                class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Tournament (Real)</button>
             <button onclick="app.switchTab('advancement')" id="tab-advancement"
                 class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Advancement</button>
             <button onclick="app.switchTab('alliance')" id="tab-alliance"
@@ -259,6 +261,42 @@
                     class="mt-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">+ Add Match</button>
             </div>
         </div>
+
+        <!-- TOURNAMENT REAL -->
+        <div id="content-tournament-real" class="tab-content hidden">
+            <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-first">Tournament (Real) - Live Matches</h2>
+                    <button onclick="app.fetchTournamentReal()" 
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-bold flex items-center gap-2">
+                        <span id="tournament-refresh-icon">↻</span> Reload Tournament Data
+                    </button>
+                </div>
+                <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-700 text-gray-300 sticky top-0">
+                            <tr>
+                                <th class="px-3 py-2">Match</th>
+                                <th class="px-3 py-2 text-red-400">R1</th>
+                                <th class="px-3 py-2 text-red-400">R2</th>
+                                <th class="px-3 py-2 text-center text-red-500">Score</th>
+                                <th class="px-3 py-2 text-center text-red-500">RP</th>
+                                <th class="px-3 py-2 text-blue-400">B1</th>
+                                <th class="px-3 py-2 text-blue-400">B2</th>
+                                <th class="px-3 py-2 text-center text-blue-500">Score</th>
+                                <th class="px-3 py-2 text-center text-blue-500">RP</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tournament-real-body" class="divide-y divide-gray-700"></tbody>
+                    </table>
+                </div>
+                <p class="text-xs text-gray-400 mt-4">
+                    Click "Reload Tournament Data" to fetch latest matches from FTCScout. 
+                    Real matches will auto-populate the Tournament (Hypothetical) tab.
+                </p>
+            </div>
+        </div>
+
 
         <!-- ADVANCEMENT -->
         <div id="content-advancement" class="tab-content hidden">
@@ -410,6 +448,8 @@
             { code: "USCANOEBM2", prefix: "M2" },
             { code: "USCANOEBM3", prefix: "M3" }
         ];
+        
+        const TOURNAMENT_EVENT = { code: "USCANOEBT", prefix: "TOURN" };
 
         const TEAMS = [
             { number: "5214", name: '"B.R.O." (Bot Resources Operation)' },
@@ -435,6 +475,7 @@
         const AppState = {
             matches: [],             // All fetched matches
             hypotheticalMatches: [], // User added matches
+            tournamentRealMatches: [], // Real tournament matches from FTCScout
             awards: [],              // User added awards
             teamNotes: {},           // teamNum -> text note
             allianceList: [],        // Ordered list of team numbers
@@ -677,6 +718,103 @@
          * UI Controller
          */
         const app = {
+            
+            async fetchTournamentReal() {
+                const icon = document.getElementById('tournament-refresh-icon');
+                if (icon) icon.classList.add('animate-spin');
+                
+                try {
+                    const matches = await fetchMeetData(TOURNAMENT_EVENT.code, TOURNAMENT_EVENT.prefix);
+                    
+                    // Store tournament matches
+                    AppState.tournamentRealMatches = matches || [];
+                    
+                    // Render in Tournament (Real) tab
+                    app.renderTournamentReal();
+                    
+                    // Auto-populate Tournament (Hypothetical) tab
+                    app.populateHypotheticalFromReal();
+                    
+                    alert(`Loaded ${matches.length} tournament matches!`);
+                } catch (e) {
+                    console.error(e);
+                    alert('Error loading tournament data: ' + e.message);
+                } finally {
+                    if (icon) icon.classList.remove('animate-spin');
+                }
+            },
+
+            renderTournamentReal() {
+                const tbody = document.getElementById('tournament-real-body');
+                if (!tbody) return;
+                
+                tbody.innerHTML = '';
+                
+                if (!AppState.tournamentRealMatches || AppState.tournamentRealMatches.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-gray-500">No tournament matches loaded yet. Click "Reload Tournament Data".</td></tr>';
+                    return;
+                }
+                
+                AppState.tournamentRealMatches.forEach(m => {
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-gray-750';
+                    row.innerHTML = `
+                        <td class="px-3 py-2 font-mono text-gray-400">${m.match_id}</td>
+                        <td class="px-3 py-2">${m.red[0] || ''}</td>
+                        <td class="px-3 py-2">${m.red[1] || ''}</td>
+                        <td class="px-3 py-2 text-center font-bold text-red-400">${m.red_score}</td>
+                        <td class="px-3 py-2 text-center">${m.red_rp}</td>
+                        <td class="px-3 py-2">${m.blue[0] || ''}</td>
+                        <td class="px-3 py-2">${m.blue[1] || ''}</td>
+                        <td class="px-3 py-2 text-center font-bold text-blue-400">${m.blue_score}</td>
+                        <td class="px-3 py-2 text-center">${m.blue_rp}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            },
+
+            populateHypotheticalFromReal() {
+                if (!AppState.tournamentRealMatches || AppState.tournamentRealMatches.length === 0) return;
+                
+                // Clear existing hypothetical matches
+                AppState.hypotheticalMatches = [];
+                
+                // Populate from real
+                AppState.tournamentRealMatches.forEach(m => {
+                    const matchNum = m.match_id.replace('TOURN-Q', '');
+                    const hypo = {
+                        match_id: `Q-${matchNum}`,
+                        r1: m.red[0] || '',
+                        r2: m.red[1] || '',
+                        red_score: m.red_score,
+                        red_rp: m.red_rp,
+                        red: m.red,
+                        b1: m.blue[0] || '',
+                        b2: m.blue[1] || '',
+                        blue_score: m.blue_score,
+                        blue_rp: m.blue_rp,
+                        blue: m.blue,
+                        match_type: 'TOURNAMENT'
+                    };
+                    AppState.hypotheticalMatches.push(hypo);
+                    
+                    // Update UI row
+                    const row = document.getElementById(`tmatch-${matchNum}`);
+                    if (row) {
+                        const inputs = row.querySelectorAll('input');
+                        inputs[0].value = hypo.r1; inputs[1].value = hypo.r2;
+                        inputs[2].value = hypo.red_score; inputs[3].value = hypo.red_rp;
+                        inputs[4].value = hypo.b1; inputs[5].value = hypo.b2;
+                        inputs[6].value = hypo.blue_score; inputs[7].value = hypo.blue_rp;
+                        app.updateRowUI(row, inputs, matchNum, true);
+                    }
+                });
+                
+                app.saveState();
+                app.renderStandings();
+            },
+
+            
             async init() {
                 // Load Token
                 const token = localStorage.getItem('gh_token');
@@ -781,6 +919,7 @@
                 if (tabId === 'standings') app.renderStandings();
                 if (tabId === 'advancement') app.renderAdvancement();
                 if (tabId === 'alliance') app.renderAlliance();
+                if (tabId === 'tournament-real') app.renderTournamentReal();
             },
 
             renderStandings() {
