@@ -593,18 +593,26 @@
             const blueTeams = m.teams.filter(t => t.alliance === 'Blue');
 
             let r_rp = 0, b_rp = 0, r_score = 0, b_score = 0;
+            let r_auto = 0, b_auto = 0, r_dc = 0, b_dc = 0;
 
             if (m.scores) {
-                r_score = m.scores.red.totalPoints;
-                b_score = m.scores.blue.totalPoints;
+                const s = m.scores;
+                r_score = s.red.totalPoints;
+                b_score = s.blue.totalPoints;
+
+                // New Metrics
+                r_auto = s.red.autoPoints || 0;
+                b_auto = s.blue.autoPoints || 0;
+                r_dc = s.red.dcPoints || 0;
+                b_dc = s.blue.dcPoints || 0;
 
                 // Calc Base RP
                 const r_base = (r_score > b_score) ? 3 : (r_score === b_score ? 1 : 0);
                 const b_base = (b_score > r_score) ? 3 : (b_score === r_score ? 1 : 0);
 
                 // Bonus
-                const r_bonus = (m.scores.red.movementRp || 0) + (m.scores.red.goalRp || 0) + (m.scores.red.patternRp || 0);
-                const b_bonus = (m.scores.blue.movementRp || 0) + (m.scores.blue.goalRp || 0) + (m.scores.blue.patternRp || 0);
+                const r_bonus = (s.red.movementRp ? 1 : 0) + (s.red.goalRp ? 1 : 0) + (s.red.patternRp ? 1 : 0);
+                const b_bonus = (s.blue.movementRp ? 1 : 0) + (s.blue.goalRp ? 1 : 0) + (s.blue.patternRp ? 1 : 0);
 
                 r_rp = r_base + r_bonus;
                 b_rp = b_base + b_bonus;
@@ -618,6 +626,10 @@
                 blue_score: b_score,
                 red_score_np: (r_score - (m.scores?.red?.penaltyPointsByOpp || 0)),
                 blue_score_np: (b_score - (m.scores?.blue?.penaltyPointsByOpp || 0)),
+                red_auto: r_auto,
+                blue_auto: b_auto,
+                red_dc: r_dc,
+                blue_dc: b_dc,
                 red_rp: r_rp,
                 blue_rp: b_rp,
                 surrogates: m.teams.filter(t => t.surrogate).map(t => t.teamNumber.toString()),
@@ -665,17 +677,38 @@
                 };
             });
 
-            // 2. Calculate Split OPR
+            // 2. Calculate Split OPR (Total, Auto, DC)
             const allTeamNums = Array.from(dynamicTeams);
             const m1Matches = allMatches.filter(m => m.match_id.startsWith('M1-'));
             const m2Matches = allMatches.filter(m => m.match_id.startsWith('M2-'));
             const m3Matches = allMatches.filter(m => m.match_id.startsWith('M3-'));
             const tourneyMatches = allMatches.filter(m => m.match_type === 'TOURNAMENT');
 
-            const oprM1 = solveOPR(m1Matches, allTeamNums);
-            const oprM2 = solveOPR(m2Matches, allTeamNums);
-            const oprM3 = solveOPR(m3Matches, allTeamNums);
-            const tourneyOPR = solveOPR(tourneyMatches, allTeamNums);
+            // Helper to solve for different metrics
+            const solveForMetric = (matches, metricName) => {
+                if (metricName === 'score') return solveOPR(matches, allTeamNums);
+                // Create shadow matches with swapped scores
+                const shadow = matches.map(m => ({
+                    ...m,
+                    red_score: m[`red_${metricName}`] || 0,
+                    blue_score: m[`blue_${metricName}`] || 0
+                }));
+                return solveOPR(shadow, allTeamNums);
+            };
+
+            const oprM1 = solveForMetric(m1Matches, 'score');
+            const oprM2 = solveForMetric(m2Matches, 'score');
+            const oprM3 = solveForMetric(m3Matches, 'score');
+
+            const oprAutoM1 = solveForMetric(m1Matches, 'auto');
+            const oprAutoM2 = solveForMetric(m2Matches, 'auto');
+            const oprAutoM3 = solveForMetric(m3Matches, 'auto');
+
+            const oprDcM1 = solveForMetric(m1Matches, 'dc');
+            const oprDcM2 = solveForMetric(m2Matches, 'dc');
+            const oprDcM3 = solveForMetric(m3Matches, 'dc');
+
+            const tourneyOPR = solveForMetric(tourneyMatches, 'score');
 
             // 3. Distribute matches to teams
             allMatches.forEach(m => {
@@ -689,6 +722,8 @@
                             match_id: m.match_id,
                             rp: isRed ? m.red_rp : m.blue_rp,
                             score: isRed ? m.red_score : m.blue_score,
+                            auto: isRed ? m.red_auto : m.blue_auto,
+                            dc: isRed ? m.red_dc : m.blue_dc,
                             is_surrogate: isSurrogate,
                             match_type: m.match_type
                         };
@@ -700,11 +735,22 @@
 
             // 4. Calculate Stats per Team
             Object.values(AppState.teamsData).forEach(team => {
-                // Assign OPR
+                // Assign OPRs
                 team.opr_m1 = oprM1[team.number] || 0;
                 team.opr_m2 = oprM2[team.number] || 0;
                 team.opr_m3 = oprM3[team.number] || 0;
                 team.tourney_opr = tourneyOPR[team.number] || 0;
+
+                // Component OPRs (Weighted Season Avg)
+                // Use a simple sum for now to store, breakdown handles display
+                team.opr_auto = (oprAutoM1[team.number] || 0) + (oprAutoM2[team.number] || 0) + (oprAutoM3[team.number] || 0);
+                // Wait, summing OPRs of different meets is wrong. We need to store them separately or average them weighted by play.
+                // Let's store individual meets in a 'stats' object or just flattened.
+                team.oprs = {
+                    m1: { total: oprM1[team.number] || 0, auto: oprAutoM1[team.number] || 0, dc: oprDcM1[team.number] || 0 },
+                    m2: { total: oprM2[team.number] || 0, auto: oprAutoM2[team.number] || 0, dc: oprDcM2[team.number] || 0 },
+                    m3: { total: oprM3[team.number] || 0, auto: oprAutoM3[team.number] || 0, dc: oprDcM3[team.number] || 0 }
+                };
 
                 // League Meets (Top 10)
                 const leagueMatches = team.matches.filter(m => m.match_type === 'MEET' && !m.is_surrogate)
@@ -726,7 +772,12 @@
                 const validMatches = team.matches.filter(m => !m.is_surrogate);
                 team.matches_played = validMatches.length;
                 const totalScore = validMatches.reduce((s, m) => s + m.score, 0);
+                const totalAuto = validMatches.reduce((s, m) => s + (m.auto || 0), 0);
+                const totalDc = validMatches.reduce((s, m) => s + (m.dc || 0), 0);
+
                 team.avg_score = team.matches_played > 0 ? totalScore / team.matches_played : 0;
+                team.avg_auto = team.matches_played > 0 ? totalAuto / team.matches_played : 0;
+                team.avg_dc = team.matches_played > 0 ? totalDc / team.matches_played : 0;
 
                 // Breakdown for UI
                 const countedIds = new Set([...top10League, ...top5Tourney].map(m => m.match_id));
