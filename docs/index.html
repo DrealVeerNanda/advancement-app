@@ -928,16 +928,15 @@
             },
 
             async loadFromCloud() {
-                app.setCloudStatus('Loading...', 'text-yellow-400');
+                app.setCloudStatus("Loading...", "text-yellow-400");
                 try {
                     let data = null;
-                    const token = document.getElementById('gh-token').value.trim();
+                    const token = document.getElementById("gh-token").value.trim();
 
-                    // 1. Prefer API if Token exists (Instant, no cache)
                     if (token) {
                         try {
                             const apiUrl = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}`;
-                            const apiRes = await fetch(apiUrl, { headers: { 'Authorization': `token ${token}` } });
+                            const apiRes = await fetch(apiUrl, { headers: { "Authorization": `token ${token}` }, cache: "no-store" });
                             if (apiRes.ok) {
                                 const json = await apiRes.json();
                                 if (json.content) {
@@ -945,47 +944,43 @@
                                     data = JSON.parse(decoded);
                                 }
                             }
-                        } catch (ignore) { console.warn("API load failed, falling back"); }
+                        } catch(ignore) { console.warn("API load failed, falling back"); }
                     }
 
-                    // 2. Fallback to Public URL
                     if (!data) {
-                        const webPath = CONFIG.path.replace(/^docs\//, '');
+                        const webPath = CONFIG.path.replace(/^docs//, "");
                         const webUrl = `https://${CONFIG.owner}.github.io/${CONFIG.repo}/${webPath}?t=${Date.now()}`;
-
-                        const res = await fetch(webUrl);
-                        if (res.ok) {
-                            data = await res.json();
-                        }
+                        const res = await fetch(webUrl, { cache: "no-store" });
+                        if (res.ok) data = await res.json();
                     }
 
-                    if (!data) throw new Error('No data found (check Token or wait for GitHub Pages build)');
+                    if (!data) throw new Error("No data found (check Token or wait for GitHub Pages build)");
 
-                    // 3. Update State
+                    AppState.hypotheticalMatches = [];
+                    AppState.awards = [];
+                    document.getElementById("adv_team").value = "";
+                    document.querySelectorAll("input[type=text], input[type=number]").forEach(i => {
+                        if(i.id !== "gh-token") i.value = "";
+                    });
+                    document.querySelectorAll("[id^=tmatch-]").forEach(r => {
+                        r.classList.remove("bg-yellow-900/40");
+                        r.classList.add("bg-gray-700");
+                    });
+
                     AppState.hypotheticalMatches = data.hypotheticalMatches || [];
                     AppState.awards = data.awards || [];
                     AppState.isHypothetical = data.isHypothetical || false;
-
                     app.saveState();
 
-                    // 4. Update UI without Reload (Instant)
-                    document.getElementById('mode-toggle').checked = AppState.isHypothetical;
-                    // Reset UI classes manually to avoid loop issues
-                    if (AppState.isHypothetical) document.body.classList.add('hypothetical-mode-active');
-                    else document.body.classList.remove('hypothetical-mode-active');
-
-                    // Restore match inputs (clear first then fill)
-                    document.querySelectorAll('[id^="tmatch-"] input').forEach(i => i.value = '');
-                    document.querySelectorAll('[id^="tmatch-"]').forEach(r => {
-                        r.classList.remove('bg-yellow-900/40');
-                        r.classList.add('bg-gray-700');
-                    });
+                    document.getElementById("mode-toggle").checked = AppState.isHypothetical;
+                    if(AppState.isHypothetical) document.body.classList.add("hypothetical-mode-active");
+                    else document.body.classList.remove("hypothetical-mode-active");
 
                     AppState.hypotheticalMatches.forEach(m => {
-                        const num = m.match_id.split('-')[1];
+                        const num = m.match_id.split("-")[1];
                         const row = document.getElementById(`tmatch-${num}`);
                         if (row) {
-                            const inputs = row.querySelectorAll('input');
+                            const inputs = row.querySelectorAll("input");
                             inputs[0].value = m.r1; inputs[1].value = m.r2;
                             inputs[2].value = m.red_score; inputs[3].value = m.red_rp;
                             inputs[4].value = m.b1; inputs[5].value = m.b2;
@@ -995,14 +990,14 @@
                     });
 
                     app.updateAwardsList();
-                    app.renderStandings();
+                    app.renderStandings(); 
                     app.renderAdvancement();
 
-                    app.setCloudStatus('Loaded successfully!', 'text-green-500');
-
+                    app.setCloudStatus("Loaded successfully! ✓", "text-green-500");
+                    setTimeout(() => app.setCloudStatus("", ""), 3000);
                 } catch (e) {
                     console.error(e);
-                    app.setCloudStatus('Load Error: ' + e.message, 'text-red-500');
+                    app.setCloudStatus("Load Error: " + e.message, "text-red-500");
                 }
             },
 
