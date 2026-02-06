@@ -248,10 +248,10 @@
                             <th class="px-6 py-3">Rank</th>
                             <th class="px-6 py-3">Team</th>
                             <th class="px-6 py-3">Name</th>
+                            <th class="px-6 py-3 text-center" title="Highest OPR across all meets">Highest OPR</th>
                             <th class="px-6 py-3 text-center" title="Estimated Tournament OPR (Prediction)">Est. OPR
                             </th>
                             <th class="px-6 py-3 text-center" title="Tournament OPR">Tourn OPR</th>
-                            <th class="px-6 py-3 text-center" title="Highest OPR across all meets">Highest OPR</th>
                             <th class="px-6 py-3 text-center">Total RP</th>
                             <th class="px-6 py-3 text-center">Avg Score</th>
                             <th class="px-6 py-3 text-center">Matches</th>
@@ -1131,10 +1131,16 @@
                     const allOPRs = [t.opr_m1, t.opr_m2, t.opr_m3, t.tourney_opr].filter(opr => opr > 0);
                     const highestOPR = allOPRs.length > 0 ? Math.max(...allOPRs) : 0;
 
-                    // Calculate difficulty percentage (relative to league average)
-                    const avgDifficulty = (advStats.matchDifficulty.m1 + advStats.matchDifficulty.m2 + advStats.matchDifficulty.m3 + advStats.matchDifficulty.tournament) / 4;
+                    // Calculate per-meet difficulty percentages (relative to league average)
                     const leagueAvgDifficulty = data.reduce((sum, team) => sum + (team.tourney_opr || team.opr_m3 || team.opr_m2 || team.opr_m1 || 0), 0) / data.length;
-                    const difficultyPercentage = leagueAvgDifficulty > 0 ? (avgDifficulty / leagueAvgDifficulty * 100) : 100;
+
+                    const getDifficultyPercent = (difficulty) => leagueAvgDifficulty > 0 ? (difficulty / leagueAvgDifficulty * 100) : 100;
+                    const getDifficultyColor = (percent) => percent > 105 ? 'text-red-400' : percent < 95 ? 'text-green-400' : 'text-gray-400';
+
+                    const diffM1Pct = getDifficultyPercent(advStats.matchDifficulty.m1);
+                    const diffM2Pct = getDifficultyPercent(advStats.matchDifficulty.m2);
+                    const diffM3Pct = getDifficultyPercent(advStats.matchDifficulty.m3);
+                    const diffTournPct = getDifficultyPercent(advStats.matchDifficulty.tournament);
 
                     tbody.innerHTML += `
                     <tr class="cursor-pointer ${isUser ? 'bg-blue-900/30' : 'hover:bg-gray-700'} border-b border-gray-700 transition" onclick="document.getElementById('${detailId}').classList.toggle('hidden')">
@@ -1146,9 +1152,9 @@
                                 <span class="bg-gray-700/50 px-1 rounded text-gray-300" title="Estimated Global Percentile">Top ${(100 - percentile).toFixed(1)}% World</span>
                             </div>
                         </td>
+                        <td class="px-6 py-4 text-center text-yellow-400 font-bold">${highestOPR.toFixed(0)}</td>
                         <td class="px-6 py-4 text-center text-indigo-400 font-bold">${predictedVal.toFixed(0)}</td>
                         <td class="px-6 py-4 text-center text-orange-500 font-bold">${t.tourney_opr.toFixed(0)}</td>
-                        <td class="px-6 py-4 text-center text-yellow-400 font-bold">${highestOPR.toFixed(0)}</td>
                         <td class="px-6 py-4 text-center font-bold text-lg">${t.total_rp}</td>
                         <td class="px-6 py-4 text-center text-gray-400">${t.avg_score.toFixed(1)}</td>
                         <td class="px-6 py-4 text-center text-gray-500">${t.matches_played}</td>
@@ -1230,25 +1236,22 @@
                                             </div>
                                             <!-- Match Difficulty -->
                                             <div class="mt-2 pt-2 border-t border-gray-700/30">
-                                                <div class="flex justify-between items-center mb-1">
-                                                    <span class="text-[10px] text-gray-500 uppercase">Match Difficulty</span>
-                                                    <span class="text-[10px] font-bold ${difficultyPercentage > 105 ? 'text-red-400' : difficultyPercentage < 95 ? 'text-green-400' : 'text-gray-400'}" title="Relative to league average">${difficultyPercentage.toFixed(0)}%</span>
+                                                <div class="text-[10px] text-gray-500 uppercase mb-1">Match Difficulty</div>
+                                                <div class="flex justify-between text-xs">
+                                                    <span class="text-yellow-600">M1: ${advStats.matchDifficulty.m1.toFixed(0)}</span>
+                                                    <span class="font-mono font-bold ${getDifficultyColor(diffM1Pct)}" title="Relative to league average">${diffM1Pct.toFixed(0)}%</span>
                                                 </div>
                                                 <div class="flex justify-between text-xs">
-                                                    <span class="text-yellow-600">M1:</span>
-                                                    <span class="font-mono text-gray-300">${advStats.matchDifficulty.m1.toFixed(0)}</span>
+                                                    <span class="text-yellow-500">M2: ${advStats.matchDifficulty.m2.toFixed(0)}</span>
+                                                    <span class="font-mono font-bold ${getDifficultyColor(diffM2Pct)}" title="Relative to league average">${diffM2Pct.toFixed(0)}%</span>
                                                 </div>
                                                 <div class="flex justify-between text-xs">
-                                                    <span class="text-yellow-500">M2:</span>
-                                                    <span class="font-mono text-gray-300">${advStats.matchDifficulty.m2.toFixed(0)}</span>
+                                                    <span class="text-yellow-400">M3: ${advStats.matchDifficulty.m3.toFixed(0)}</span>
+                                                    <span class="font-mono font-bold ${getDifficultyColor(diffM3Pct)}" title="Relative to league average">${diffM3Pct.toFixed(0)}%</span>
                                                 </div>
                                                 <div class="flex justify-between text-xs">
-                                                    <span class="text-yellow-400">M3:</span>
-                                                    <span class="font-mono text-gray-300">${advStats.matchDifficulty.m3.toFixed(0)}</span>
-                                                </div>
-                                                <div class="flex justify-between text-xs">
-                                                    <span class="text-orange-400">Tourn:</span>
-                                                    <span class="font-mono text-gray-300">${advStats.matchDifficulty.tournament.toFixed(0)}</span>
+                                                    <span class="text-orange-400">Tourn: ${advStats.matchDifficulty.tournament.toFixed(0)}</span>
+                                                    <span class="font-mono font-bold ${getDifficultyColor(diffTournPct)}" title="Relative to league average">${diffTournPct.toFixed(0)}%</span>
                                                 </div>
                                             </div>
                                          </div>
