@@ -1916,12 +1916,12 @@
                 // Blue Score becomes Red Score (points allowed).
                 const dpMatches = matches.map(m => ({
                     ...m,
-                    red_score: m.blue_score, // Red allow Blue's score
-                    blue_score: m.red_score, // Blue allow Red's score
-                    red_score_np: m.blue_score,
-                    blue_score_np: m.red_score
+                    red_score: Number(m.blue_score) || 0, // Force number
+                    blue_score: Number(m.red_score) || 0,
+                    red_score_np: Number(m.blue_score) || 0,
+                    blue_score_np: Number(m.red_score) || 0
                 }));
-                return solveOPR(dpMatches, teamNumbers);
+                return solveOPR(dpMatches, teamNumbers); // Call global function
             },
 
             getStandardDeviation(array) {
