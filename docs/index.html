@@ -133,6 +133,8 @@
                 class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Tournament (Hypothetical)</button>
             <button onclick="app.switchTab('advancement')" id="tab-advancement"
                 class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Advancement</button>
+            <button onclick="app.switchTab('alliance')" id="tab-alliance"
+                class="tab-btn px-4 py-2 bg-gray-800 rounded-t-lg hover:bg-gray-700">Selection</button>
         </div>
 
         <!-- STANDINGS -->
@@ -268,6 +270,30 @@
                 </div>
             </div>
         </div>
+
+        <!-- ALLIANCE SELECTION -->
+        <div id="content-alliance" class="tab-content hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Available Teams -->
+                <div class="bg-gray-800 rounded-lg p-4 shadow-lg">
+                    <h3 class="font-bold mb-3 text-lg text-gray-300">Available Teams</h3>
+                    <input type="text" id="alliance-search" placeholder="Search team..."
+                        class="w-full bg-gray-700 text-white rounded p-2 mb-3 border border-gray-600"
+                        onkeyup="app.renderAlliance()">
+                    <div id="alliance-available" class="space-y-2 max-h-[60vh] overflow-y-auto"></div>
+                </div>
+
+                <!-- My List -->
+                <div class="bg-gray-800 rounded-lg p-4 shadow-lg">
+                    <h3 class="font-bold mb-3 text-lg text-yellow-400">My Selection List</h3>
+                    <p class="text-xs text-gray-400 mb-2">Drag to reorder or use arrows.</p>
+                    <div id="alliance-selected"
+                        class="space-y-2 max-h-[60vh] overflow-y-auto min-h-[200px] border-2 border-dashed border-gray-700 rounded p-2">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
 
     <!-- Datalist -->
@@ -333,6 +359,8 @@
             matches: [],             // All fetched matches
             hypotheticalMatches: [], // User added matches
             awards: [],              // User added awards
+            teamNotes: {},           // teamNum -> text note
+            allianceList: [],        // Ordered list of team numbers
             isHypothetical: false,
             lastFetch: null,
             teamsData: {}            // number -> { ...stats, matches: [] }
@@ -582,6 +610,8 @@
                     const s = JSON.parse(stored);
                     AppState.hypotheticalMatches = s.hypotheticalMatches || [];
                     AppState.awards = s.awards || [];
+                    AppState.teamNotes = s.teamNotes || {};
+                    AppState.allianceList = s.allianceList || [];
                     AppState.isHypothetical = s.isHypothetical || false;
                     document.getElementById('mode-toggle').checked = AppState.isHypothetical;
                     app.toggleMode(false); // Update UI only
@@ -671,7 +701,8 @@
                 btn.classList.add('bg-first', 'text-white');
 
                 if (tabId === 'standings') app.renderStandings();
-                if (tabId === 'advancement') app.renderAdvancement();
+                if (tabId === 'advancement') app.renderAdvancement(); app.renderAlliance();
+                if (tabId === 'alliance') app.renderAlliance();
             },
 
             renderStandings() {
@@ -706,9 +737,22 @@
                         <td class="px-6 py-4 text-center text-xs text-gray-500">▼</td>
                     </tr>
                     <tr id="${detailId}" class="hidden bg-gray-900/50">
-                        <td colspan="11" class="p-4"><div class="bg-gray-800 rounded p-4">
-                            <table class="w-full text-sm"><tbody>${breakdownRows}</tbody></table>
-                        </div></td>
+                        <td colspan="11" class="p-4">
+                            <div class="bg-gray-800 rounded p-4 mb-3">
+                                <h4 class="font-bold mb-2 text-xs text-gray-400 uppercase">Match Breakdown</h4>
+                                <table class="w-full text-sm"><tbody>${breakdownRows}</tbody></table>
+                            </div>
+                            <div class="bg-gray-800 rounded p-4">
+                                <h4 class="font-bold mb-2 text-xs text-gray-400 uppercase">Team Notes (Shared)</h4>
+                                <textarea 
+                                    class="w-full bg-gray-700 text-white rounded p-2 text-sm"
+                                    rows="3" 
+                                    placeholder="Add notes for this team (e.g. Robot capabilities, strategy)..."
+                                    onchange="app.saveTeamNote('${t.number}', this.value)"
+                                >${AppState.teamNotes[t.number] || ''}</textarea>
+                                <div class="text-xs text-gray-500 mt-1 text-right">Auto-saves on change</div>
+                            </div>
+                        </td>
                     </tr>
                  `;
                 });
@@ -797,7 +841,7 @@
 
                 // 4. Update Rankings
                 app.renderStandings();
-                app.renderAdvancement();
+                app.renderAdvancement(); app.renderAlliance();
             },
 
             updateRowUI(row, inputs, num, saved) {
@@ -819,7 +863,7 @@
                 AppState.awards.push({ team: t, award: label, award_val: val });
                 app.saveState();
                 app.updateAwardsList();
-                app.renderAdvancement();
+                app.renderAdvancement(); app.renderAlliance();
                 document.getElementById('adv_team').value = '';
             },
 
@@ -833,11 +877,118 @@
             `).join('');
             },
 
+            saveTeamNote(teamNum, note) {
+                if (!AppState.teamNotes) AppState.teamNotes = {};
+                AppState.teamNotes[teamNum] = note;
+                app.saveState();
+            },
+
+            saveTeamNote(teamNum, note) {
+                if (!AppState.teamNotes) AppState.teamNotes = {};
+                AppState.teamNotes[teamNum] = note;
+                app.saveState();
+            },
+
+            // ALLIANCE FUNCTIONS
+            addToAlliance(teamNum) {
+                if (!AppState.allianceList) AppState.allianceList = [];
+                if (!AppState.allianceList.includes(teamNum)) {
+                    AppState.allianceList.push(teamNum);
+                    app.saveState();
+                    app.renderAlliance();
+                }
+            },
+
+            removeFromAlliance(teamNum) {
+                AppState.allianceList = AppState.allianceList.filter(t => t !== teamNum);
+                app.saveState();
+                app.renderAlliance();
+            },
+
+            moveAllianceItem(index, direction) {
+                const list = AppState.allianceList;
+                if (direction === -1 && index > 0) {
+                    [list[index], list[index - 1]] = [list[index - 1], list[index]];
+                } else if (direction === 1 && index < list.length - 1) {
+                    [list[index], list[index + 1]] = [list[index + 1], list[index]];
+                }
+                app.saveState();
+                app.renderAlliance();
+            },
+
+            renderAlliance() {
+                const search = (document.getElementById('alliance-search')?.value || '').toLowerCase();
+                const availableDiv = document.getElementById('alliance-available');
+                const selectedDiv = document.getElementById('alliance-selected');
+
+                if (!availableDiv || !selectedDiv) return;
+
+                // Render Available
+                const selectedSet = new Set(AppState.allianceList || []);
+                const allTeams = calculateRankings(); // Get stats for display
+
+                availableDiv.innerHTML = allTeams
+                    .filter(t => !selectedSet.has(t.number) && (t.number.includes(search) || t.name.toLowerCase().includes(search)))
+                    .map(t => `
+                        <div class="bg-gray-700 p-3 rounded flex justify-between items-center hover:bg-gray-600 cursor-pointer transition"
+                             onclick="app.addToAlliance('${t.number}')">
+                            <div class="flex flex-col">
+                                <span class="font-bold text-white">${t.number} <span class="font-normal text-gray-400 text-sm">- ${t.name}</span></span>
+                                <div class="text-xs text-gray-300 mt-1 flex space-x-3">
+                                    <span>Rank: <b class="text-white">${t.league_rank}</b></span>
+                                    <span>NP-OPR: <b class="text-yellow-400">${Math.max(t.opr_m1, t.opr_m2, t.opr_m3).toFixed(0)}</b></span>
+                                    <span>T-OPR: <b class="text-orange-400">${t.tourney_opr.toFixed(0)}</b></span>
+                                </div>
+                            </div>
+                            <button class="text-green-400 font-bold hover:text-green-300 text-xl">+</button>
+                        </div>
+                    `).join('');
+
+                // Render Selected (Draggable)
+                selectedDiv.innerHTML = (AppState.allianceList || []).map((teamNum, i) => {
+                    const t = allTeams.find(x => x.number === teamNum) || { number: teamNum, name: 'Unknown', opr_m3: 0, tourney_opr: 0 };
+                    return `
+                        <div class="bg-gray-700 p-3 rounded flex justify-between items-center group relative border-l-4 border-yellow-500" draggable="true"
+                             ondragstart="app.dragStart(event, ${i})" ondragover="app.dragOver(event)" ondrop="app.drop(event, ${i})">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-gray-500 font-mono text-xs w-4">${i + 1}</span>
+                                <div>
+                                    <div class="font-bold text-white">${t.number}</div>
+                                    <div class="text-xs text-gray-400">${t.name}</div>
+                                </div>
+                            </div>
+                             <div class="text-xs text-gray-300 flex space-x-2">
+                                <span>OPR: ${t.opr_m3?.toFixed(0)}</span>
+                             </div>
+                            <div class="flex items-center space-x-1">
+                                <button onclick="app.moveAllianceItem(${i}, -1)" class="p-1 text-gray-400 hover:text-white">▲</button>
+                                <button onclick="app.moveAllianceItem(${i}, 1)" class="p-1 text-gray-400 hover:text-white">▼</button>
+                                <button onclick="app.removeFromAlliance('${t.number}')" class="p-1 text-red-500 hover:text-red-400 ml-2">✕</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            },
+
+            dragStart(e, index) { e.dataTransfer.setData('text/plain', index); },
+            dragOver(e) { e.preventDefault(); },
+            drop(e, targetIndex) {
+                e.preventDefault();
+                const sourceIndex = parseInt(e.dataTransfer.getData('text/plain'));
+                if (sourceIndex !== targetIndex) {
+                    const list = AppState.allianceList;
+                    const item = list.splice(sourceIndex, 1)[0];
+                    list.splice(targetIndex, 0, item);
+                    app.saveState();
+                    app.renderAlliance();
+                }
+            },
+
             removeAward(i) {
                 AppState.awards.splice(i, 1);
                 app.saveState();
                 app.updateAwardsList();
-                app.renderAdvancement();
+                app.renderAdvancement(); app.renderAlliance();
             },
 
             renderAdvancement() {
@@ -869,6 +1020,8 @@
 
                 AppState.hypotheticalMatches = [];
                 AppState.awards = [];
+                AppState.teamNotes = {};
+                AppState.allianceList = [];
                 localStorage.removeItem("eb_advancement_state");
 
                 const token = localStorage.getItem("gh_token");
@@ -902,6 +1055,8 @@
                     const content = JSON.stringify({
                         hypotheticalMatches: AppState.hypotheticalMatches,
                         awards: AppState.awards,
+                        teamNotes: AppState.teamNotes,
+                        allianceList: AppState.allianceList,
                         timestamp: new Date().toISOString()
                     }, null, 2);
 
@@ -944,11 +1099,11 @@
                                     data = JSON.parse(decoded);
                                 }
                             }
-                        } catch(ignore) { console.warn("API load failed, falling back"); }
+                        } catch (ignore) { console.warn("API load failed, falling back"); }
                     }
 
                     if (!data) {
-                        const webPath = CONFIG.path.replace(/^docs//, "");
+                        const webPath = CONFIG.path.replace(/^docs\//, "");
                         const webUrl = `https://${CONFIG.owner}.github.io/${CONFIG.repo}/${webPath}?t=${Date.now()}`;
                         const res = await fetch(webUrl, { cache: "no-store" });
                         if (res.ok) data = await res.json();
@@ -958,9 +1113,11 @@
 
                     AppState.hypotheticalMatches = [];
                     AppState.awards = [];
+                    AppState.teamNotes = {};
+                    AppState.allianceList = [];
                     document.getElementById("adv_team").value = "";
                     document.querySelectorAll("input[type=text], input[type=number]").forEach(i => {
-                        if(i.id !== "gh-token") i.value = "";
+                        if (i.id !== "gh-token") i.value = "";
                     });
                     document.querySelectorAll("[id^=tmatch-]").forEach(r => {
                         r.classList.remove("bg-yellow-900/40");
@@ -969,11 +1126,13 @@
 
                     AppState.hypotheticalMatches = data.hypotheticalMatches || [];
                     AppState.awards = data.awards || [];
+                    AppState.teamNotes = data.teamNotes || {};
+                    AppState.allianceList = data.allianceList || [];
                     AppState.isHypothetical = data.isHypothetical || false;
                     app.saveState();
 
                     document.getElementById("mode-toggle").checked = AppState.isHypothetical;
-                    if(AppState.isHypothetical) document.body.classList.add("hypothetical-mode-active");
+                    if (AppState.isHypothetical) document.body.classList.add("hypothetical-mode-active");
                     else document.body.classList.remove("hypothetical-mode-active");
 
                     AppState.hypotheticalMatches.forEach(m => {
@@ -990,8 +1149,8 @@
                     });
 
                     app.updateAwardsList();
-                    app.renderStandings(); 
-                    app.renderAdvancement();
+                    app.renderStandings();
+                    app.renderAdvancement(); app.renderAlliance();
 
                     app.setCloudStatus("Loaded successfully! ✓", "text-green-500");
                     setTimeout(() => app.setCloudStatus("", ""), 3000);
