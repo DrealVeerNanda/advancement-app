@@ -144,8 +144,10 @@
                             <th class="px-6 py-3">Rank</th>
                             <th class="px-6 py-3">Team</th>
                             <th class="px-6 py-3">Name</th>
-                            <th class="px-6 py-3 text-center" title="League OPR (Meets 1-3)">L-OPR</th>
-                            <th class="px-6 py-3 text-center" title="Tournament OPR">T-OPR</th>
+                            <th class="px-6 py-3 text-center" title="Meet 1 OPR">M1</th>
+                            <th class="px-6 py-3 text-center" title="Meet 2 OPR">M2</th>
+                            <th class="px-6 py-3 text-center" title="Meet 3 OPR">M3</th>
+                            <th class="px-6 py-3 text-center" title="Tournament OPR">Tourn</th>
                             <th class="px-6 py-3 text-center">Total RP</th>
                             <th class="px-6 py-3 text-center">Avg Score</th>
                             <th class="px-6 py-3 text-center">Matches</th>
@@ -249,6 +251,10 @@
                                 <tr>
                                     <th class="px-4 py-2">Rank</th>
                                     <th class="px-4 py-2">Team</th>
+                                    <th class="px-4 py-2 text-center" title="M1 OPR">M1</th>
+                                    <th class="px-4 py-2 text-center" title="M2 OPR">M2</th>
+                                    <th class="px-4 py-2 text-center" title="M3 OPR">M3</th>
+                                    <th class="px-4 py-2 text-center" title="Tourn OPR">T</th>
                                     <th class="px-4 py-2 text-center">Qual Pts</th>
                                     <th class="px-4 py-2 text-center">Alliance</th>
                                     <th class="px-4 py-2 text-center">Award</th>
@@ -446,10 +452,14 @@
 
             // 2. Calculate Split OPR
             const allTeamNums = Array.from(dynamicTeams);
-            const leagueMatches = allMatches.filter(m => m.match_type === 'MEET');
+            const m1Matches = allMatches.filter(m => m.match_id.startsWith('M1-'));
+            const m2Matches = allMatches.filter(m => m.match_id.startsWith('M2-'));
+            const m3Matches = allMatches.filter(m => m.match_id.startsWith('M3-'));
             const tourneyMatches = allMatches.filter(m => m.match_type === 'TOURNAMENT');
 
-            const leagueOPR = solveOPR(leagueMatches, allTeamNums);
+            const oprM1 = solveOPR(m1Matches, allTeamNums);
+            const oprM2 = solveOPR(m2Matches, allTeamNums);
+            const oprM3 = solveOPR(m3Matches, allTeamNums);
             const tourneyOPR = solveOPR(tourneyMatches, allTeamNums);
 
             // 3. Distribute matches to teams
@@ -476,7 +486,9 @@
             // 4. Calculate Stats per Team
             Object.values(AppState.teamsData).forEach(team => {
                 // Assign OPR
-                team.league_opr = leagueOPR[team.number] || 0;
+                team.opr_m1 = oprM1[team.number] || 0;
+                team.opr_m2 = oprM2[team.number] || 0;
+                team.opr_m3 = oprM3[team.number] || 0;
                 team.tourney_opr = tourneyOPR[team.number] || 0;
 
                 // League Meets (Top 10)
@@ -682,15 +694,17 @@
                         <td class="px-6 py-4 font-bold">${t.league_rank}</td>
                         <td class="px-6 py-4 font-mono text-first font-bold">${t.number}</td>
                         <td class="px-6 py-4 text-gray-300">${t.name}</td>
-                        <td class="px-6 py-4 text-center text-yellow-500 font-bold">${t.league_opr.toFixed(1)}</td>
-                        <td class="px-6 py-4 text-center text-orange-500 font-bold">${t.tourney_opr.toFixed(1)}</td>
+                        <td class="px-6 py-4 text-center text-yellow-600 font-bold">${t.opr_m1.toFixed(0)}</td>
+                        <td class="px-6 py-4 text-center text-yellow-500 font-bold">${t.opr_m2.toFixed(0)}</td>
+                        <td class="px-6 py-4 text-center text-yellow-400 font-bold">${t.opr_m3.toFixed(0)}</td>
+                        <td class="px-6 py-4 text-center text-orange-500 font-bold">${t.tourney_opr.toFixed(0)}</td>
                         <td class="px-6 py-4 text-center font-bold text-lg">${t.total_rp}</td>
                         <td class="px-6 py-4 text-center text-gray-400">${t.avg_score.toFixed(1)}</td>
                         <td class="px-6 py-4 text-center text-gray-500">${t.matches_played}</td>
                         <td class="px-6 py-4 text-center text-xs text-gray-500">▼</td>
                     </tr>
                     <tr id="${detailId}" class="hidden bg-gray-900/50">
-                        <td colspan="9" class="p-4"><div class="bg-gray-800 rounded p-4">
+                        <td colspan="11" class="p-4"><div class="bg-gray-800 rounded p-4">
                             <table class="w-full text-sm"><tbody>${breakdownRows}</tbody></table>
                         </div></td>
                     </tr>
@@ -834,8 +848,10 @@
                     <tr class="${bg}">
                         <td class="px-4 py-3 font-bold">${t.league_rank}</td>
                          <td class="px-4 py-3 font-mono">${t.number}</td>
-                         <td class="px-4 py-3 text-center font-mono text-yellow-400">${t.league_opr.toFixed(1)}</td>
-                         <td class="px-4 py-3 text-center font-mono text-orange-400">${t.tourney_opr.toFixed(1)}</td>
+                         <td class="px-4 py-3 text-center font-mono text-yellow-600">${t.opr_m1.toFixed(0)}</td>
+                         <td class="px-4 py-3 text-center font-mono text-yellow-500">${t.opr_m2.toFixed(0)}</td>
+                         <td class="px-4 py-3 text-center font-mono text-yellow-400">${t.opr_m3.toFixed(0)}</td>
+                         <td class="px-4 py-3 text-center font-mono text-orange-500">${t.tourney_opr.toFixed(0)}</td>
                         <td class="px-4 py-3 text-center text-gray-400">${t.qual_pts}</td>
                         <td class="px-4 py-3 text-center text-gray-400">${t.alliance_pts}</td>
                         <td class="px-4 py-3 text-center text-gray-400">${t.award_pts}</td>
