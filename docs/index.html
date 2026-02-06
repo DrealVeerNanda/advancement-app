@@ -350,8 +350,8 @@
                     teams { teamNumber alliance surrogate }
                     scores {
                         ... on MatchScores2025 {
-                            red { totalPoints movementRp goalRp patternRp }
-                            blue { totalPoints movementRp goalRp patternRp }
+                            red { totalPoints penaltyPointsByOpp movementRp goalRp patternRp }
+                            blue { totalPoints penaltyPointsByOpp movementRp goalRp patternRp }
                         }
                     }
                 }
@@ -403,6 +403,8 @@
                 blue: blueTeams.map(t => t.teamNumber.toString()),
                 red_score: r_score,
                 blue_score: b_score,
+                red_score_np: (r_score - (m.scores?.red?.penaltyPointsByOpp || 0)),
+                blue_score_np: (b_score - (m.scores?.blue?.penaltyPointsByOpp || 0)),
                 red_rp: r_rp,
                 blue_rp: b_rp,
                 surrogates: m.teams.filter(t => t.surrogate).map(t => t.teamNumber.toString()),
@@ -1115,8 +1117,8 @@
                 const redTeams = match.red.filter(t => t && teamToIndex.has(t));
                 const blueTeams = match.blue.filter(t => t && teamToIndex.has(t));
 
-                const redScore = match.red_score;
-                const blueScore = match.blue_score;
+                const redScore = (typeof match.red_score_np !== 'undefined') ? match.red_score_np : match.red_score;
+                const blueScore = (typeof match.blue_score_np !== 'undefined') ? match.blue_score_np : match.blue_score;
 
                 // Red Alliance
                 for (const team1 of redTeams) {
