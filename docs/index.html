@@ -259,14 +259,10 @@
                                         <tr>
                                             <th class="px-1 md:px-4 py-2">Rank</th>
                                             <th class="px-1 md:px-4 py-2">Team</th>
-                                            <th class="hidden md:table-cell px-4 py-2 text-center" title="M1 OPR">M1
-                                            </th>
-                                            <th class="hidden md:table-cell px-4 py-2 text-center" title="M2 OPR">M2
-                                            </th>
-                                            <th class="hidden md:table-cell px-4 py-2 text-center" title="M3 OPR">M3
-                                            </th>
-                                            <th class="hidden md:table-cell px-4 py-2 text-center" title="Tourn OPR">T
-                                            </th>
+                                            <th class="px-2 md:px-4 py-2 text-center" title="M1 OPR">M1</th>
+                                            <th class="px-2 md:px-4 py-2 text-center" title="M2 OPR">M2</th>
+                                            <th class="px-2 md:px-4 py-2 text-center" title="M3 OPR">M3</th>
+                                            <th class="px-2 md:px-4 py-2 text-center" title="Tourn OPR">T</th>
                                             <th class="px-1 md:px-4 py-2 text-center">Qual Pts</th>
                                             <th class="px-1 md:px-4 py-2 text-center">Alliance</th>
                                             <th class="px-1 md:px-4 py-2 text-center">Award</th>
@@ -934,9 +930,12 @@
                 const selectedSet = new Set(AppState.allianceList || []);
                 const allTeams = calculateRankings(); // Get stats for display
 
-                availableDiv.innerHTML = allTeams
-                    .filter(t => !selectedSet.has(t.number) && (t.number.includes(search) || t.name.toLowerCase().includes(search)))
-                    .map(t => `
+                const filteredTeams = allTeams.filter(t => !selectedSet.has(t.number) && (t.number.includes(search) || t.name.toLowerCase().includes(search)));
+
+                if (filteredTeams.length === 0) {
+                    availableDiv.innerHTML = '<div class="text-gray-500 text-center italic p-4">No teams found. Try refreshing matches.</div>';
+                } else {
+                    availableDiv.innerHTML = filteredTeams.map(t => `
                         <div class="bg-gray-700 p-3 rounded flex justify-between items-center hover:bg-gray-600 cursor-pointer transition"
                              onclick="app.addToAlliance('${t.number}')">
                             <div class="flex flex-col">
@@ -950,6 +949,7 @@
                             <button class="text-green-400 font-bold hover:text-green-300 text-xl">+</button>
                         </div>
                     `).join('');
+                }
 
                 // Render Selected (Draggable)
                 selectedDiv.innerHTML = (AppState.allianceList || []).map((teamNum, i) => {
@@ -1010,10 +1010,10 @@
                          <td class="px-1 md:px-4 py-3 font-mono">
                             <span class="block text-first font-bold">${t.number}</span>
                          </td>
-                         <td class="hidden md:table-cell px-4 py-3 text-center font-mono text-yellow-600">${t.opr_m1.toFixed(0)}</td>
-                         <td class="hidden md:table-cell px-4 py-3 text-center font-mono text-yellow-500">${t.opr_m2.toFixed(0)}</td>
-                         <td class="hidden md:table-cell px-4 py-3 text-center font-mono text-yellow-400">${t.opr_m3.toFixed(0)}</td>
-                         <td class="hidden md:table-cell px-4 py-3 text-center font-mono text-orange-500">${t.tourney_opr.toFixed(0)}</td>
+                         <td class="px-2 md:px-4 py-3 text-center font-mono text-yellow-600">${t.opr_m1.toFixed(0)}</td>
+                         <td class="px-2 md:px-4 py-3 text-center font-mono text-yellow-500">${t.opr_m2.toFixed(0)}</td>
+                         <td class="px-2 md:px-4 py-3 text-center font-mono text-yellow-400">${t.opr_m3.toFixed(0)}</td>
+                         <td class="px-2 md:px-4 py-3 text-center font-mono text-orange-500">${t.tourney_opr.toFixed(0)}</td>
                         <td class="px-1 md:px-4 py-3 text-center text-gray-400 text-sm md:text-base">${t.qual_pts}</td>
                         <td class="px-1 md:px-4 py-3 text-center text-gray-400 text-sm md:text-base">${t.alliance_pts}</td>
                         <td class="px-1 md:px-4 py-3 text-center text-gray-400 text-sm md:text-base">${t.award_pts}</td>
