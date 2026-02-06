@@ -144,18 +144,17 @@
                     <table class="w-full text-left border-collapse">
                         <thead class="bg-gray-700 text-gray-300 uppercase text-sm">
                             <tr>
-                                <th class="px-1 md:px-6 py-3">Rank</th>
-                                <th class="px-1 md:px-6 py-3">Team</th>
-                                <th class="px-1 md:px-6 py-3">Name</th>
-                                <th class="px-1 md:px-6 py-3 text-center text-xs md:text-sm" title="Meet 1 OPR">M1</th>
-                                <th class="px-1 md:px-6 py-3 text-center text-xs md:text-sm" title="Meet 2 OPR">M2</th>
-                                <th class="px-1 md:px-6 py-3 text-center text-xs md:text-sm" title="Meet 3 OPR">M3</th>
-                                <th class="px-1 md:px-6 py-3 text-center text-xs md:text-sm" title="Tournament OPR">T
-                                </th>
-                                <th class="px-1 md:px-6 py-3 text-center">RP</th>
-                                <th class="hidden md:table-cell px-6 py-3 text-center">Avg</th>
-                                <th class="hidden md:table-cell px-6 py-3 text-center">Matches</th>
-                                <th class="px-1 md:px-6 py-3"></th>
+                                <th class="px-6 py-3">Rank</th>
+                                <th class="px-6 py-3">Team</th>
+                                <th class="px-6 py-3">Name</th>
+                                <th class="px-6 py-3 text-center" title="Meet 1 OPR">M1</th>
+                                <th class="px-6 py-3 text-center" title="Meet 2 OPR">M2</th>
+                                <th class="px-6 py-3 text-center" title="Meet 3 OPR">M3</th>
+                                <th class="px-6 py-3 text-center" title="Tournament OPR">Tourn</th>
+                                <th class="px-6 py-3 text-center">Total RP</th>
+                                <th class="px-6 py-3 text-center">Avg Score</th>
+                                <th class="px-6 py-3 text-center">Matches</th>
+                                <th class="px-6 py-3"></th>
                             </tr>
                         </thead>
                         <tbody id="standings-body" class="divide-y divide-gray-700"></tbody>
@@ -257,17 +256,17 @@
                                 <table class="w-full text-left">
                                     <thead class="bg-gray-700 text-gray-300 uppercase text-xs">
                                         <tr>
-                                            <th class="px-1 md:px-4 py-2">Rank</th>
-                                            <th class="px-1 md:px-4 py-2">Team</th>
-                                            <th class="px-2 md:px-4 py-2 text-center" title="M1 OPR">M1</th>
-                                            <th class="px-2 md:px-4 py-2 text-center" title="M2 OPR">M2</th>
-                                            <th class="px-2 md:px-4 py-2 text-center" title="M3 OPR">M3</th>
-                                            <th class="px-2 md:px-4 py-2 text-center" title="Tourn OPR">T</th>
-                                            <th class="px-1 md:px-4 py-2 text-center">Qual Pts</th>
-                                            <th class="px-1 md:px-4 py-2 text-center">Alliance</th>
-                                            <th class="px-1 md:px-4 py-2 text-center">Award</th>
-                                            <th class="px-1 md:px-4 py-2 text-center">Playoff</th>
-                                            <th class="px-1 md:px-4 py-2 text-center font-bold">Total AP</th>
+                                            <th class="px-4 py-2">Rank</th>
+                                            <th class="px-4 py-2">Team</th>
+                                            <th class="px-4 py-2 text-center" title="M1 OPR">M1</th>
+                                            <th class="px-4 py-2 text-center" title="M2 OPR">M2</th>
+                                            <th class="px-4 py-2 text-center" title="M3 OPR">M3</th>
+                                            <th class="px-4 py-2 text-center" title="Tourn OPR">Tourn</th>
+                                            <th class="px-4 py-2 text-center">Qual Pts</th>
+                                            <th class="px-4 py-2 text-center">Alliance</th>
+                                            <th class="px-4 py-2 text-center">Award</th>
+                                            <th class="px-4 py-2 text-center">Playoff</th>
+                                            <th class="px-4 py-2 text-center font-bold">Total AP</th>
                                         </tr>
                                     </thead>
                                     <tbody id="advancement-body" class="divide-y divide-gray-700 text-sm"></tbody>
@@ -731,17 +730,17 @@
 
                     tbody.innerHTML += `
                     <tr class="cursor-pointer ${isUser ? 'bg-blue-900/30' : 'hover:bg-gray-700'} border-b border-gray-700" onclick="document.getElementById('${detailId}').classList.toggle('hidden')">
-                        <td class="px-1 md:px-6 py-4 font-bold text-center">${t.league_rank}</td>
-                        <td class="px-1 md:px-6 py-4 font-mono text-first font-bold text-xs md:text-base">${t.number}</td>
-                        <td class="px-1 md:px-6 py-4 text-gray-300 max-w-[100px] md:max-w-none truncate text-xs md:text-base">${t.name}</td>
-                        <td class="px-1 md:px-6 py-4 text-center text-yellow-600 font-bold text-xs md:text-base">${t.opr_m1.toFixed(0)}</td>
-                        <td class="px-1 md:px-6 py-4 text-center text-yellow-500 font-bold text-xs md:text-base">${t.opr_m2.toFixed(0)}</td>
-                        <td class="px-1 md:px-6 py-4 text-center text-yellow-400 font-bold text-xs md:text-base">${t.opr_m3.toFixed(0)}</td>
-                        <td class="px-1 md:px-6 py-4 text-center text-orange-500 font-bold text-xs md:text-base">${t.tourney_opr.toFixed(0)}</td>
-                        <td class="px-1 md:px-6 py-4 text-center font-bold text-sm md:text-lg">${t.total_rp}</td>
-                        <td class="hidden md:table-cell px-6 py-4 text-center text-gray-400">${t.avg_score.toFixed(1)}</td>
-                        <td class="hidden md:table-cell px-6 py-4 text-center text-gray-500">${t.matches_played}</td>
-                        <td class="px-1 md:px-6 py-4 text-center text-xs text-gray-500">▼</td>
+                        <td class="px-6 py-4 font-bold text-center">${t.league_rank}</td>
+                        <td class="px-6 py-4 font-mono text-first font-bold">${t.number}</td>
+                        <td class="px-6 py-4 text-gray-300 min-w-[150px]">${t.name}</td>
+                        <td class="px-6 py-4 text-center text-yellow-600 font-bold">${t.opr_m1.toFixed(0)}</td>
+                        <td class="px-6 py-4 text-center text-yellow-500 font-bold">${t.opr_m2.toFixed(0)}</td>
+                        <td class="px-6 py-4 text-center text-yellow-400 font-bold">${t.opr_m3.toFixed(0)}</td>
+                        <td class="px-6 py-4 text-center text-orange-500 font-bold">${t.tourney_opr.toFixed(0)}</td>
+                        <td class="px-6 py-4 text-center font-bold text-lg">${t.total_rp}</td>
+                        <td class="px-6 py-4 text-center text-gray-400">${t.avg_score.toFixed(1)}</td>
+                        <td class="px-6 py-4 text-center text-gray-500">${t.matches_played}</td>
+                        <td class="px-6 py-4 text-center text-xs text-gray-500">▼</td>
                     </tr>
                     <tr id="${detailId}" class="hidden bg-gray-900/50">
                         <td colspan="11" class="p-4">
@@ -1006,19 +1005,17 @@
                     const bg = i < 2 ? 'bg-green-900/30 border-l-4 border-green-500' : (t.number === '14259' ? 'bg-blue-900/30' : '');
                     tbody.innerHTML += `
                     <tr class="${bg}">
-                        <td class="px-1 md:px-4 py-3 font-bold">${t.league_rank}</td>
-                         <td class="px-1 md:px-4 py-3 font-mono">
-                            <span class="block text-first font-bold">${t.number}</span>
-                         </td>
-                         <td class="px-2 md:px-4 py-3 text-center font-mono text-yellow-600">${t.opr_m1.toFixed(0)}</td>
-                         <td class="px-2 md:px-4 py-3 text-center font-mono text-yellow-500">${t.opr_m2.toFixed(0)}</td>
-                         <td class="px-2 md:px-4 py-3 text-center font-mono text-yellow-400">${t.opr_m3.toFixed(0)}</td>
-                         <td class="px-2 md:px-4 py-3 text-center font-mono text-orange-500">${t.tourney_opr.toFixed(0)}</td>
-                        <td class="px-1 md:px-4 py-3 text-center text-gray-400 text-sm md:text-base">${t.qual_pts}</td>
-                        <td class="px-1 md:px-4 py-3 text-center text-gray-400 text-sm md:text-base">${t.alliance_pts}</td>
-                        <td class="px-1 md:px-4 py-3 text-center text-gray-400 text-sm md:text-base">${t.award_pts}</td>
-                        <td class="px-1 md:px-4 py-3 text-center text-gray-400 text-sm md:text-base">${t.playoff_pts}</td>
-                        <td class="px-1 md:px-4 py-3 text-center font-bold text-white text-base md:text-lg">${t.advancement_points}</td>
+                        <td class="px-4 py-3 font-bold">${t.league_rank}</td>
+                         <td class="px-4 py-3 font-mono">${t.number}</td>
+                         <td class="px-4 py-3 text-center font-mono text-yellow-600">${t.opr_m1.toFixed(0)}</td>
+                         <td class="px-4 py-3 text-center font-mono text-yellow-500">${t.opr_m2.toFixed(0)}</td>
+                         <td class="px-4 py-3 text-center font-mono text-yellow-400">${t.opr_m3.toFixed(0)}</td>
+                         <td class="px-4 py-3 text-center font-mono text-orange-500">${t.tourney_opr.toFixed(0)}</td>
+                        <td class="px-4 py-3 text-center text-gray-400">${t.qual_pts}</td>
+                        <td class="px-4 py-3 text-center text-gray-400">${t.alliance_pts}</td>
+                        <td class="px-4 py-3 text-center text-gray-400">${t.award_pts}</td>
+                        <td class="px-4 py-3 text-center text-gray-400">${t.playoff_pts}</td>
+                        <td class="px-4 py-3 text-center font-bold text-white text-lg">${t.advancement_points}</td>
                     </tr>
                 `;
                 });
