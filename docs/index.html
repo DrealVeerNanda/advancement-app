@@ -4,8 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>East Bay League Advancement (Static)</title>
+    <title>East Bay League Advancement</title>
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -88,7 +93,7 @@
         <header class="mb-8 border-b border-gray-700 pb-4 flex justify-between items-center">
             <div>
                 <h1 class="text-3xl font-bold text-first mb-2">East Bay League Tournament</h1>
-                <p class="text-gray-400">Hypothetical Scenario Planner | 2025-2026 DECODE Season (Static)</p>
+                <p class="text-gray-400">Live Data & Scenario Planner | 2025-2026 DECODE Season</p>
             </div>
 
             <div class="flex items-center space-x-6">
@@ -135,12 +140,8 @@
                 <h2 class="text-xl font-bold mb-4 flex items-center gap-2"><span class="text-indigo-400">☁</span> Cloud
                     Sync</h2>
 
-                <div class="mb-4">
-                    <label class="block text-xs uppercase text-gray-400 mb-1">GitHub Personal Token (One-time)</label>
-                    <input class="text-base" type="password" id="gh-token" placeholder="ghp_..."
-                        class="w-full bg-gray-700 rounded px-3 py-2 text-white border border-gray-600 focus:border-indigo-500 outline-none">
-                    <p class="text-xs text-gray-500 mt-1">Required only for Saving. Saved securely in your browser.</p>
-                </div>
+                <p class="text-sm text-gray-400 mb-4">Sync your data across devices using Firebase. Your data is
+                    automatically saved and synced in real-time.</p>
 
                 <div class="flex gap-2 mb-4">
                     <button onclick="app.saveToCloud()"
@@ -327,7 +328,7 @@
             </div>
         </div>
 
-                <!-- ALLIANCE SELECTION -->
+        <!-- ALLIANCE SELECTION -->
         <div id="content-alliance" class="tab-content hidden">
             <div class="grid grid-cols-2 gap-6">
                 <!-- Available Teams -->
@@ -344,12 +345,12 @@
                     <h3 class="font-bold mb-3 text-lg text-yellow-400">My Draft List (In Order)</h3>
                     <p class="text-xs text-gray-400 mb-2">Drag teams here in order of preference. #1 = most wanted.</p>
                     <div id="alliance-selected"
-                        class="space-y-2 max-h-[60vh] overflow-y-auto min-h-[200px] border-2 border-dashed border-gray-700 rounded p-2"
-                        ></div>
+                        class="space-y-2 max-h-[60vh] overflow-y-auto min-h-[200px] border-2 border-dashed border-gray-700 rounded p-2">
+                    </div>
                 </div>
             </div>
         </div>
-        </div>
+    </div>
     </div>
 
     <!-- Datalist -->
@@ -383,6 +384,19 @@
             repo: 'advancement-app',
             path: 'docs/data/shared_state.json'
         };
+
+        // Firebase Configuration  
+        const firebaseConfig = {
+            apiKey: "AIzaSy D6_YourActualKeyHere",
+            authDomain: "east-bay-advancement.firebaseapp.com",
+            databaseURL: "https://east-bay-advancement-default-rtdb.firebaseio.com",
+            projectId: "east-bay-advancement"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+
 
         const MEETS = [
             { code: "USCANOEBM1", prefix: "M1" },
@@ -1093,95 +1107,47 @@
 
 
             async saveToCloud() {
-                const token = document.getElementById('gh-token').value.trim();
-                if (!token) return app.setCloudStatus('Error: Token required to save.', 'text-red-500');
-                localStorage.setItem('gh_token', token);
-
                 app.setCloudStatus('Saving...', 'text-yellow-400');
-
                 try {
-                    // 1. Get SHA
-                    const getUrl = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}`;
-                    const getRes = await fetch(getUrl, { headers: { 'Authorization': `token ${token}` } });
-                    const getJson = await getRes.json();
-
-                    if (!getRes.ok && getRes.status !== 404) throw new Error('Failed to check file');
-
-                    const sha = getJson.sha;
-
-                    // 2. Upload
-                    const content = JSON.stringify({
+                    const data = {
                         hypotheticalMatches: AppState.hypotheticalMatches,
                         awards: AppState.awards,
                         teamNotes: AppState.teamNotes,
                         allianceList: AppState.allianceList,
+                        isHypothetical: AppState.isHypothetical,
                         timestamp: new Date().toISOString()
-                    }, null, 2);
-
-                    const putRes = await fetch(getUrl, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `token ${token}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            message: 'Update shared state via App',
-                            content: btoa(content),
-                            sha: sha
-                        })
-                    });
-
-                    if (!putRes.ok) throw new Error('Save failed');
-                    app.setCloudStatus('Saved to GitHub successfully! ✓', 'text-green-500');
+                    };
+                    await firebase.database().ref('eb_advancement_state').set(data);
+                    app.setCloudStatus('Saved! ✓', 'text-green-500');
+                    setTimeout(() => app.setCloudStatus("", ""), 2000);
                 } catch (e) {
                     console.error(e);
                     app.setCloudStatus('Error: ' + e.message, 'text-red-500');
-                    app.setCloudStatus('Load Error: ' + e.message, 'text-red-500');
                 }
             },
 
             async loadFromCloud() {
                 app.setCloudStatus("Loading...", "text-yellow-400");
                 try {
-                    let data = null;
-                    const token = document.getElementById("gh-token").value.trim();
-
-                    if (token) {
-                        try {
-                            const apiUrl = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}`;
-                            const apiRes = await fetch(apiUrl, { headers: { "Authorization": `token ${token}` }, cache: "no-store" });
-                            if (apiRes.ok) {
-                                const json = await apiRes.json();
-                                if (json.content) {
-                                    const decoded = atob(json.content);
-                                    data = JSON.parse(decoded);
-                                }
-                            }
-                        } catch (ignore) { console.warn("API load failed, falling back"); }
-                    }
-
+                    const snapshot = await firebase.database().ref('eb_advancement_state').once('value');
+                    const data = snapshot.val();
                     if (!data) {
-                        const webPath = CONFIG.path.replace(/^docs\//, "");
-                        const webUrl = `https://${CONFIG.owner}.github.io/${CONFIG.repo}/${webPath}?t=${Date.now()}`;
-                        const res = await fetch(webUrl, { cache: "no-store" });
-                        if (res.ok) data = await res.json();
+                        app.setCloudStatus('No data', 'text-gray-400');
+                        return;
                     }
 
-                    if (!data) throw new Error("No data found (check Token or wait for GitHub Pages build)");
-
+                    // Reset
                     AppState.hypotheticalMatches = [];
                     AppState.awards = [];
                     AppState.teamNotes = {};
                     AppState.allianceList = [];
-                    document.getElementById("adv_team").value = "";
-                    document.querySelectorAll("input[type=text], input[type=number]").forEach(i => {
-                        if (i.id !== "gh-token") i.value = "";
-                    });
+                    document.querySelectorAll("input[type=text], input[type=number]").forEach(i => i.value = "");
                     document.querySelectorAll("[id^=tmatch-]").forEach(r => {
                         r.classList.remove("bg-yellow-900/40");
                         r.classList.add("bg-gray-700");
                     });
 
+                    // Load
                     AppState.hypotheticalMatches = data.hypotheticalMatches || [];
                     AppState.awards = data.awards || [];
                     AppState.teamNotes = data.teamNotes || {};
@@ -1193,6 +1159,7 @@
                     if (AppState.isHypothetical) document.body.classList.add("hypothetical-mode-active");
                     else document.body.classList.remove("hypothetical-mode-active");
 
+                    // Restore matches
                     AppState.hypotheticalMatches.forEach(m => {
                         const num = m.match_id.split("-")[1];
                         const row = document.getElementById(`tmatch-${num}`);
@@ -1208,69 +1175,30 @@
 
                     app.updateAwardsList();
                     app.renderStandings();
-                    app.renderAdvancement(); app.renderAlliance();
+                    app.renderAdvancement();
+                    app.renderAlliance();
 
-                    app.setCloudStatus("Loaded successfully! ✓", "text-green-500");
-                    setTimeout(() => app.setCloudStatus("", ""), 3000);
+                    app.setCloudStatus("Loaded! ✓", "text-green-500");
+                    setTimeout(() => app.setCloudStatus("", ""), 2000);
                 } catch (e) {
                     console.error(e);
-                    app.setCloudStatus("Load Error: " + e.message, "text-red-500");
+                    app.setCloudStatus("Error: " + e.message, "text-red-500");
                 }
             },
 
-            async clearCloudData(skipConfirm = false) {
-                if (!skipConfirm && !confirm("DANGER: This will WIPE the cloud file for everyone. Continue?")) return;
-
-                const token = document.getElementById('gh-token').value.trim();
-                if (!token) {
-                    if (!skipConfirm) app.setCloudStatus('Error: Token required.', 'text-red-500');
-                    else { alert("Cannot clear cloud: No Token found."); location.reload(); }
-                    return;
-                }
-                localStorage.setItem('gh_token', token);
-
-                if (!skipConfirm) app.setCloudStatus('Clearing...', 'text-red-400');
-
+            async clearCloudData() {
+                if (!confirm("DANGER: Wipe cloud data?")) return;
+                app.setCloudStatus('Clearing...', 'text-yellow-400');
                 try {
-                    const getUrl = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}`;
-                    const getRes = await fetch(getUrl, { headers: { 'Authorization': `token ${token}` } });
-
-                    if (!getRes.ok && getRes.status !== 404) throw new Error('Check failed');
-
-                    let sha = null;
-                    if (getRes.ok) {
-                        const json = await getRes.json();
-                        sha = json.sha;
-                    }
-
-                    const content = JSON.stringify({}, null, 2);
-                    const body = { message: 'Clear shared state', content: btoa(content) };
-                    if (sha) body.sha = sha;
-
-                    const putRes = await fetch(getUrl, {
-                        method: 'PUT',
-                        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify(body)
-                    });
-
-                    if (!putRes.ok) throw new Error('Clear failed');
-
-                    if (!skipConfirm) {
-                        app.setCloudStatus('Cloud Cleared! ✓', 'text-green-500');
-                        setTimeout(() => app.loadFromCloud(), 1000);
-                    } else {
-                        alert("Cloud Data Wiped.");
-                        location.reload();
-                    }
+                    await firebase.database().ref('eb_advancement_state').remove();
+                    app.setCloudStatus('Cleared! ✓', 'text-green-500');
                 } catch (e) {
-                    if (!skipConfirm) app.setCloudStatus('Error: ' + e.message, 'text-red-500');
-                    else {
-                        console.error(e);
-                        alert("Failed to clear cloud: " + e.message);
-                        location.reload();
-                    }
+                    console.error(e);
+                    app.setCloudStatus('Error: ' + e.message, 'text-red-500');
                 }
             },
+
+            
 
             setCloudStatus(msg, color) {
                 const el = document.getElementById('cloud-status');
