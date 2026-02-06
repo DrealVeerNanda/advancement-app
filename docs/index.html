@@ -398,14 +398,8 @@
                                 <tr>
                                     <th class="px-4 py-3 font-bold text-gray-200">Rank</th>
                                     <th class="px-4 py-3 font-bold text-gray-200">Team</th>
-                                    <th class="px-4 py-3 text-center font-bold text-gray-200" title="M1 OPR">M1
-                                    </th>
-                                    <th class="px-4 py-3 text-center font-bold text-gray-200" title="M2 OPR">M2
-                                    </th>
-                                    <th class="px-4 py-3 text-center font-bold text-gray-200" title="M3 OPR">M3
-                                    </th>
-                                    <th class="px-4 py-3 text-center font-bold text-gray-200" title="Tourn OPR">
-                                        Tourn</th>
+                                    <th class="px-4 py-3 text-center font-bold text-gray-200" title="Tournament OPR">
+                                        Tourn OPR</th>
                                     <th class="px-4 py-3 text-center font-bold text-gray-200">Qual Pts</th>
                                     <th class="px-4 py-3 text-center font-bold text-gray-200">Alliance</th>
                                     <th class="px-4 py-3 text-center font-bold text-gray-200">Award</th>
@@ -1143,9 +1137,6 @@
                                 <span class="bg-gray-700/50 px-1 rounded text-gray-300" title="Estimated Global Percentile">Top ${(100 - percentile).toFixed(1)}% World</span>
                             </div>
                         </td>
-                        <td class="px-6 py-4 text-center text-yellow-600 font-bold">${t.opr_m1.toFixed(0)}</td>
-                        <td class="px-6 py-4 text-center text-yellow-500 font-bold">${t.opr_m2.toFixed(0)}</td>
-                        <td class="px-6 py-4 text-center text-yellow-400 font-bold">${t.opr_m3.toFixed(0)}</td>
                         <td class="px-6 py-4 text-center text-orange-500 font-bold">${t.tourney_opr.toFixed(0)}</td>
                         <td class="px-6 py-4 text-center font-bold text-lg">${t.total_rp}</td>
                         <td class="px-6 py-4 text-center text-gray-400">${t.avg_score.toFixed(1)}</td>
@@ -1250,6 +1241,23 @@
                                          <div class="p-2 bg-gray-750 rounded border border-gray-700/50">
                                             <div class="text-[10px] text-indigo-400 uppercase">Pred. Tourn</div>
                                             <div class="text-lg font-bold ${trendColor}">${predictedVal.toFixed(1)} <span class="text-xs">${trendIcon}</span></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Meet OPRs -->
+                                    <div class="mb-3 p-2 bg-gray-750 rounded border border-gray-700/50">
+                                        <div class="text-[10px] text-gray-400 uppercase mb-1 font-bold">Meet OPRs</div>
+                                        <div class="flex justify-between items-center text-xs">
+                                            <span class="text-yellow-600">M1:</span>
+                                            <span class="font-mono text-white">${t.opr_m1.toFixed(1)}</span>
+                                        </div>
+                                        <div class="flex justify-between items-center text-xs">
+                                            <span class="text-yellow-500">M2:</span>
+                                            <span class="font-mono text-white">${t.opr_m2.toFixed(1)}</span>
+                                        </div>
+                                        <div class="flex justify-between items-center text-xs">
+                                            <span class="text-yellow-400">M3:</span>
+                                            <span class="font-mono text-white">${t.opr_m3.toFixed(1)}</span>
                                         </div>
                                     </div>
                                     
