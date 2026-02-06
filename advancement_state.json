@@ -1,5 +1,13 @@
 {
     "alliance_selections": {},
+    "detailed_alliances": {
+        "alliance1": {
+            "captain": "14259"
+        },
+        "alliance2": {},
+        "alliance3": {},
+        "alliance4": {}
+    },
     "awards": {},
     "playoff_results": {}
 }
