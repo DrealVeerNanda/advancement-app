@@ -1773,9 +1773,26 @@
                 const scores = matches.map(m => m.score);
                 const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
 
+                // Linear Regression on scores (Index vs Score)
+                const n = scores.length;
+                const sumX = (n * (n - 1)) / 2; // Sum of 0..n-1
+                const sumY = scores.reduce((a, b) => a + b, 0);
+                const sumXY = scores.reduce((a, b, i) => a + (i * b), 0);
+                const sumXX = (n * (n - 1) * (2 * n - 1)) / 6; // Sum of squares 0..n-1
+
+                // Slope (m) and Intercept (b) for y = mx + b
+                const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+                const intercept = (sumY - slope * sumX) / n;
+
                 // 2. Prediction Data (Next 5 Matches)
-                // Simple prediction: Use Average Score for now (visual placeholder)
-                const predictions = Array(5).fill(avg);
+                // Use regression line: y = slope * (n + i) + intercept
+                const predictions = Array.from({ length: 5 }, (_, i) => {
+                    const x = n + i;
+                    return Math.max(0, slope * x + intercept); // Ensure non-negative
+                });
+
+                // Last predicted value for display
+                const finalPred = predictions[predictions.length - 1];
 
                 // Combine for scaling
                 const allPoints = [...scores, ...predictions];
@@ -1802,7 +1819,10 @@
 
                 // --- Draw Trend Line (Prediction) ---
                 let predD = "";
-                // Start from last history point
+                // Start from last history point (or strictly regression?)
+                // Let's start from the regression value at (n-1) to show the *trend* continuity, 
+                // OR connect smoothly from last actual data point.
+                // Connecting from last actual point is better UI generally, even if regression differs slightly.
                 const startX = (scores.length - 1) * stepX;
                 const startY = height - ((scores[scores.length - 1] - min) / range * height);
                 predD += `M ${startX} ${startY}`;
@@ -1834,9 +1854,12 @@
                             </linearGradient>
                         </defs>
                         
-                        <!-- Average Line -->
+                        <!-- Average Line (Historical) -->
                         <path d="${avgLine}" stroke="#4b5563" stroke-width="1" stroke-dasharray="4,4" />
                         <text x="2" y="${yAvg - 2}" font-size="8" fill="#9ca3af" class="bg-gray-800 rounded px-1">Avg: ${avg.toFixed(1)}</text>
+                        
+                        <!-- Prediction Text (End) -->
+                         <text x="${width - 30}" y="${height - ((finalPred - min) / range * height) - 5}" font-size="8" fill="#fbbf24" class="bg-gray-800 rounded px-1">Pred: ${finalPred.toFixed(1)}</text>
 
                         <!-- History Area & Line -->
                         <path d="${fillD}" fill="url(#gradScore)" stroke="none" />
