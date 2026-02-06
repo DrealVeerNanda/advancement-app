@@ -36,6 +36,49 @@
             border: 2px solid #F6E05E;
             background: rgba(246, 224, 94, 0.05);
         }
+
+        /* Toggle Checkbox */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #68D391;
+        }
+
+        .toggle-checkbox:checked+.toggle-label {
+            background-color: #68D391;
+        }
+
+        .toggle-checkbox {
+            right: auto;
+            left: 0;
+            z-index: 10;
+        }
+
+        .toggle-label {
+            width: 3rem;
+            height: 1.5rem;
+            background-color: #4A5568;
+            border-radius: 9999px;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .toggle-checkbox {
+            position: absolute;
+            top: 0.125rem;
+            left: 0.125rem;
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 9999px;
+            background-color: white;
+            appearance: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .toggle-checkbox:checked {
+            left: 1.625rem;
+        }
     </style>
 </head>
 
@@ -60,8 +103,8 @@
                     <span class="mr-3 text-sm font-bold text-gray-300">Live</span>
                     <div
                         class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
-                        <input class="text-base" type="checkbox" id="mode-toggle"
-                            class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer duration-200 ease-in-out left-0"
+                        <input type="checkbox" id="mode-toggle"
+                            class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
                             onchange="app.toggleMode()" />
                         <label for="mode-toggle"
                             class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-600 cursor-pointer"></label>
@@ -219,7 +262,7 @@
         <!-- ADVANCEMENT -->
         <div id="content-advancement" class="tab-content hidden">
             <!-- Similar structure to original but simplified for JS logic -->
-            <div class="grid grid-cols-3 gap-6">
+            <div class="grid grid-cols-4 gap-6">
                 <div class="col-span-1 space-y-4">
                     <div class="bg-gray-800 p-4 rounded-lg">
                         <h3 class="font-bold mb-3">Add Awards/Results</h3>
@@ -250,7 +293,7 @@
                             <div id="awards-list" class="space-y-2 max-h-96 overflow-y-auto"></div>
                         </div>
                     </div>
-                    <div class="col-span-2">
+                    <div class="col-span-3">
                         <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left">
