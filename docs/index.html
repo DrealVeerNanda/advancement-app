@@ -1103,6 +1103,22 @@
                     const pDc = Math.min(100, (wDc / 100) * 100);
                     const pTotal = Math.min(100, (wOpr / 160) * 100);
 
+                    // Advanced Stats
+                    const stats = app.calculateAdvancedStats(t, AppState.matches, app.currentOprResults || {}); // Need to store OPR results globally or recalculate. 
+                    // Wait, renderStandings calls calculateRankings which calls solveOPR but doesn't expose the full results object easily unless we store it.
+                    // calculateRankings returns an array of team objects with OPRs attached. 
+                    // I can build a map of teamNum -> OPR from `data` which is available here!
+
+                    const oprMap = {};
+                    data.forEach(tm => oprMap[tm.number] = tm.tourney_opr || tm.opr_m3 || tm.opr_m2 || tm.opr_m1 || 0);
+                    // Re-calculate with full map
+                    const advStats = app.calculateAdvancedStats(t, AppState.matches, oprMap);
+
+                    // Format Kryptonite
+                    const kryptoniteHtml = advStats.kryptonite.length > 0
+                        ? advStats.kryptonite.map(k => `<span class="bg-red-900/50 text-red-300 px-1 rounded text-[10px] border border-red-700/50 mr-1">${k.num} (${k.count}L)</span>`).join('')
+                        : '<span class="text-gray-500 text-[10px]">None</span>';
+
                     tbody.innerHTML += `
                     <tr class="cursor-pointer ${isUser ? 'bg-blue-900/30' : 'hover:bg-gray-700'} border-b border-gray-700 transition" onclick="document.getElementById('${detailId}').classList.toggle('hidden')">
                         <td class="px-6 py-4 font-bold text-center">${t.league_rank}</td>
@@ -1128,57 +1144,72 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 
                                 <!-- OPR Breakdown Chart -->
-                                <div class="bg-gray-800 rounded p-4 border border-gray-700">
-                                    <h4 class="font-bold mb-4 text-xs text-indigo-400 uppercase tracking-widest">Performance Profile (Est. OPR)</h4>
-                                    
-                                    <div class="mb-3">
-                                        <div class="flex justify-between text-sm mb-1">
-                                            <span class="text-gray-400">Total OPR</span>
-                                            <span class="font-bold text-white">${wOpr.toFixed(1)} <span class="text-[10px] text-gray-500">(Top ${(100 - percentile).toFixed(1)}%)</span></span>
+                                <div class="bg-gray-800 rounded p-4 border border-gray-700 flex flex-col justify-between">
+                                    <div>
+                                        <h4 class="font-bold mb-4 text-xs text-indigo-400 uppercase tracking-widest">Performance Profile (Est. OPR)</h4>
+                                        
+                                        <div class="mb-3">
+                                            <div class="flex justify-between text-sm mb-1">
+                                                <span class="text-gray-400">Total OPR</span>
+                                                <span class="font-bold text-white">${wOpr.toFixed(1)} <span class="text-[10px] text-gray-500">(Top ${(100 - percentile).toFixed(1)}%)</span></span>
+                                            </div>
+                                            <div class="w-full bg-gray-700 rounded-full h-2">
+                                                <div class="bg-indigo-500 h-2 rounded-full" style="width: ${pTotal}%"></div>
+                                            </div>
                                         </div>
-                                        <div class="w-full bg-gray-700 rounded-full h-2">
-                                            <div class="bg-indigo-500 h-2 rounded-full" style="width: ${pTotal}%"></div>
+    
+                                        <div class="mb-3">
+                                            <div class="flex justify-between text-sm mb-1">
+                                                <span class="text-green-400">Auto OPR</span>
+                                                <span class="font-bold text-green-300">${wAuto.toFixed(1)}</span>
+                                            </div>
+                                            <div class="w-full bg-gray-700 rounded-full h-2">
+                                                <div class="bg-green-500 h-2 rounded-full" style="width: ${pAuto}%"></div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    
-                                     <div class="mb-3 p-2 bg-gray-900/50 rounded border border-gray-700/50">
-                                        <div class="flex justify-between text-sm items-center">
-                                            <span class="text-gray-400 text-xs">Pred. Tourn OPR</span>
-                                            <div class="text-right">
-                                                 <span class="font-bold ${trendColor} text-lg">${predictedVal.toFixed(1)}</span>
-                                                 <span class="text-xs ${trendColor} ml-1">${trendIcon}</span>
+    
+                                        <div class="mb-3">
+                                            <div class="flex justify-between text-sm mb-1">
+                                                <span class="text-blue-400">Tele/End OPR</span>
+                                                <span class="font-bold text-blue-300">${wDc.toFixed(1)}</span>
+                                            </div>
+                                            <div class="w-full bg-gray-700 rounded-full h-2">
+                                                <div class="bg-blue-500 h-2 rounded-full" style="width: ${pDc}%"></div>
                                             </div>
                                         </div>
                                     </div>
-
-                                    <div class="mb-3">
-                                        <div class="flex justify-between text-sm mb-1">
-                                            <span class="text-green-400">Auto OPR</span>
-                                            <span class="font-bold text-green-300">${wAuto.toFixed(1)}</span>
-                                        </div>
-                                        <div class="w-full bg-gray-700 rounded-full h-2">
-                                            <div class="bg-green-500 h-2 rounded-full" style="width: ${pAuto}%"></div>
-                                        </div>
+                                    
+                                    <!-- Scout Metrics -->
+                                    <div class="mt-4 pt-4 border-t border-gray-700/50">
+                                         <h4 class="font-bold mb-2 text-[10px] text-gray-500 uppercase tracking-widest">Scouting Intel</h4>
+                                         <div class="space-y-2">
+                                            <div class="flex justify-between text-xs">
+                                                <span class="text-gray-400">Contribution</span>
+                                                <span class="font-mono ${advStats.contribution > 50 ? 'text-green-400' : 'text-gray-300'}">${advStats.contribution.toFixed(1)}%</span>
+                                            </div>
+                                            <div class="flex justify-between text-xs">
+                                                <span class="text-gray-400">Consistency (±)</span>
+                                                <span class="font-mono text-gray-300">${advStats.consistency.toFixed(1)} pts</span>
+                                            </div>
+                                            <div class="flex justify-between text-xs">
+                                                <span class="text-gray-400">Strength of Sched.</span>
+                                                <span class="font-mono text-gray-300">${advStats.sos.toFixed(0)} Avg OPR</span>
+                                            </div>
+                                             <div class="flex justify-between text-xs items-center">
+                                                <span class="text-gray-400">Kryptonite</span>
+                                                <div class="text-right">${kryptoniteHtml}</div>
+                                            </div>
+                                         </div>
                                     </div>
-
-                                    <div class="mb-1">
-                                        <div class="flex justify-between text-sm mb-1">
-                                            <span class="text-blue-400">Tele/End OPR</span>
-                                            <span class="font-bold text-blue-300">${wDc.toFixed(1)}</span>
-                                        </div>
-                                        <div class="w-full bg-gray-700 rounded-full h-2">
-                                            <div class="bg-blue-500 h-2 rounded-full" style="width: ${pDc}%"></div>
-                                        </div>
-                                    </div>
-                                    <p class="text-[10px] text-gray-500 mt-2">*Based on latest meet performance</p>
                                 </div>
 
                                 <!-- Average Scores & Match History -->
                                 <div class="bg-gray-800 rounded p-4 border border-gray-700 col-span-2 flex flex-col">
                                     <div class="grid grid-cols-4 gap-4 text-center mb-4">
-                                        <div class="p-2 bg-gray-750 rounded">
+                                        <div class="p-2 bg-gray-750 rounded relative group">
                                             <div class="text-[10px] text-gray-400 uppercase">Avg Score</div>
                                             <div class="text-xl font-bold text-white">${t.avg_score.toFixed(1)}</div>
+                                            
                                         </div>
                                         <div class="p-2 bg-gray-750 rounded">
                                             <div class="text-[10px] text-green-400 uppercase">Avg Auto</div>
@@ -1188,15 +1219,16 @@
                                             <div class="text-[10px] text-blue-400 uppercase">Avg Tele/End</div>
                                             <div class="text-lg font-bold text-white">${t.avg_dc.toFixed(1)}</div>
                                         </div>
-                                        <div class="p-2 bg-gray-750 rounded">
-                                            <div class="text-[10px] text-gray-400 uppercase">Matches</div>
-                                            <div class="text-lg font-bold text-white">${t.matches_played}</div>
+    
+                                         <div class="p-2 bg-gray-750 rounded border border-gray-700/50">
+                                            <div class="text-[10px] text-indigo-400 uppercase">Pred. Tourn</div>
+                                            <div class="text-lg font-bold ${trendColor}">${predictedVal.toFixed(1)} <span class="text-xs">${trendIcon}</span></div>
                                         </div>
                                     </div>
                                     
                                     <!-- Trend Graph -->
-                                    <div class="mb-4 h-16 w-full bg-gray-800/50 rounded relative">
-                                        <div class="absolute top-1 left-2 text-[10px] text-gray-500 uppercase font-bold tracking-wider">Score Trend</div>
+                                    <div class="mb-4 h-24 w-full bg-gray-900 rounded relative border border-gray-700/50">
+                                        <div class="absolute top-2 left-2 text-[10px] text-gray-500 uppercase font-bold tracking-wider z-10">Score Trend</div>
                                         ${app.generateSparkline(t.matches.filter(m => !m.is_surrogate).sort((a, b) => a.match_id.localeCompare(b.match_id)))}
                                     </div>
 
@@ -1225,11 +1257,10 @@
                                 <h4 class="font-bold mb-2 text-xs text-yellow-400 uppercase tracking-widest">Team Notes (Shared)</h4>
                                 <textarea 
                                     class="w-full bg-gray-700 text-white rounded p-3 text-sm flex-grow border border-gray-600 focus:border-yellow-500 focus:outline-none transition"
-                                    rows="2" 
+                                    rows="1" 
                                     placeholder="Add notes (e.g. Robot reliability, auto paths)..."
                                     onchange="app.saveTeamNote('${t.number}', this.value)"
                                 >${AppState.teamNotes[t.number] || ''}</textarea>
-                                <div class="text-[10px] text-gray-500 mt-1 text-right">Auto-saves to cloud</div>
                             </div>
                         </td>
                     </tr>
@@ -1737,10 +1768,76 @@
 
 
 
+            // --- New Advanced Metrics Helpers ---
+
+            getStandardDeviation(array) {
+                if (!array || array.length === 0) return 0;
+                const n = array.length;
+                const mean = array.reduce((a, b) => a + b, 0) / n;
+                const variance = array.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / n;
+                return Math.sqrt(variance);
+            },
+
+            calculateAdvancedStats(team, allMatches, oprResults) {
+                // Filter matches played by this team
+                const teamMatches = allMatches.filter(m => m.red.includes(team.number) || m.blue.includes(team.number));
+                if (teamMatches.length === 0) return { consistency: 0, contribution: 0, sos: 0, kryptonite: [] };
+
+                // 1. Consistency (Std Dev of Score)
+                const scores = teamMatches.map(m => m.red.includes(team.number) ? m.red_score : m.blue_score);
+                const consistency = app.getStandardDeviation(scores);
+
+                // 2. Contribution % (OPR / Avg Alliance Score)
+                const avgAllianceScore = scores.reduce((a, b) => a + b, 0) / scores.length;
+                const contribution = (team.tourney_opr || team.opr_m3 || team.opr_m2 || team.opr_m1 || 0) / (avgAllianceScore || 1) * 100;
+
+                // 3. Strength of Schedule (Avg Opponent OPR)
+                let opponentOprSum = 0;
+                let opponentCount = 0;
+
+                // 4. Kryptonite (Teams lost to)
+                const lossesTo = {}; // { teamNum: count }
+
+                teamMatches.forEach(m => {
+                    const isRed = m.red.includes(team.number);
+                    const opponents = isRed ? m.blue : m.red;
+                    const result = isRed ? (m.red_score > m.blue_score ? 'W' : (m.red_score < m.blue_score ? 'L' : 'T'))
+                        : (m.blue_score > m.red_score ? 'W' : (m.blue_score < m.red_score ? 'L' : 'T'));
+
+                    opponents.forEach(opp => {
+                        // SOS
+                        const oppOpr = oprResults[opp] || 0;
+                        if (oppOpr > 0) {
+                            opponentOprSum += oppOpr;
+                            opponentCount++;
+                        }
+
+                        // Kryptonite
+                        if (result === 'L') {
+                            lossesTo[opp] = (lossesTo[opp] || 0) + 1;
+                        }
+                    });
+                });
+
+                const sos = opponentCount > 0 ? opponentOprSum / opponentCount : 0;
+
+                // Sort Kryptonite
+                const kryptonite = Object.entries(lossesTo)
+                    .sort((a, b) => b[1] - a[1]) // Descending by loss count
+                    .slice(0, 3) // Top 3
+                    .map(([num, count]) => ({ num, count }));
+
+                return { consistency, contribution, sos, kryptonite };
+            },
+
             getMatchRowsForTeam(teamNum) {
                 const allTeamMatches = AppState.matches.filter(m => m.red.includes(teamNum) || m.blue.includes(teamNum));
                 // Sort by match_id
                 allTeamMatches.sort((a, b) => a.match_id.localeCompare(b.match_id));
+
+                // Calc stats for display in header of match list maybe? Or just keep rows here. 
+                // The stats will be calculated in renderStandings and passed or recalculated.
+                // For now, this function just returns HTML strings for rows.
 
                 return allTeamMatches.map(m => {
                     const isRed = m.red.includes(teamNum);
