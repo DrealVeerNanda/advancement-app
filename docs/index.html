@@ -725,7 +725,10 @@
                 <td class="px-3 py-2"><input type="text" list="team-numbers" class="w-full bg-gray-600 rounded px-2 py-1 text-sm" placeholder="B2"></td>
                 <td class="px-3 py-2"><input type="number" class="w-full bg-gray-600 rounded px-2 py-1 text-sm text-center" placeholder="Score"></td>
                 <td class="px-3 py-2"><input type="number" class="w-full bg-gray-600 rounded px-2 py-1 text-sm text-center" placeholder="RP"></td>
-                <td class="px-3 py-2"><button onclick="app.saveTournamentMatch(${num})" class="bg-green-600 text-white px-2 py-1 rounded text-xs">Save</button></td>
+                <td class="px-3 py-2 flex gap-1">
+                    <button onclick="app.saveTournamentMatch(${num})" class="bg-green-600 text-white px-2 py-1 rounded text-xs">Save</button>
+                    <button onclick="app.clearTournamentMatch(${num})" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs" title="Reset match">✕</button>
+                </td>
             `;
                 tbody.appendChild(row);
             },
@@ -752,6 +755,26 @@
                     app.toggleMode(false); // Enable without re-render loop
                 }
                 app.renderStandings(); // Re-render to update OPR
+            },
+
+            clearTournamentMatch(num) {
+                // 1. Remove from State
+                const matchId = `Q-${num}`;
+                AppState.hypotheticalMatches = AppState.hypotheticalMatches.filter(m => m.match_id !== matchId);
+                app.saveState();
+
+                // 2. Clear Inputs
+                const row = document.getElementById(`tmatch-${num}`);
+                const inputs = row.querySelectorAll('input');
+                inputs.forEach(i => i.value = '');
+
+                // 3. Reset UI
+                row.classList.remove('bg-yellow-900/40');
+                row.classList.add('bg-gray-700');
+
+                // 4. Update Rankings
+                app.renderStandings();
+                app.renderAdvancement();
             },
 
             updateRowUI(row, inputs, num, saved) {
@@ -816,7 +839,7 @@
 
             async resetAll() {
                 if (!confirm("Clear all LOCAL data? (This only cleans this computer)")) return;
-                
+
                 AppState.hypotheticalMatches = [];
                 AppState.awards = [];
                 localStorage.removeItem("eb_advancement_state");
