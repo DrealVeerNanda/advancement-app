@@ -2,7 +2,8 @@
     "alliance_selections": {},
     "detailed_alliances": {
         "alliance1": {
-            "captain": "14259"
+            "captain": "14259",
+            "pick2": "25627"
         },
         "alliance2": {},
         "alliance3": {},

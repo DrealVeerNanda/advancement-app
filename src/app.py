@@ -35,10 +35,10 @@ threading.Thread(target=background_data_fetch, daemon=True).start()
 advancement_state = {
     'alliance_selections': {}, 
     'detailed_alliances': {
-        'alliance1': {'captain': None, 'pick1': None, 'pick2': None},
-        'alliance2': {'captain': None, 'pick1': None, 'pick2': None},
-        'alliance3': {'captain': None, 'pick1': None, 'pick2': None},
-        'alliance4': {'captain': None, 'pick1': None, 'pick2': None}
+        'alliance1': {'captain': None, 'pick1': None, 'pick2': None, 'pick3': None, 'pick4': None},
+        'alliance2': {'captain': None, 'pick1': None, 'pick2': None, 'pick3': None, 'pick4': None},
+        'alliance3': {'captain': None, 'pick1': None, 'pick2': None, 'pick3': None, 'pick4': None},
+        'alliance4': {'captain': None, 'pick1': None, 'pick2': None, 'pick3': None, 'pick4': None}
     },
     'awards': {}, 
     'playoff_results': {} 
@@ -70,10 +70,10 @@ def load_advancement_state():
             # Ensure detailed_alliances exists if not in loaded data
             if 'detailed_alliances' not in advancement_state:
                  advancement_state['detailed_alliances'] = {
-                    'alliance1': {'captain': None, 'pick1': None, 'pick2': None},
-                    'alliance2': {'captain': None, 'pick1': None, 'pick2': None},
-                    'alliance3': {'captain': None, 'pick1': None, 'pick2': None},
-                    'alliance4': {'captain': None, 'pick1': None, 'pick2': None}
+                    'alliance1': {'captain': None, 'pick1': None, 'pick2': None, 'pick3': None, 'pick4': None},
+                    'alliance2': {'captain': None, 'pick1': None, 'pick2': None, 'pick3': None, 'pick4': None},
+                    'alliance3': {'captain': None, 'pick1': None, 'pick2': None, 'pick3': None, 'pick4': None},
+                    'alliance4': {'captain': None, 'pick1': None, 'pick2': None, 'pick3': None, 'pick4': None}
                 }
     except FileNotFoundError:
         pass
@@ -174,10 +174,10 @@ def reset_scenario():
     data_manager.clear_tournament_matches()
     advancement_state['alliance_selections'].clear()
     advancement_state['detailed_alliances'] = {
-        'alliance1': {'captain': None, 'pick1': None, 'pick2': None},
-        'alliance2': {'captain': None, 'pick1': None, 'pick2': None},
-        'alliance3': {'captain': None, 'pick1': None, 'pick2': None},
-        'alliance4': {'captain': None, 'pick1': None, 'pick2': None}
+        'alliance1': {'captain': None, 'pick1': None, 'pick2': None, 'pick3': None, 'pick4': None},
+        'alliance2': {'captain': None, 'pick1': None, 'pick2': None, 'pick3': None, 'pick4': None},
+        'alliance3': {'captain': None, 'pick1': None, 'pick2': None, 'pick3': None, 'pick4': None},
+        'alliance4': {'captain': None, 'pick1': None, 'pick2': None, 'pick3': None, 'pick4': None}
     }
     advancement_state['awards'].clear()
     advancement_state['playoff_results'].clear()
