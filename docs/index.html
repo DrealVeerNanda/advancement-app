@@ -1104,19 +1104,33 @@
                     const pTotal = Math.min(100, (wOpr / 160) * 100);
 
                     // Advanced Stats
-                    const stats = app.calculateAdvancedStats(t, AppState.matches, app.currentOprResults || {}); // Need to store OPR results globally or recalculate. 
-                    // Wait, renderStandings calls calculateRankings which calls solveOPR but doesn't expose the full results object easily unless we store it.
-                    // calculateRankings returns an array of team objects with OPRs attached. 
-                    // I can build a map of teamNum -> OPR from `data` which is available here!
-
+                    // 1. OPR Map
                     const oprMap = {};
                     data.forEach(tm => oprMap[tm.number] = tm.tourney_opr || tm.opr_m3 || tm.opr_m2 || tm.opr_m1 || 0);
-                    // Re-calculate with full map
-                    const advStats = app.calculateAdvancedStats(t, AppState.matches, oprMap);
+
+                    // 2. DPR Map (Defensive Power Rating)
+                    // We need to solve DPR for all teams once, ideally outside the loop.
+                    // But for now, let's solve it if not exists.
+                    if (!app.dprResults) {
+                        const allTeamNums = data.map(team => team.number);
+                        app.dprResults = app.solveDPR(AppState.matches, allTeamNums);
+                    }
+
+                    const advStats = app.calculateAdvancedStats(t, AppState.matches, oprMap, app.dprResults);
 
                     // Format Kryptonite
                     const kryptoniteHtml = advStats.kryptonite.length > 0
-                        ? advStats.kryptonite.map(k => `<span class="bg-red-900/50 text-red-300 px-1 rounded text-[10px] border border-red-700/50 mr-1">${k.num} (${k.count}L)</span>`).join('')
+                        ? advStats.kryptonite.map(k => `<span class="bg-red-900/50 text-red-300 px-1 rounded text-[10px] border border-red-700/50 mr-1 cursor-help" title="${k.count} Losses">${k.num}</span>`).join('')
+                        : '<span class="text-gray-500 text-[10px]">None</span>';
+
+                    // Format Best Friends
+                    const friendsHtml = advStats.bestFriends.length > 0
+                        ? advStats.bestFriends.map(f => `<span class="bg-indigo-900/50 text-indigo-300 px-1 rounded text-[10px] border border-indigo-700/50 mr-1 cursor-help" title="Avg Score: ${f.avg.toFixed(0)}">${f.num}</span>`).join('')
+                        : '<span class="text-gray-500 text-[10px]">None</span>';
+
+                    // Format Shutdowns
+                    const shutdownsHtml = advStats.defense.shutdowns.length > 0
+                        ? advStats.defense.shutdowns.map(s => `<span class="bg-blue-900/50 text-blue-300 px-1 rounded text-[10px] border border-blue-700/50 mr-1">${s}</span>`).join('')
                         : '<span class="text-gray-500 text-[10px]">None</span>';
 
                     tbody.innerHTML += `
@@ -1196,8 +1210,21 @@
                                                 <span class="font-mono text-gray-300">${advStats.sos.toFixed(0)} Avg OPR</span>
                                             </div>
                                              <div class="flex justify-between text-xs items-center">
-                                                <span class="text-gray-400">Kryptonite</span>
+                                                <span class="text-gray-400">Kryptonite (Losses)</span>
                                                 <div class="text-right">${kryptoniteHtml}</div>
+                                            </div>
+                                            <!-- Defense & Chemistry -->
+                                            <div class="flex justify-between text-xs items-center mt-2 pt-2 border-t border-gray-700/30">
+                                                <span class="text-indigo-400">Best Friends</span>
+                                                <div class="text-right">${friendsHtml}</div>
+                                            </div>
+                                            <div class="flex justify-between text-xs items-center">
+                                                <span class="text-blue-400" title="Defensive Power Rating (Pts Allowed)">Defense (DPR)</span>
+                                                <span class="font-mono text-gray-300">${advStats.defense.dpr.toFixed(1)} pts</span>
+                                            </div>
+                                            <div class="flex justify-between text-xs items-center">
+                                                <span class="text-gray-500">Shutdowns</span>
+                                                <div class="text-right">${shutdownsHtml}</div>
                                             </div>
                                          </div>
                                     </div>
@@ -1770,6 +1797,20 @@
 
             // --- New Advanced Metrics Helpers ---
 
+            solveDPR(matches, teamNumbers) {
+                // To solve DPR (Defensive Power Rating), we solve OPR but swap scores.
+                // Red Score becomes Blue Score (points allowed).
+                // Blue Score becomes Red Score (points allowed).
+                const dpMatches = matches.map(m => ({
+                    ...m,
+                    red_score: m.blue_score, // Red allow Blue's score
+                    blue_score: m.red_score, // Blue allow Red's score
+                    red_score_np: m.blue_score,
+                    blue_score_np: m.red_score
+                }));
+                return solveOPR(dpMatches, teamNumbers);
+            },
+
             getStandardDeviation(array) {
                 if (!array || array.length === 0) return 0;
                 const n = array.length;
@@ -1778,10 +1819,10 @@
                 return Math.sqrt(variance);
             },
 
-            calculateAdvancedStats(team, allMatches, oprResults) {
+            calculateAdvancedStats(team, allMatches, oprResults, dprResults) {
                 // Filter matches played by this team
                 const teamMatches = allMatches.filter(m => m.red.includes(team.number) || m.blue.includes(team.number));
-                if (teamMatches.length === 0) return { consistency: 0, contribution: 0, sos: 0, kryptonite: [] };
+                if (teamMatches.length === 0) return { consistency: 0, contribution: 0, sos: 0, kryptonite: [], bestFriends: [], defense: { dpr: 0, impact: 0, shutdowns: [] } };
 
                 // 1. Consistency (Std Dev of Score)
                 const scores = teamMatches.map(m => m.red.includes(team.number) ? m.red_score : m.blue_score);
@@ -1791,30 +1832,46 @@
                 const avgAllianceScore = scores.reduce((a, b) => a + b, 0) / scores.length;
                 const contribution = (team.tourney_opr || team.opr_m3 || team.opr_m2 || team.opr_m1 || 0) / (avgAllianceScore || 1) * 100;
 
-                // 3. Strength of Schedule (Avg Opponent OPR)
+                // 3. SOS, Kryptonite, Best Friends, Shutdowns
                 let opponentOprSum = 0;
                 let opponentCount = 0;
 
-                // 4. Kryptonite (Teams lost to)
                 const lossesTo = {}; // { teamNum: count }
+                const partnerScores = {}; // { teamNum: [scores] }
+                let lowestAllowed = { score: 999, opp: [] }; // Shutdowns
 
                 teamMatches.forEach(m => {
                     const isRed = m.red.includes(team.number);
                     const opponents = isRed ? m.blue : m.red;
-                    const result = isRed ? (m.red_score > m.blue_score ? 'W' : (m.red_score < m.blue_score ? 'L' : 'T'))
-                        : (m.blue_score > m.red_score ? 'W' : (m.blue_score < m.red_score ? 'L' : 'T'));
+                    const partners = isRed ? m.red : m.blue;
+                    const myScore = isRed ? m.red_score : m.blue_score;
+                    const oppScore = isRed ? m.blue_score : m.red_score;
 
+                    const result = myScore > oppScore ? 'W' : (myScore < oppScore ? 'L' : 'T');
+
+                    // SOS & Kryptonite & Shutdowns
                     opponents.forEach(opp => {
-                        // SOS
                         const oppOpr = oprResults[opp] || 0;
                         if (oppOpr > 0) {
                             opponentOprSum += oppOpr;
                             opponentCount++;
                         }
+                        if (result === 'L') lossesTo[opp] = (lossesTo[opp] || 0) + 1;
+                    });
 
-                        // Kryptonite
-                        if (result === 'L') {
-                            lossesTo[opp] = (lossesTo[opp] || 0) + 1;
+                    // Track Shutdowns (lowest opponent score)
+                    if (oppScore < lowestAllowed.score) {
+                        lowestAllowed.score = oppScore;
+                        lowestAllowed.opp = opponents;
+                    } else if (oppScore === lowestAllowed.score) {
+                        lowestAllowed.opp = [...lowestAllowed.opp, ...opponents];
+                    }
+
+                    // Best Friends (Partners)
+                    partners.forEach(p => {
+                        if (p !== team.number) {
+                            if (!partnerScores[p]) partnerScores[p] = [];
+                            partnerScores[p].push(myScore);
                         }
                     });
                 });
@@ -1823,11 +1880,31 @@
 
                 // Sort Kryptonite
                 const kryptonite = Object.entries(lossesTo)
-                    .sort((a, b) => b[1] - a[1]) // Descending by loss count
-                    .slice(0, 3) // Top 3
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 3)
                     .map(([num, count]) => ({ num, count }));
 
-                return { consistency, contribution, sos, kryptonite };
+                // Sort Best Friends (Avg Score)
+                const bestFriends = Object.entries(partnerScores)
+                    .map(([num, scores]) => ({ num, avg: scores.reduce((a, b) => a + b, 0) / scores.length, count: scores.length }))
+                    .sort((a, b) => b.avg - a.avg)
+                    .slice(0, 3); // Top 3
+
+                // Defense
+                const dpr = dprResults ? (dprResults[team.number] || 0) : 0;
+                // Impact: Measure against global avg score (e.g., 45ish)
+                // Positive impact = lower DPR than avg
+                const globalAvgScore = 45; // Approx for Into The Deep
+                const defenseImpact = globalAvgScore - dpr; // Positive means good defense (low DPR)
+
+                return {
+                    consistency,
+                    contribution,
+                    sos,
+                    kryptonite,
+                    bestFriends,
+                    defense: { dpr, impact: defenseImpact, shutdowns: [...new Set(lowestAllowed.opp)].slice(0, 3), minAllowed: lowestAllowed.score }
+                };
             },
 
             getMatchRowsForTeam(teamNum) {
