@@ -1103,12 +1103,20 @@
                 // but here just checking team existence
                 if (!t) return;
 
+                // Check for duplicate award
+                const duplicate = AppState.awards.find(a => a.team === t && a.award === label);
+                if (duplicate) {
+                    alert(`Team ${t} already has award: ${label}\n\nPlease remove the existing award first if you want to update it.`);
+                    return;
+                }
+
                 AppState.awards.push({ team: t, award: label, award_val: val });
                 app.saveState();
                 app.updateAwardsList();
                 app.renderAdvancement(); app.renderAlliance();
                 document.getElementById('adv_team').value = '';
             },
+
 
             updateAwardsList() {
                 const div = document.getElementById('awards-list');
