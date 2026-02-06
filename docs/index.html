@@ -1916,8 +1916,12 @@
                 // Blue Score becomes Red Score (points allowed).
                 const dpMatches = matches.map(m => ({
                     ...m,
-                    red_score: Number(m.blue_score) || 0, // Force number
-                    blue_score: Number(m.red_score) || 0,
+                    // Use non-penalty scores if available, otherwise fall back to total scores.
+                    // Red Allow = Blue NP Score
+                    // Blue Allow = Red NP Score
+                    red_score: (typeof m.blue_score_np !== 'undefined') ? (Number(m.blue_score_np) || 0) : (Number(m.blue_score) || 0),
+                    blue_score: (typeof m.red_score_np !== 'undefined') ? (Number(m.red_score_np) || 0) : (Number(m.red_score) || 0),
+                    // These fields below serve no purpose for DPR solver but kept for consistency if referenced elsewhere
                     red_score_np: Number(m.blue_score) || 0,
                     blue_score_np: Number(m.red_score) || 0
                 }));
