@@ -695,14 +695,24 @@
                     const r = (m[`red_${metricName}`] !== undefined) ? m[`red_${metricName}`] : 0;
                     const b = (m[`blue_${metricName}`] !== undefined) ? m[`blue_${metricName}`] : 0;
 
+                    // Create a CLEAN object to ensure no property leakage from ...m
+                    // We only need red, blue, and the scores for solveOPR
                     return {
-                        ...m,
+                        match_id: m.match_id, // Keep ID for debugging
+                        red: m.red,
+                        blue: m.blue,
                         red_score: r,
                         blue_score: b,
-                        red_score_np: r,  // Override _np variant to prevent using total score
+                        red_score_np: r,  // FORCE override
                         blue_score_np: b
                     };
                 });
+
+                // Debug logging to verify differentiation
+                if (shadow.length > 0 && metricName === 'auto') {
+                    console.log(`[OPR DEBUG] Metric: ${metricName}`, shadow[0]);
+                }
+
                 return solveOPR(shadow, allTeamNums);
             };
 
