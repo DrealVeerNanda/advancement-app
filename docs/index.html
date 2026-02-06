@@ -1895,7 +1895,15 @@
             calculateAdvancedStats(team, allMatches, oprResults, dprResults) {
                 // Filter matches played by this team
                 const teamMatches = allMatches.filter(m => m.red.includes(team.number) || m.blue.includes(team.number));
-                if (teamMatches.length === 0) return { consistency: 0, contribution: 0, sos: 0, kryptonite: [], bestFriends: [], defense: { dpr: 0, impact: 0, shutdowns: [] } };
+                if (teamMatches.length === 0) return {
+                    consistency: 0,
+                    contribution: 0,
+                    sos: 0,
+                    kryptonite: [],
+                    bestFriends: [],
+                    defense: { dpr: 0, impact: 0, shutdowns: [] },
+                    matchDifficulty: { m1: 0, m2: 0, m3: 0, tournament: 0 }
+                };
 
                 // 1. Consistency (Std Dev of Score)
                 const scores = teamMatches.map(m => m.red.includes(team.number) ? m.red_score : m.blue_score);
